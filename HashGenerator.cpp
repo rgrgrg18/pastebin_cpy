@@ -1,12 +1,12 @@
-//#include "HashGenerator.h"
+#include "HashGenerator.h"
 #include <cstring>
 #include <iostream>
 
-///using namespace paste_hash;
+using namespace paste_hash;
 
-const std::string code_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+const std::string Base64::code_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
-std::string generate_4 (std::string str) {
+std::string Base64::generate_4 (std::string str) {
 	std::string hash_4(4, '\0');
 
 	str += '\0';
@@ -34,4 +34,12 @@ std::string generate_4 (std::string str) {
 	hash_4[3] = code_string[encoded_4];
 
 	return hash_4;
+}
+
+std::string Base64::generate_8 (std::string str) {
+	std::string hash_8;
+	hash_8 += generate_4(str.substr(0, 4));
+	hash_8 += generate_4(str.substr(4, 4));
+
+	return hash_8;
 }
