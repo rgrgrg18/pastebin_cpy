@@ -16,13 +16,16 @@ int main() {
     TgBot::Bot bot(Token);
 
     commands(bot);
+    answer(bot);
 
     try {
         printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
-        TgBot::TgLongPoll longPoll(bot);
+        bot.getApi().deleteWebhook();
+        TgLongPoll long_poll(bot);
+
         while (true) {
             printf("Long poll started\n");
-            longPoll.start();
+            long_poll.start();
         }
     } catch (TgBot::TgException& e) {
         printf("error: %s\n", e.what());

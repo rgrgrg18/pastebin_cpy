@@ -7,5 +7,6 @@ using namespace std;
 using namespace TgBot;
 
 void commands(TgBot::Bot& bot);
+void answer(TgBot::Bot& bot);
 
 #endif
