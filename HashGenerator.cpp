@@ -1,21 +1,20 @@
 #include "HashGenerator.h"
-#include <cstring>
 
 using namespace paste_hash;
 
 const std::string code_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
-std::string generate_4 (int value) {
+std::string generate_4 (std::string str) {
 	std::string hash_4(4, '\0');
 
-	char default_1_byte = value;
-	char default_2_byte = value >> 8;
-	char default_3_byte = value >> 16;
+	char first = str[0];
+	char second = str[1];
+	char third = str[2];
 
-	char encoded_1 = default_1_byte & 63;
-	char encoded_2 = ((default_1_byte >> 6) | ((default_2_byte & 15) << 2));
-	char encoded_3 = ((default_2_byte >> 4) | ((default_3_byte & 3) << 4));
-	char encoded_4 = (default_3_byte & 257) >> 2;
+	char encoded_1 = first >> 2;
+	char encoded_2 = ((first << 4) & 48) | (second >> 4);
+	char encoded_3 = ((second << 2) & 60) | (third >> 6);
+	char encoded_4 = third & 63;
 
 	hash_4[0] = code_string[encoded_1]; 
 	hash_4[1] = code_string[encoded_2];

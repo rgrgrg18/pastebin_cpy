@@ -5,7 +5,7 @@
 
 namespace paste_hash {
 	const std::string code_string;
-	std::string generate_4 (int value); 		
+	std::string generate_4 (std::string value); 		
 }
 
 #endif
