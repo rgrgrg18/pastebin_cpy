@@ -8,17 +8,19 @@ namespace paste_hash {
 	private:
 		static const std::string code_string;
 	public: 
-		std::string hash_4;
-		std::string hash_8;
+		const std::string hash;
 
 		Base64() = delete;	
 		Base64(const Base64& other) = delete;
 		Base64& operator=(const Base64& other) = delete;
 
-		explicit Base64(std::string str): hash_8(generate_8(str)) {}
+		explicit Base64(unsigned long long value): Base64(std::to_string(value)) {}
+		explicit Base64(unsigned long long value, int length_hash): Base64(std::to_string(value), length_hash) {}
+		explicit Base64(std::string str): hash(generate(str, (str.size() / 3) * 4 + (str.size() % 3))) {}
+		explicit Base64(std::string str, int length_hash): hash(generate(str, length_hash)) {}
 	private:
-		std::string generate_4 (std::string str);
-		std::string generate_8 (std::string str);
+		static std::string generate_4 (std::string str);
+		static std::string generate (std::string str, int length_hash);
 	}; 		
 }
 
