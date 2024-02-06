@@ -1,12 +1,8 @@
-#include <csignal>
-#include <cstdio>
-#include <cstdlib>
 #include <exception>
-#include <string>
-#include <tgbot/tgbot.h>
-
 #include "config.h"
-#include "commands.h"
+#include "inline_keyboard.h"
+
+#include "commands.h" 
 
 using namespace std;
 using namespace TgBot;
@@ -15,8 +11,12 @@ int main() {
     
     TgBot::Bot bot(Token);
 
-    commands(bot);
-    answer(bot);
+    InlineKeyboard all_inline;
+    unordered_map<int, InlineKeyboardMarkup::Ptr> all_keyboards = all_inline.make_vector_keyboards(bot, keyboards_args);
+
+    BotCommands all_commands;
+    all_commands.commands(bot, all_keyboards);
+    all_commands.answer(bot);
 
     try {
         printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
