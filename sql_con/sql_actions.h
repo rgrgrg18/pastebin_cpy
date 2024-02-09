@@ -5,11 +5,17 @@
 
 class sql_actions {
 public:
-	static void add_user (pqxx::work& txn, const std::string& login);
-	static void add_paste (pqxx::work& txn, const std::string& login, const std::string& amazon_link, const std::string& hash_link);
-	static std::string get_amazon_link (pqxx::work& txn, const std::string& hash);
-	static unsigned long long get_sequence_for_hash (pqxx::work& txn);
 	static void print_sql_tables(pqxx::work& txn);
+public:
+	static void prepare_add_user (pqxx::connection_base& conn);
+	static void prepare_add_paste (pqxx::connection_base& conn);
+	static void prepare_get_amazon_link (pqxx::connection_base& conn);
+	static void prepare_get_sequence_for_hash (pqxx::connection_base& conn);
+	static void execute_add_user (pqxx::transaction_base& txn, const std::string& login);
+	static void execute_add_paste (pqxx::transaction_base& txn, const std::string& login, 
+								   const std::string& amazon_link, const std::string& hash_link);
+	static std::string execute_get_amazon_link (pqxx::transaction_base& txn);
+	static unsigned long long execute_get_sequence_for_hash (pqxx::transaction_base& txn);
 };
 
 

@@ -2,57 +2,50 @@
 #include <iostream>
 #include <iomanip>
 
-unsigned long long sql_actions::get_sequence_for_hash (pqxx::work& txn) {
-	pqxx::result res(txn.exec("SELECT nextval('hash_generate');"));
-	int hash_s = 0;
-	res[0][0].to(hash_s);
 
-	txn.commit();
-
-	return hash_s;
+void sql_actions::prepare_get_sequence_for_hash (pqxx::connection_base& conn) {
+	conn.prepare (
+		"get_sequence_for_hash",
+		"SELECT nextval('hash_generate');");
 }
 
-std::string sql_actions::get_amazon_link (pqxx::work& txn, const std::string& hash) {
-	std::string get_link = "SELECT amazon_link FROM pastes WHERE hash = '";
-	get_link += hash;
-	get_link.push_back('\'');
-
-	pqxx::result res(txn.exec(get_link.c_str()));
-
-	return res[0][0].c_str();
+void sql_actions::prepare_get_amazon_link (pqxx::connection_base& conn) {
+	conn.prepare (
+		"get_amazon_link",
+		"SELECT amazon_link FROM pastes WHERE hash = $1");
 }
 
-void sql_actions::add_user (pqxx::work& txn, const std::string& login) {
-	std::string insert_users = "INSERT INTO users (id, login) VALUES (nextval('seq_person'), '";
-	insert_users += login;
-
-	insert_users.push_back('\'');
-	insert_users.push_back(')');
-
-	txn.exec0(insert_users.c_str());
-
-	txn.commit();
+void sql_actions::prepare_add_user (pqxx::connection_base& conn) {
+	conn.prepare(
+		"add_user",
+		"INSERT INTO users (id, login) VALUES (nextval('seq_person'), $1)");
 }
 
-void sql_actions::add_paste (pqxx::work& txn, const std::string& login, const std::string& amazon_link, const std::string& hash_link) {
+void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
+	conn.prepare(
+		"add_paste",
+		"INSERT INTO pastes (hash, amazon_link, user_id) \
+		VALUES ($1, $2, (SELECT id FROM users WHERE login = $3))");
+}
 
-	std::string insert_paste = "INSERT INTO pastes (hash, amazon_link, user_id) VALUES ('";
+unsigned long long sql_actions::execute_get_sequence_for_hash (pqxx::transaction_base& txn) {
+	unsigned long long sequence;
+	return txn.exec_prepared("get_sequence_for_hash")[0][0].as(sequence);
+}
 
-	insert_paste += hash_link;
-	insert_paste += "', '";
-	insert_paste += amazon_link;
+std::string sql_actions::execute_get_amazon_link (pqxx::transaction_base& txn) {
+	return (txn.exec_prepared("get_amazon_link"))[0][0].c_str();
+}
 
-	std::string user_id = "', (SELECT id FROM users WHERE login = '";
-	user_id += login;
-	user_id.push_back('\'');
-	user_id.push_back(')');
-	user_id.push_back(')');
+void sql_actions::execute_add_user (pqxx::transaction_base& txn, const std::string& login) {
+	txn.exec_prepared("add_user", login);
+}
 
-	insert_paste += user_id;
-
-	txn.exec0(insert_paste.c_str());
-
-	txn.commit();
+void sql_actions::execute_add_paste (pqxx::transaction_base& txn, 
+						const std::string& login, 
+						const std::string& amazon_link, 
+						const std::string& hash_link) {
+	txn.exec_prepared("add_paste", hash_link, amazon_link, login);
 }
 
 void sql_actions::print_sql_tables(pqxx::work& txn) {
