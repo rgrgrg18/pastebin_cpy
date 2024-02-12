@@ -1,7 +1,7 @@
 #include "sql_actions.h"
 #include <iostream>
 #include <iomanip>
-
+#include "/home/apinov/pastebin_cpy/hash_generate/HashGenerator.h"
 
 void sql_actions::prepare_get_sequence_for_hash (pqxx::connection_base& conn) {
 	conn.prepare (
@@ -76,6 +76,19 @@ void sql_actions::prepare_all_pastes (pqxx::connection_base& conn) {
 void sql_actions::execute_all_pastes (pqxx::transaction_base& txn, const std::string& login) {
 	txn.exec_prepared("all_pastes");
 }		
+
+void sql_actions::new_paste (pqxx::dbtransaction& txn, const std::string& login, const std::string& amazon_link) {
+	unsigned long long sequence = sql_actions::execute_get_sequence_for_hash(txn);
+	paste_hash::Base64 hash_sequence(sequence);
+
+	pqxx::subtransaction txn1(txn, "insert");
+
+	sql_actions::execute_add_user(txn1, login);
+		
+	sql_actions::execute_add_paste(txn1, login, amazon_link, hash_sequence.hash);
+	std::cout << login << amazon_link << hash_sequence.hash;
+	txn1.commit();
+}
 
 void sql_actions::print_sql_tables (pqxx::work& txn) {
 	pqxx::result res(txn.exec("SELECT * FROM users"));

@@ -23,6 +23,8 @@ public:
 	static unsigned long long execute_get_sequence_for_hash (pqxx::transaction_base& txn);
 	static int execute_number_pastes (pqxx::transaction_base& txn, const std::string& login);
 	static void execute_all_pastes (pqxx::transaction_base& txn, const std::string& login);
+public:
+	static void new_paste (pqxx::dbtransaction& txn, const std::string& login, const std::string& amazon_link); 
 };
 
 #endif
