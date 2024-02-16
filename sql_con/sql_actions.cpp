@@ -35,7 +35,8 @@ unsigned long long sql_actions::execute_get_sequence_for_hash (pqxx::transaction
 }
 
 std::string sql_actions::execute_get_amazon_link (pqxx::transaction_base& txn, const std::string& hash_link) {
-	return (txn.exec_prepared("get_amazon_link", hash_link))[0][0].c_str();
+	pqxx::result link = txn.exec_prepared("get_amazon_link", hash_link);
+	return link.empty() ? "" : link[0][0].c_str();
 }
 
 void sql_actions::prepare_check_login (pqxx::connection_base& conn) {
@@ -86,7 +87,6 @@ void sql_actions::new_paste (pqxx::dbtransaction& txn, const std::string& login,
 	sql_actions::execute_add_user(txn1, login);
 		
 	sql_actions::execute_add_paste(txn1, login, amazon_link, hash_sequence.hash);
-	std::cout << login << amazon_link << hash_sequence.hash;
 	txn1.commit();
 }
 
