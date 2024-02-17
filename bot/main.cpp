@@ -15,8 +15,13 @@ int main() {
     unordered_map<int, InlineKeyboardMarkup::Ptr> all_keyboards = all_inline.make_vector_keyboards(bot, keyboards_args);
 
     BotCommands all_commands;
-    all_commands.commands(bot, all_keyboards);
-    all_commands.answer(bot);
+    all_commands.callback(bot, all_keyboards);
+    all_commands.answer(bot, all_keyboards);
+
+    signal(SIGINT, [](int s) {
+        printf("SIGINT got\n");
+        exit(0);
+    });
 
     try {
         printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());

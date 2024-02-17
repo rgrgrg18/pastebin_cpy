@@ -9,7 +9,7 @@ InlineKeyboardMarkup::Ptr InlineKeyboard::make_keyboard(TgBot::Bot& bot, vector<
     for (int i = 0; i < button_names.size(); i++) {
         InlineKeyboardButton::Ptr checkButton(new InlineKeyboardButton);
         checkButton->text = button_names[i];
-        checkButton->callbackData = button_names[i];
+        checkButton->callbackData = button_names[i] + "_c";
         row0.push_back(checkButton);
     }
     keyboard->inlineKeyboard.push_back(row0);
