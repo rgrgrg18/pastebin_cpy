@@ -2,8 +2,7 @@
 
 // "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=" - symbols, that we can use 
 
-
-bool validate::validate_code(const string& code) {
+bool validate::validate_code(const std::string& code) {
     if (code.length() != 8) return false;
     for (char symbol : code) {
         if ((int)symbol >= 65 && (int)symbol <= 90) continue;

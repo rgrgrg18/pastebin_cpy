@@ -1,13 +1,10 @@
 #include "inline_keyboard.h"
-#include <csignal>
-#include <cstdio>
-#include <cstdlib>
 
-InlineKeyboardMarkup::Ptr InlineKeyboard::make_keyboard(TgBot::Bot& bot, vector<string>& button_names) {
-    InlineKeyboardMarkup::Ptr keyboard(new InlineKeyboardMarkup);
-    vector<InlineKeyboardButton::Ptr> row0;
-    for (int i = 0; i < button_names.size(); i++) {
-        InlineKeyboardButton::Ptr checkButton(new InlineKeyboardButton);
+TgBot::InlineKeyboardMarkup::Ptr InlineKeyboard::make_keyboard(TgBot::Bot& bot, std::vector<std::string>& button_names) {
+    TgBot::InlineKeyboardMarkup::Ptr keyboard(new TgBot::InlineKeyboardMarkup);
+    std::vector<TgBot::InlineKeyboardButton::Ptr> row0;
+    for (int i = 0; i < button_names.size(); ++i) {
+        TgBot::InlineKeyboardButton::Ptr checkButton(new TgBot::InlineKeyboardButton);
         checkButton->text = button_names[i];
         checkButton->callbackData = button_names[i] + "_c";
         row0.push_back(checkButton);
@@ -16,8 +13,8 @@ InlineKeyboardMarkup::Ptr InlineKeyboard::make_keyboard(TgBot::Bot& bot, vector<
     return keyboard;
 }
 
-unordered_map<int, InlineKeyboardMarkup::Ptr> InlineKeyboard::make_vector_keyboards(TgBot::Bot& bot, unordered_map<int, vector<string>>& keyboards_args) {
-    unordered_map<int, InlineKeyboardMarkup::Ptr> ans;
+std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> InlineKeyboard::make_vector_keyboards(TgBot::Bot& bot, std::unordered_map<int, std::vector<std::string>>& keyboards_args) {
+    std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> ans;
     for (auto elem : keyboards_args) {
         ans[elem.first] = make_keyboard(bot, elem.second);
     }

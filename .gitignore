@@ -1,2 +1,16 @@
 *.o
 *.exe
+
+#temporary files
+my_project_build/
+*/.DS_Store
+.DS_Store
+.vscode/
+CMakeFiles/
+bot/config.h
+CmakeLists.txt
+.gitignore
+amazon_s3/.vscode
+CmakeLists.txt
+
+

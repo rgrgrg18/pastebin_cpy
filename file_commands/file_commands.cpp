@@ -1,7 +1,7 @@
-#include "make_files.h"
-#include <stdio.h>
+#include "file_commands.h"
 
-void MakeFiles::string_to_txt(int64_t user_id, std::string message, std::string& directory){
+// converting a string to a txt file with the specified directory
+void FileCommands::string_to_txt(int64_t user_id, std::string message, std::string& directory){
 
     std::ofstream file(directory + 
                         std::to_string(user_id) + 
@@ -17,7 +17,8 @@ void MakeFiles::string_to_txt(int64_t user_id, std::string message, std::string&
     }
 };
 
-void MakeFiles::string_to_bin(int64_t user_id, std::string message, std::string& directory){
+// converting a string to a bin file with the specified directory
+void FileCommands::string_to_bin(int64_t user_id, std::string message, std::string& directory){
 
     std::ofstream file(directory + 
                         std::to_string(user_id) + 
@@ -33,24 +34,27 @@ void MakeFiles::string_to_bin(int64_t user_id, std::string message, std::string&
     }
 };
 
-std::string MakeFiles::file_type(std::string& path) {
+// returns the file type
+std::string FileCommands::file_type(const std::string& path) {
     std::string ans;
     int i = path.size() - 1;
-    while (i >= 0 && path[i] != '.') i--;
-    i++;
-    for (i; i < path.size(); i++) {
+    while (i >= 0 && path[i] != '.') --i;
+    ++i;
+    for (i; i < path.size(); ++i) {
         ans.push_back(path[i]);
     }
+    return ans;
 }
 
-void MakeFiles::txt_to_bin(std::string txt_path){
+// converting a txt file to a bin file
+void FileCommands::txt_to_bin(std::string txt_path){
     std::string bin_path;
     if (file_type(txt_path) != "txt") {
         std::cout << "incorrect path name in func txt_to_bin";
         return;
     }
 
-    for (int i = 0; i < txt_path.size() - 3; i++) {
+    for (int i = 0; i < txt_path.size() - 3; ++i) {
         bin_path.push_back(txt_path[i]);
     }
     bin_path += "bin";
@@ -73,9 +77,8 @@ void MakeFiles::txt_to_bin(std::string txt_path){
 
 };
 
-
-
-void MakeFiles::bin_to_txt(std::string bin_path){
+// converting a bin file to a txt file
+void FileCommands::bin_to_txt(std::string bin_path){
 
     std::string txt_path;
     if (file_type(bin_path) != "bin") {
@@ -83,7 +86,7 @@ void MakeFiles::bin_to_txt(std::string bin_path){
         return;
     }
 
-    for (int i = 0; i < bin_path.size() - 3; i++) {
+    for (int i = 0; i < bin_path.size() - 3; ++i) {
         txt_path.push_back(bin_path[i]);
     }
     txt_path += "txt";

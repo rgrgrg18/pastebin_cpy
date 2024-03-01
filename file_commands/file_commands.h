@@ -6,10 +6,9 @@
 #include <fstream>
 #include <string>
 
-class MakeFiles {
-private:
-    std::string file_type(std::string& path);
+class FileCommands {
 public:
+    std::string file_type(const std::string& path);
     void string_to_txt(int64_t user_id, std::string message, std::string& directory);
     void string_to_bin(int64_t user_id, std::string message, std::string& directory);
     void txt_to_bin(std::string txt_path);
