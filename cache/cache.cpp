@@ -45,7 +45,5 @@ namespace cache {
 		}
 	};		
 }
-// string and map can throw exceptions
-
 
 #endif
