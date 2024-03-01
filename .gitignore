@@ -1,7 +1,5 @@
 *.o
 *.exe
-
-#temporary files
 my_project_build/
 */.DS_Store
 .DS_Store
@@ -12,5 +10,4 @@ CmakeLists.txt
 .gitignore
 amazon_s3/.vscode
 CmakeLists.txt
-
 
