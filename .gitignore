@@ -10,4 +10,9 @@ CmakeLists.txt
 .gitignore
 amazon_s3/.vscode
 CmakeLists.txt
-
+test
+*/test
+*/.o
+*/.exe
+*/test.cpp
+test.cpp
