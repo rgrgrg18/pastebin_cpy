@@ -1,7 +1,7 @@
 #include "sql_actions.h"
 #include <iostream>
 #include <iomanip>
-#include "/home/apinov/pastebin_cpy/hash_generate/HashGenerator.h"
+#include "../hash_generate/HashGenerator.h"
 
 void sql_actions::prepare_get_sequence_for_hash (pqxx::connection_base& conn) {
 	conn.prepare (
@@ -67,16 +67,6 @@ int sql_actions::execute_number_pastes (pqxx::transaction_base& txn, const std::
 	int count;
 	return txn.exec_prepared("number_pastes", login)[0][0].as(count);
 }
-
-void sql_actions::prepare_all_pastes (pqxx::connection_base& conn) {
-	conn.prepare(
-		"all_pastes",
-		"COPY (SELECT * FROM pastes WHERE user_id = (SELECT id FROM users WHERE login = 'kirill')) TO '/var/lib/postgresql/test1.txt'");
-}
-
-void sql_actions::execute_all_pastes (pqxx::transaction_base& txn, const std::string& login) {
-	txn.exec_prepared("all_pastes");
-}		
 
 void sql_actions::new_paste (pqxx::dbtransaction& txn, const std::string& login, const std::string& amazon_link) {
 	unsigned long long sequence = sql_actions::execute_get_sequence_for_hash(txn);
