@@ -219,43 +219,64 @@ user_state sql_actions::execute_get_user_state (pqxx::transaction_base& txn, int
 }
 
 /**
- * @brief Prepares change flag new paste in users_state table to opposite value
+ * @brief Prepares change flag new paste in users_state table to true
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_change_flag_new_paste (pqxx::connection_base& conn) {
+void sql_actions::prepare_set_flag_new_paste_true (pqxx::connection_base& conn) {
 	conn.prepare (
-		"change_flag_new_paste",
-		"UPDATE user_state SET new_paste = NOT new_paste WHERE login = $1");
+		"flag_new_paste_true",
+		"UPDATE user_state SET new_paste = TRUE WHERE login = $1");
 }
 
 /**
- * @brief Prepares change flag watch paste in users_state table to opposite value
+ * @brief Prepares change flag watch paste in users_state table to true
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_change_flag_watch_paste (pqxx::connection_base& conn) {
+void sql_actions::prepare_set_flag_watch_paste_true (pqxx::connection_base& conn) {
 	conn.prepare (
-		"change_flag_watch_paste",
-		"UPDATE user_state SET watch_paste = NOT watch_paste WHERE login = $1");
+		"flag_watch_paste_true",
+		"UPDATE user_state SET watch_paste = TRUE WHERE login = $1");
 }
 
 /**
- * @brief Сhange flag new paste in users_state table to opposite value
+ * @brief Сhange flag new paste in users_state table to true
  * 
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
  */
-void sql_actions::execute_swap_new_paste_flag (pqxx::transaction_base& txn, int64_t login) {
-	txn.exec_prepared0("change_flag_new_paste", login);
+void sql_actions::execute_set_flag_new_paste_true (pqxx::transaction_base& txn, int64_t login) {
+	txn.exec_prepared0("flag_new_paste_true", login);
 }
 
 /**
- * @brief Сhange flag watch paste in users_state table to opposite value
+ * @brief Сhange flag watch paste in users_state table to true
  * 
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
  */
-void sql_actions::execute_swap_watch_paste_flag (pqxx::transaction_base& txn, int64_t login) {
-	txn.exec_prepared0("change_flag_watch_paste", login);
+void sql_actions::execute_set_flag_watch_paste_true (pqxx::transaction_base& txn, int64_t login) {
+	txn.exec_prepared0("flag_watch_paste_true", login);
+}
+
+/**
+ * @brief Prepares change flags new paste and watch paste in users_state table to false
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_set_flags_false (pqxx::connection_base& conn) {
+	conn.prepare (
+		"flags_false",
+		"UPDATE user_state SET watch_paste = FALSE, new_paste = FALSE WHERE login = $1");
+}
+
+/**
+ * @brief Change flags new paste and watch paste in users_state table to false
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ */
+void sql_actions::execute_set_flags_false (pqxx::transaction_base& txn, int64_t login) {
+	txn.exec_prepared0("flags_false", login);
 }

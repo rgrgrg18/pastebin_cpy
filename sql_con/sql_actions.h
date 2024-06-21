@@ -20,8 +20,9 @@ public:
 	static void prepare_add_user_state (pqxx::connection_base& conn);
 	static void prepare_get_user_state (pqxx::connection_base& conn);
 
-	static void prepare_change_flag_new_paste (pqxx::connection_base& conn);
-	static void prepare_change_flag_watch_paste (pqxx::connection_base& conn);
+	static void prepare_set_flag_new_paste_true (pqxx::connection_base& conn);
+	static void prepare_set_flag_watch_paste_true (pqxx::connection_base& conn);
+	static void prepare_set_flags_false (pqxx::connection_base& conn);
 public:
 	static unsigned long long execute_get_sequence_for_public_key (pqxx::transaction_base& txn);
 	static unsigned long long execute_get_sequence_for_private_key (pqxx::transaction_base& txn);
@@ -35,8 +36,9 @@ public:
 	static void execute_add_user_state (pqxx::transaction_base& txn, int64_t login);
 	static user_state execute_get_user_state (pqxx::transaction_base& txn, int64_t login);
 
-	static void execute_swap_new_paste_flag (pqxx::transaction_base& txn, int64_t login);
-	static void execute_swap_watch_paste_flag (pqxx::transaction_base& txn, int64_t login);
+	static void execute_set_flag_new_paste_true (pqxx::transaction_base& txn, int64_t login);
+	static void execute_set_flag_watch_paste_true (pqxx::transaction_base& txn, int64_t login);
+	static void execute_set_flags_false (pqxx::transaction_base& txn, int64_t login);
 };
 
 #endif
