@@ -154,7 +154,7 @@ keys sql_actions::new_paste (pqxx::dbtransaction& txn, int64_t login) {
 
 	sql_actions::execute_add_user(txn1, login);
 		
-	sql_actions::execute_add_paste(txn1, login, hash_seq_private_key.hash, hash_seq_public_key.hash);
+	sql_actions::execute_add_paste(txn1, login, hash_seq_public_key.hash, hash_seq_private_key.hash);
 	txn1.commit();
 
 	return {hash_seq_public_key.hash, hash_seq_private_key.hash};
