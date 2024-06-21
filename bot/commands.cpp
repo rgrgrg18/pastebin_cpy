@@ -15,6 +15,7 @@ void BotCommands::commands(TgBot::Bot& bot, std::string command, std::unordered_
         
         pqxx::work txn(conn);
 
+        // commands responce
         if (command == "new_paste") sql_actions::execute_set_flag_new_paste_true(txn, message->chat->id);
         if (command == "watch_paste") sql_actions::execute_set_flag_watch_paste_true(txn, message->chat->id);
 

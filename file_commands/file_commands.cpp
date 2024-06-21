@@ -1,23 +1,5 @@
 #include "file_commands.h"
 
-// converting a string to a txt file with the specified directory
-/*void FileCommands::string_to_txt(int64_t user_id, std::string message, std::string& directory){
-
-    std::ofstream file(directory + 
-                        std::to_string(user_id) + 
-                        ".txt", 
-                        std::ios_base::out);
-
-    if (file.is_open()) {
-        file << message;
-        file.close();
-    } else {
-        std::cout << "can't open file in function string_to_txt";
-        return;
-    }
-}
-*/
-
 // converting a string to a bin file with the specified directory
 void FileCommands::string_to_bin(std::string fileName, std::string message, std::string& directory){
 

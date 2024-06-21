@@ -10,7 +10,6 @@ bool validate::validate_code(const std::string& code) {
         if ((int)symbol >= 97 && (int)symbol <= 122) continue;
         if ((int)symbol >= 48 && (int)symbol <= 57) continue;
         if ((int)symbol == 43 || (int)symbol == 47 || (int)symbol == 61) continue;
-        std::cout << "in validate" << "\n";
         return false;
     }
     return true;

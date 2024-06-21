@@ -2,7 +2,7 @@
 
 ----
 
-* Install all the necessary libraries: [aws-sdk-cpp](https://github.com/aws/aws-sdk-cpp), [tgbot-cpp](https://github.com/reo7sp/tgbot-cpp) and their dependencies
+* Install all the necessary libraries: [aws-sdk-cpp](https://github.com/aws/aws-sdk-cpp), [tgbot-cpp](https://github.com/reo7sp/tgbot-cpp), [pqxx](https://github.com/jtv/libpqxx) and their dependencies
 
 * To work with aws, go to the directory `~/.aws/` (macOS / Linux) 
 
@@ -21,7 +21,7 @@
   region=<your_region>
 ```
 
-Also, if you do not have such a directory, use the command `aws configure` in terminal.
+Also, if you do not have such a directory, use the command `aws configure` in terminal
 
 (if you want to see more detailed instructions, go to the website [aws](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/setup-linux.html))
 
@@ -29,7 +29,9 @@ Also, if you do not have such a directory, use the command `aws configure` in te
 
 ----
 
-* Copy our repository and after that create a file `config.h` in the bot folder. And put the token of your telegram bot in this file `Token = <YOUR_TOKEN>`
+* Copy our repository and after that open `bot/config.h` and change the parameters according to the sample
+
+* Change file CMakeLists.txt if necessary
 
 * Create your buid directory and navigate there
 

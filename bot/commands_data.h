@@ -6,7 +6,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-//command have the text answer, this can have the keyboard (command_keyboards), may be wait smth (wait_list)
+//command have the text answer, this can have the keyboard (command_keyboards)
+
 std::unordered_map<std::string, std::string> __attribute__((weak)) command_list = { 
     {"start", "Hi! \nTo write the new paste use /new_paste\nTo check another paste use /watch_paste"},
     {"help", "/new_paste write the new paste\n/watch_paste check another paste"},
@@ -19,6 +20,7 @@ std::unordered_map<std::string, int> __attribute__((weak)) command_keyboards = {
     {"watch_paste", 1},
 };
 
+// inline keyboards and their buttons
 std::unordered_map<int, std::vector<std::string>> __attribute__((weak)) keyboards_args = {
     {1, {"cancel"}}
 };
