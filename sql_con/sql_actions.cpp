@@ -98,7 +98,7 @@ void sql_actions::prepare_add_user (pqxx::connection_base& conn) {
  * @brief Adds user login in table users if it doesn't exist there
  * 
  * @param txn Reference to current transaction.
- * @param login User login that we want to add
+ * @param login Id telegram chat 
  * 
  * If user login already exist in the table, function won't do anything
  */
@@ -123,7 +123,7 @@ void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
  * @brief Adds row into table pastes
  * 
  * @param txn Reference to current transaction.
- * @param login User login creator of paste
+ * @param login Id telegram chat 
  * @param public_key Key with which people receive the file
  * @param private_key Name of file in yandex cloud
  */
@@ -141,7 +141,7 @@ void sql_actions::execute_add_paste (pqxx::transaction_base& txn,
  * If it will throws nothing will be created. (Strong exception guarantee)
  * 
  * @param txn Reference to current transaction.
- * @param login User login creator of paste
+ * @param login Id telegram chat 
  * @return keys The pair of public key and private key
  */
 keys sql_actions::new_paste (pqxx::dbtransaction& txn, int64_t login) {
@@ -158,4 +158,104 @@ keys sql_actions::new_paste (pqxx::dbtransaction& txn, int64_t login) {
 	txn1.commit();
 
 	return {hash_seq_public_key.hash, hash_seq_private_key.hash};
+}
+
+// Work with users states
+/**
+ * @brief Prepares check if login exist in user_state table
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_check_state (pqxx::connection_base& conn) {
+	conn.prepare(
+		"check_state",
+		"SELECT new_paste FROM user_state WHERE login = $1");
+}
+
+/**
+ * @brief Prepares add user login in table users_state
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_add_user_state (pqxx::connection_base& conn) {
+	conn.prepare (
+		"add_user_state",
+		"INSERT INTO user_state (login, new_paste, watch_paste) VALUES ($1, false, false)");
+}
+
+/**
+ * @brief Adds user login in table users_state if it doesn't exist there
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ */
+void sql_actions::execute_add_user_state (pqxx::transaction_base& txn, int64_t login) {
+	if (txn.exec_prepared("check_state", login).size() == 0)
+		txn.exec_prepared0("add_user_state", login);
+}
+
+/**
+ * @brief Prepares a query that returns current user state
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_get_user_state (pqxx::connection_base& conn) {
+	conn.prepare (
+		"get_user_state",
+		"SELECT new_paste, watch_paste FROM user_state WHERE login = $1");
+}
+
+/**
+ * @brief Return current user state
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ * @return user_state Pair of new_paste and watch_paste flags
+ */
+user_state sql_actions::execute_get_user_state (pqxx::transaction_base& txn, int64_t login) {
+	auto result = txn.exec_prepared("get_user_state", login);
+	bool boolean_type;
+	return {result[0][0].as(boolean_type), result[0][1].as(boolean_type)};
+}
+
+/**
+ * @brief Prepares change flag new paste in users_state table to opposite value
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_change_flag_new_paste (pqxx::connection_base& conn) {
+	conn.prepare (
+		"change_flag_new_paste",
+		"UPDATE user_state SET new_paste = NOT new_paste WHERE login = $1");
+}
+
+/**
+ * @brief Prepares change flag watch paste in users_state table to opposite value
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_change_flag_watch_paste (pqxx::connection_base& conn) {
+	conn.prepare (
+		"change_flag_watch_paste",
+		"UPDATE user_state SET watch_paste = NOT watch_paste WHERE login = $1");
+}
+
+/**
+ * @brief Сhange flag new paste in users_state table to opposite value
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ */
+void sql_actions::execute_swap_new_paste_flag (pqxx::transaction_base& txn, int64_t login) {
+	txn.exec_prepared0("change_flag_new_paste", login);
+}
+
+/**
+ * @brief Сhange flag watch paste in users_state table to opposite value
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ */
+void sql_actions::execute_swap_watch_paste_flag (pqxx::transaction_base& txn, int64_t login) {
+	txn.exec_prepared0("change_flag_watch_paste", login);
 }
