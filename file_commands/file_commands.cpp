@@ -1,7 +1,7 @@
 #include "file_commands.h"
 
 // converting a string to a txt file with the specified directory
-void FileCommands::string_to_txt(int64_t user_id, std::string message, std::string& directory){
+/*void FileCommands::string_to_txt(int64_t user_id, std::string message, std::string& directory){
 
     std::ofstream file(directory + 
                         std::to_string(user_id) + 
@@ -15,13 +15,14 @@ void FileCommands::string_to_txt(int64_t user_id, std::string message, std::stri
         std::cout << "can't open file in function string_to_txt";
         return;
     }
-};
+}
+*/
 
 // converting a string to a bin file with the specified directory
-void FileCommands::string_to_bin(int64_t user_id, std::string message, std::string& directory){
+void FileCommands::string_to_bin(std::string fileName, std::string message, std::string& directory){
 
     std::string openDir = directory + 
-                        std::to_string(user_id) + 
+                        fileName + 
                         ".bin";
     std::ofstream file(openDir, 
                         std::ios_base::out);
@@ -48,7 +49,7 @@ std::string FileCommands::file_type(const std::string& path) {
 }
 
 // converting a txt file to a bin file
-void FileCommands::txt_to_bin(std::string txt_path){
+void FileCommands::txt_to_bin(std::string txt_path, std::string bin_name){
     std::string bin_path;
     if (file_type(txt_path) != "txt") {
         std::cout << "incorrect path name in func txt_to_bin";
@@ -58,7 +59,9 @@ void FileCommands::txt_to_bin(std::string txt_path){
     for (int i = 0; i < txt_path.size() - 3; ++i) {
         bin_path.push_back(txt_path[i]);
     }
-    bin_path += "bin";
+    
+    while (bin_path.back() != '/') bin_path.pop_back();
+    bin_path += bin_name + ".bin";
 
     std::ifstream txt_file(txt_path);
     std::ofstream bin_file(bin_path,
