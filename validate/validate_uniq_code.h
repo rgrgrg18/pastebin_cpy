@@ -7,7 +7,7 @@
 // checking the unique code from the user
 class validate {
 public:
-    bool validate_code(const std::string& code);
+    static bool validate_code(const std::string& code);
 };
 
 #endif

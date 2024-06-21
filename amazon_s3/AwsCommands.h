@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _Aws_Commands_h_
 #define _Aws_Commands_h_
 
@@ -13,10 +12,10 @@
 
 class AwsCommands {
 public:
-    bool PutObject(const Aws::String &bucketName,
+    static bool PutObject(const Aws::String &bucketName,
                            const Aws::String &fileName,
                            const Aws::Client::ClientConfiguration &clientConfig);
-    bool DownloadObject(const Aws::String &objectKey,
+    static bool DownloadObject(const Aws::String &objectKey,
                            const Aws::String &fromBucket,
                            const Aws::String &saveFilePath,
                            const Aws::Client::ClientConfiguration &clientConfig);

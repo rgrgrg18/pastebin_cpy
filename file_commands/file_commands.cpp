@@ -1,7 +1,7 @@
 #include "file_commands.h"
 
 // converting a string to a txt file with the specified directory
-void FileCommands::string_to_txt(int64_t user_id, std::string message, std::string& directory){
+/*void FileCommands::string_to_txt(int64_t user_id, std::string message, std::string& directory){
 
     std::ofstream file(directory + 
                         std::to_string(user_id) + 
@@ -15,21 +15,23 @@ void FileCommands::string_to_txt(int64_t user_id, std::string message, std::stri
         std::cout << "can't open file in function string_to_txt";
         return;
     }
-};
+}
+*/
 
 // converting a string to a bin file with the specified directory
-void FileCommands::string_to_bin(int64_t user_id, std::string message, std::string& directory){
+void FileCommands::string_to_bin(std::string fileName, std::string message, std::string& directory){
 
-    std::ofstream file(directory + 
-                        std::to_string(user_id) + 
-                        ".bin", 
+    std::string openDir = directory + 
+                        fileName + 
+                        ".bin";
+    std::ofstream file(openDir, 
                         std::ios_base::out);
 
     if (file.is_open()) {
         file << message;
         file.close();
     } else {
-        std::cout << "can't open file in function string_to_bin"; 
+        std::cout << "can't open file in function string_to_bin\n"; 
         return;
     }
 };
@@ -47,7 +49,7 @@ std::string FileCommands::file_type(const std::string& path) {
 }
 
 // converting a txt file to a bin file
-void FileCommands::txt_to_bin(std::string txt_path){
+void FileCommands::txt_to_bin(std::string txt_path, std::string bin_name){
     std::string bin_path;
     if (file_type(txt_path) != "txt") {
         std::cout << "incorrect path name in func txt_to_bin";
@@ -57,7 +59,9 @@ void FileCommands::txt_to_bin(std::string txt_path){
     for (int i = 0; i < txt_path.size() - 3; ++i) {
         bin_path.push_back(txt_path[i]);
     }
-    bin_path += "bin";
+    
+    while (bin_path.back() != '/') bin_path.pop_back();
+    bin_path += bin_name + ".bin";
 
     std::ifstream txt_file(txt_path);
     std::ofstream bin_file(bin_path,
@@ -78,7 +82,7 @@ void FileCommands::txt_to_bin(std::string txt_path){
 };
 
 // converting a bin file to a txt file
-void FileCommands::bin_to_txt(std::string bin_path){
+void FileCommands::bin_to_txt(std::string bin_path, std::string txt_name){
 
     std::string txt_path;
     if (file_type(bin_path) != "bin") {
@@ -89,15 +93,17 @@ void FileCommands::bin_to_txt(std::string bin_path){
     for (int i = 0; i < bin_path.size() - 3; ++i) {
         txt_path.push_back(bin_path[i]);
     }
-    txt_path += "txt";
+
+    while (txt_path.back() != '/') txt_path.pop_back();
+    txt_path += txt_name + ".txt";
 
     std::ofstream txt_file(txt_path,
                             std::ios_base::out);
 
-    std::ifstream bin_file(bin_path);
+    std::ifstream bin_file(bin_path, std::ios::binary);
 
     if (bin_file.is_open() && txt_file.is_open()) {
-        char symbol;
+        unsigned char symbol;
         while (bin_file >> symbol) {
             txt_file << symbol;
         }
