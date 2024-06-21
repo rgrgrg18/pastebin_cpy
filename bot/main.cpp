@@ -4,9 +4,11 @@
 #include "inline_keyboard.h"
 #include "commands.h" 
 
+#include <pqxx/pqxx>
+
 
 int main() {
-    
+
     Aws::SDKOptions options;
     Aws::InitAPI(options);
 
@@ -14,13 +16,11 @@ int main() {
     clientConfig.endpointOverride = Aws::String("storage.yandexcloud.net");
 
     TgBot::Bot bot(Token);
+    
+    std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> all_keyboards = InlineKeyboard::make_vector_keyboards(bot, keyboards_args);
 
-    InlineKeyboard all_inline;
-    std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> all_keyboards = all_inline.make_vector_keyboards(bot, keyboards_args);
-
-    BotCommands all_commands;
-    all_commands.callback(bot, all_keyboards);
-    all_commands.answer(bot, all_keyboards, options, clientConfig);
+    BotCommands::callback(bot);
+    BotCommands::answer(bot, all_keyboards, options, clientConfig);
 
 
     signal(SIGINT, [](int s) {
@@ -34,7 +34,6 @@ int main() {
         TgBot::TgLongPoll long_poll(bot);
 
         while (true) {
-            printf("Long poll started\n");
             long_poll.start();
         }
     } catch (TgBot::TgException& e) {

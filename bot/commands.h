@@ -1,4 +1,3 @@
-#pragma once
 #ifndef _Commands_h_
 #define _Commands_h_
 
@@ -11,13 +10,13 @@
 
 class BotCommands {
 private:
-    void incorrect_answer(TgBot::Bot& bot, TgBot::Message::Ptr message);
+    static void incorrect_answer(TgBot::Bot& bot, TgBot::Message::Ptr message);
 public:
-    void commands(TgBot::Bot& bot, std::string command, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards);
-    void callback(TgBot::Bot& bot, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards);
-    void confirm_callback(TgBot::Bot& bot, int64_t chat_id, int32_t id, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards);
-    void answer(TgBot::Bot& bot, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, Aws::SDKOptions& options, Aws::Client::ClientConfiguration& clientConfig);
-    void new_paste(TgBot::Bot& bot, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards);
+    static void commands(TgBot::Bot& bot, std::string command, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards);
+    static void callback(TgBot::Bot& bot);
+    static void confirm_callback(TgBot::Bot& bot, int64_t chat_id, int32_t id, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards);
+    static void answer(TgBot::Bot& bot, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, Aws::SDKOptions& options, Aws::Client::ClientConfiguration& clientConfig);
+    static void new_paste(TgBot::Bot& bot, std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards);
 };
 
 #endif
