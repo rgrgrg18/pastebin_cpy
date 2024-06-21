@@ -3,26 +3,26 @@
 
 #include <pqxx/pqxx>
 
+using keys = std::pair<std::string, std::string>; // pair of public and private keys
 
 class sql_actions {
 public:
-	static void print_sql_tables(pqxx::work& txn);
-public:
+	static void prepare_get_sequence_for_public_key (pqxx::connection_base& conn);
+	static void prepare_get_sequence_for_private_key (pqxx::connection_base& conn);
+	static void prepare_get_private_key (pqxx::connection_base& conn);
+
+	static void prepare_check_login (pqxx::connection_base& conn);
 	static void prepare_add_user (pqxx::connection_base& conn);
 	static void prepare_add_paste (pqxx::connection_base& conn);
-	static void prepare_get_amazon_link (pqxx::connection_base& conn);
-	static void prepare_get_sequence_for_hash (pqxx::connection_base& conn);
-	static void prepare_check_login (pqxx::connection_base& conn);
-	static void prepare_number_pastes (pqxx::connection_base& conn);
 public:
-	static void execute_add_user (pqxx::transaction_base& txn, const std::string& login);
-	static void execute_add_paste (pqxx::transaction_base& txn, const std::string& login, 
-								   const std::string& amazon_link, const std::string& hash_link);
-	static std::string execute_get_amazon_link (pqxx::transaction_base& txn, const std::string& hash_link);
-	static unsigned long long execute_get_sequence_for_hash (pqxx::transaction_base& txn);
-	static int execute_number_pastes (pqxx::transaction_base& txn, const std::string& login);
-public:
-	static void new_paste (pqxx::dbtransaction& txn, const std::string& login, const std::string& amazon_link); 
+	static unsigned long long execute_get_sequence_for_public_key (pqxx::transaction_base& txn);
+	static unsigned long long execute_get_sequence_for_private_key (pqxx::transaction_base& txn);
+	static std::string execute_get_private_key (pqxx::transaction_base& txn, const std::string& public_key);
+
+	static void execute_add_user (pqxx::transaction_base& txn, int64_t login);
+	static void execute_add_paste (pqxx::transaction_base& txn, int64_t login, 
+								   const std::string& public_key, const std::string& private_key);
+	static keys new_paste (pqxx::dbtransaction& txn, int64_t login); 
 };
 
 #endif

@@ -3,137 +3,159 @@
 #include <iomanip>
 #include "../hash_generate/HashGenerator.h"
 
-void sql_actions::prepare_get_sequence_for_hash (pqxx::connection_base& conn) {
+// Work with sequences public and private keys
+/**
+ * @brief Prepares a query that returns the next value in the sequence public key
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_get_sequence_for_public_key (pqxx::connection_base& conn) {
 	conn.prepare (
-		"get_sequence_for_hash",
-		"SELECT nextval('hash_generate');");
+		"get_sequence_for_public_key",
+		"SELECT nextval('public_key_sq');");
 }
 
-void sql_actions::prepare_get_amazon_link (pqxx::connection_base& conn) {
+/**
+ * @brief Prepares a query that returns the next value in the sequence private key
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_get_sequence_for_private_key (pqxx::connection_base& conn) {
 	conn.prepare (
-		"get_amazon_link",
-		"SELECT amazon_link FROM pastes WHERE hash = $1");
+		"get_sequence_for_private_key",
+		"SELECT nextval('private_key_sq');");
 }
 
-void sql_actions::prepare_add_user (pqxx::connection_base& conn) {
-	conn.prepare(
-		"add_user",
-		"INSERT INTO users (id, login) VALUES (nextval('seq_person'), $1)");
-}
-
-void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
-	conn.prepare(
-		"add_paste",
-		"INSERT INTO pastes (hash, amazon_link, user_id) \
-		VALUES ($1, $2, (SELECT id FROM users WHERE login = $3))");
-	
-}
-
-unsigned long long sql_actions::execute_get_sequence_for_hash (pqxx::transaction_base& txn) {
+/**
+ * @brief Returns the next value in the sequence public key
+ * 
+ * @param txn Reference to current transaction.
+ * @return unsigned long long Next value in the sequence
+ */
+unsigned long long sql_actions::execute_get_sequence_for_public_key (pqxx::transaction_base& txn) {
 	unsigned long long sequence;
-	return txn.exec_prepared("get_sequence_for_hash")[0][0].as(sequence);
+	return txn.exec_prepared("get_sequence_for_public_key")[0][0].as(sequence);
 }
 
-std::string sql_actions::execute_get_amazon_link (pqxx::transaction_base& txn, const std::string& hash_link) {
-	pqxx::result link = txn.exec_prepared("get_amazon_link", hash_link);
-	return link.empty() ? "" : link[0][0].c_str();
+/**
+ * @brief Returns the next value in the sequence private key
+ * 
+ * @param txn Reference to current transaction.
+ * @return unsigned long long Next value in the sequence
+ */
+unsigned long long sql_actions::execute_get_sequence_for_private_key (pqxx::transaction_base& txn) {
+	unsigned long long sequence;
+	return txn.exec_prepared("get_sequence_for_private_key")[0][0].as(sequence);
 }
 
+/**
+ * @brief Prepares a query that returns private key by public key
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_get_private_key (pqxx::connection_base& conn) {
+	conn.prepare (
+		"get_private_key",
+		"SELECT private_key FROM pastes WHERE public_key = $1");
+}
+
+/**
+ * @brief Returns private key of the paste by public key
+ * 
+ * @param txn Reference to current transaction.
+ * @param public_key Public key for this paste
+ * @return std::string Private key
+ */
+std::string sql_actions::execute_get_private_key (pqxx::transaction_base& txn, const std::string& public_key) {
+	pqxx::result pr_key = txn.exec_prepared("get_private_key", public_key);
+	return pr_key.empty() ? "" : pr_key[0][0].c_str();
+}
+
+// Work with adding users and pastes
+/**
+ * @brief Prepares check if login exist in users table
+ * 
+ * @param conn Reference to current connection
+ */
 void sql_actions::prepare_check_login (pqxx::connection_base& conn) {
 	conn.prepare(
 		"check_login",
 		"SELECT id FROM users WHERE login = $1");
 }
 
-void sql_actions::execute_add_user (pqxx::transaction_base& txn, const std::string& login) {
+/**
+ * @brief Prepares add user login in table users
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_add_user (pqxx::connection_base& conn) {
+	conn.prepare(
+		"add_user",
+		"INSERT INTO users (login) VALUES ($1)");
+}
+
+/**
+ * @brief Adds user login in table users if it doesn't exist there
+ * 
+ * @param txn Reference to current transaction.
+ * @param login User login that we want to add
+ * 
+ * If user login already exist in the table, function won't do anything
+ */
+void sql_actions::execute_add_user (pqxx::transaction_base& txn, int64_t login) {
 	if (txn.exec_prepared("check_login", login).size() == 0)
 		txn.exec_prepared0("add_user", login);
 }
 
-void sql_actions::execute_add_paste (pqxx::transaction_base& txn, 
-						const std::string& login, 
-						const std::string& amazon_link, 
-						const std::string& hash_link) {
-	txn.exec_prepared0("add_paste", hash_link, amazon_link, login);
-}
-
-void sql_actions::prepare_number_pastes (pqxx::connection_base& conn) {
+/**
+ * @brief Prepares add row into table pastes
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
 	conn.prepare(
-		"number_pastes",
-		"SELECT COUNT(*) FROM pastes WHERE user_id = (SELECT id FROM users WHERE login = $1)");
+		"add_paste",
+		"INSERT INTO pastes (public_key, private_key, login) \
+		VALUES ($1, $2, $3)");
 }
 
-int sql_actions::execute_number_pastes (pqxx::transaction_base& txn, const std::string& login) {
-	int count;
-	return txn.exec_prepared("number_pastes", login)[0][0].as(count);
+/**
+ * @brief Adds row into table pastes
+ * 
+ * @param txn Reference to current transaction.
+ * @param login User login creator of paste
+ * @param public_key Key with which people receive the file
+ * @param private_key Name of file in yandex cloud
+ */
+void sql_actions::execute_add_paste (pqxx::transaction_base& txn, 
+						int64_t login, 
+						const std::string& public_key, 
+						const std::string& private_key) {
+	txn.exec_prepared0("add_paste", public_key, private_key, login);
 }
 
-void sql_actions::new_paste (pqxx::dbtransaction& txn, const std::string& login, const std::string& amazon_link) {
-	unsigned long long sequence = sql_actions::execute_get_sequence_for_hash(txn);
-	paste_hash::Base64 hash_sequence(sequence);
+/**
+ * @brief Creates public and private keys for paste and adds all info in tables pastes, users.
+ * 
+ * @exception Throws exception if connection was broken, transaction aborted or the request failed.
+ * If it will throws nothing will be created. (Strong exception guarantee)
+ * 
+ * @param txn Reference to current transaction.
+ * @param login User login creator of paste
+ * @return keys The pair of public key and private key
+ */
+keys sql_actions::new_paste (pqxx::dbtransaction& txn, int64_t login) {
+	unsigned long long seq_pb_key = sql_actions::execute_get_sequence_for_public_key(txn);
+	unsigned long long seq_pr_key = sql_actions::execute_get_sequence_for_private_key(txn);
+	paste_hash::Base64 hash_seq_public_key(seq_pb_key);
+	paste_hash::Base64 hash_seq_private_key(seq_pr_key);
 
 	pqxx::subtransaction txn1(txn, "insert");
 
 	sql_actions::execute_add_user(txn1, login);
 		
-	sql_actions::execute_add_paste(txn1, login, amazon_link, hash_sequence.hash);
+	sql_actions::execute_add_paste(txn1, login, hash_seq_private_key.hash, hash_seq_public_key.hash);
 	txn1.commit();
-}
 
-void sql_actions::print_sql_tables (pqxx::work& txn) {
-	pqxx::result res(txn.exec("SELECT * FROM users"));
-
-	if (!res.empty()) {
-		int totCol = res.columns();
-		std::cout << "-------------------------------------------------------------------" << std::endl;
-
-		std::array<int, 2> wCol = {28, 28};
-
-		std::cout << "|";
-		for (int i = 0; i < totCol; ++i) {
-			std::cout << std::setfill(' ') << std::setw(wCol[i]) << std::left << res.column_name(i) << "|";
-		}
-
-		std::cout << std::endl;
-		std::cout << "-------------------------------------------------------------------" << std::endl;
-
-		for (auto row : res) {
-			std::cout << "|";
-			for (int i = 0; i < totCol; ++i) {
-				std::cout << std::setfill(' ') << std::setw(wCol[i]) << std::left << row[i].c_str() << "|";
-			}
-			std::cout << std::endl;
-		}
-
-		std::cout << "-------------------------------------------------------------------" << std::endl;
-	}
-
-	std::cout << std::endl;
-
-	pqxx::result resu(txn.exec("SELECT * FROM pastes"));
-
-	if (!resu.empty()) {
-		int totColu = resu.columns();
-		std::cout << "-------------------------------------------------------------------" << std::endl;
-
-		std::array<int, 4> wCol = {10, 15, 26, 5};
-
-		std::cout << "|";
-		for (int i = 0; i < totColu; ++i) {
-			std::cout << std::setfill(' ') << std::setw(wCol[i]) << std::left << resu.column_name(i) << "|";
-		}
-
-		std::cout << std::endl;
-		std::cout << "-------------------------------------------------------------------" << std::endl;
-
-		for (const auto& row : resu) {
-			std::cout << "|";
-			for (int i = 0; i < totColu; ++i) {
-				std::cout << std::setfill(' ') << std::setw(wCol[i]) << std::left << row[i].c_str() << "|";
-			}
-			std::cout << std::endl;
-		}
-
-		std::cout << "-------------------------------------------------------------------" << std::endl;
-	}
+	return {hash_seq_public_key.hash, hash_seq_private_key.hash};
 }
