@@ -1,4 +1,5 @@
 #include <exception>
+#include <thread>
 
 #include "config.h"
 #include "inline_keyboard.h"
@@ -8,8 +9,11 @@
 
 int main() {
 
+    // set webhook settings
+    std::string webhookUrl(Config::Webhook_url);
+
     // connect with db
-    pqxx::connection conn{conn_config};
+    pqxx::connection conn{Config::Conn};
 
     sql_actions::prepare_get_sequence_for_public_key(conn);
     sql_actions::prepare_get_sequence_for_private_key(conn);
@@ -29,9 +33,9 @@ int main() {
     Aws::InitAPI(options);
 
     Aws::Client::ClientConfiguration clientConfig;
-    clientConfig.endpointOverride = Aws::String(endpoint);
+    clientConfig.endpointOverride = Aws::String(Config::Endpoint);
 
-    TgBot::Bot bot(Token);
+    TgBot::Bot bot(Config::Token);
     
     std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> all_keyboards = InlineKeyboard::make_vector_keyboards(bot, keyboards_args);
 
@@ -46,15 +50,15 @@ int main() {
 
     try {
         printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
-        bot.getApi().deleteWebhook();
-        TgBot::TgLongPoll long_poll(bot);
 
-        while (true) {
-            long_poll.start();
-        }
+        TgBot::TgWebhookTcpServer webhookServer(8000, bot);
+
+        printf("Server starting\n");
+        bot.getApi().setWebhook(webhookUrl);
+        webhookServer.start();
+
     } catch (TgBot::TgException& e) {
         printf("error: %s\n", e.what());
-        Aws::ShutdownAPI(options);
     }
     return 0;
 }

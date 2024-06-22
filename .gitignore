@@ -1,6 +1,7 @@
 *.o
 *.exe
 my_project_build/
+build/
 */.DS_Store
 .DS_Store
 .vscode/
