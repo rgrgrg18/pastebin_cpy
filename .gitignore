@@ -1,15 +1,13 @@
 *.o
 *.exe
 my_project_build/
+build/
 */.DS_Store
 .DS_Store
 .vscode/
 CMakeFiles/
-bot/config.h
-CmakeLists.txt
 .gitignore
 amazon_s3/.vscode
-CmakeLists.txt
 test
 */test
 */.o

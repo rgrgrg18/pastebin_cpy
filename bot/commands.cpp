@@ -15,6 +15,7 @@ void BotCommands::commands(TgBot::Bot& bot, std::string command, std::unordered_
         
         pqxx::work txn(conn);
 
+        // commands responce
         if (command == "new_paste") sql_actions::execute_set_flag_new_paste_true(txn, message->chat->id);
         if (command == "watch_paste") sql_actions::execute_set_flag_watch_paste_true(txn, message->chat->id);
 
@@ -89,10 +90,10 @@ void BotCommands::answer(TgBot::Bot& bot, std::unordered_map<int, TgBot::InlineK
 
             // make local file privateKey
             keys pasteKeys = sql_actions::new_paste(txn, message->chat->id);
-            FileCommands::string_to_bin(pasteKeys.second, fileContent, files_directory);
+            FileCommands::string_to_bin(pasteKeys.second, fileContent, Config::Files_directory);
 
             // push file
-            if (!AwsCommands::PutObject(Aws::String(bucket_name), Aws::String(pasteKeys.second + ".bin"), clientConfig)) {
+            if (!AwsCommands::PutObject(Aws::String(Config::Bucket_name), Aws::String(pasteKeys.second + ".bin"), clientConfig)) {
                 
                 bot.getApi().sendMessage(message->chat->id, "we have some problems with DataBase\ntry later...");
 
@@ -104,7 +105,7 @@ void BotCommands::answer(TgBot::Bot& bot, std::unordered_map<int, TgBot::InlineK
             }
 
             // delete local bin file
-            remove((files_directory + pasteKeys.second + ".bin").c_str());
+            remove((Config::Files_directory + pasteKeys.second + ".bin").c_str());
 
             txn.commit();
             return;
@@ -129,13 +130,13 @@ void BotCommands::answer(TgBot::Bot& bot, std::unordered_map<int, TgBot::InlineK
                     return;
                 }
 
-                if (!AwsCommands::DownloadObject(Aws::String(private_key + ".bin"), Aws::String(bucket_name), Aws::String(files_directory + private_key + ".bin"), clientConfig)) {
+                if (!AwsCommands::DownloadObject(Aws::String(private_key + ".bin"), Aws::String(Config::Bucket_name), Aws::String(Config::Files_directory + private_key + ".bin"), clientConfig)) {
                     bot.getApi().sendMessage(message->chat->id, "we have some problems with DataBase\ntry later...");
                 } else {
-                    FileCommands::bin_to_txt(files_directory + private_key + ".bin", public_key);
-                    bot.getApi().sendDocument(message->chat->id, TgBot::InputFile::fromFile(files_directory + public_key + ".txt", "txt"));
+                    FileCommands::bin_to_txt(Config::Files_directory + private_key + ".bin", public_key);
+                    bot.getApi().sendDocument(message->chat->id, TgBot::InputFile::fromFile(Config::Files_directory + public_key + ".txt", "txt"));
 
-                    remove((files_directory + public_key + ".bin").c_str());
+                    remove((Config::Files_directory + public_key + ".bin").c_str());
                 }
             }
 
