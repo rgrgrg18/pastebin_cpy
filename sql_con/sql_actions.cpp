@@ -49,27 +49,31 @@ unsigned long long sql_actions::execute_get_sequence_for_private_key (pqxx::tran
 }
 
 /**
- * @brief Prepares a query that returns private key by public key
+ * @brief Prepares a query that returns private key, login, password of the paste by public key
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_get_private_key (pqxx::connection_base& conn) {
+void sql_actions::prepare_get_info_paste (pqxx::connection_base& conn) {
 	conn.prepare (
-		"get_private_key",
-		"SELECT private_key FROM pastes WHERE public_key = $1");
+		"get_info_about_paste",
+		"SELECT private_key, login, password FROM pastes WHERE public_key = $1");
 }
 
 /**
- * @brief Returns private key of the paste by public key
+ * @brief Returns private key, login and password of the paste by public key
+ * 
+ * If paste does not exist in the table, then the private key is empty.
  * 
  * @param txn Reference to current transaction.
  * @param public_key Public key for this paste
- * @return std::string Private key
+ * @return paste_info Private key, login, password of the paste
  */
-std::string sql_actions::execute_get_private_key (pqxx::transaction_base& txn, const std::string& public_key) {
-	pqxx::result pr_key = txn.exec_prepared("get_private_key", public_key);
-	return pr_key.empty() ? "" : pr_key[0][0].c_str();
-}
+paste_info sql_actions::execute_get_info_paste (pqxx::transaction_base& txn, const std::string& public_key) {
+	pqxx::result pr_key = txn.exec_prepared("get_info_about_paste", public_key);
+	if (pr_key.empty())
+		return {"", "", ""};
+	return {pr_key[0][0].c_str(), pr_key[0][1].c_str(), pr_key[0][2].c_str()};
+} 
 
 // Work with adding users and pastes
 /**
@@ -115,8 +119,8 @@ void sql_actions::execute_add_user (pqxx::transaction_base& txn, int64_t login) 
 void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
 	conn.prepare(
 		"add_paste",
-		"INSERT INTO pastes (public_key, private_key, login) \
-		VALUES ($1, $2, $3)");
+		"INSERT INTO pastes (public_key, private_key, login, password) \
+		VALUES ($1, $2, $3, $4)");
 }
 
 /**
@@ -128,10 +132,11 @@ void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
  * @param private_key Name of file in yandex cloud
  */
 void sql_actions::execute_add_paste (pqxx::transaction_base& txn, 
-						int64_t login, 
-						const std::string& public_key, 
-						const std::string& private_key) {
-	txn.exec_prepared0("add_paste", public_key, private_key, login);
+									 int64_t login, 
+									 const std::string& public_key, 
+									 const std::string& private_key,
+									 const std::string& password) {
+	txn.exec_prepared0("add_paste", public_key, private_key, login, password);
 }
 
 /**
@@ -144,7 +149,7 @@ void sql_actions::execute_add_paste (pqxx::transaction_base& txn,
  * @param login Id telegram chat 
  * @return keys The pair of public key and private key
  */
-keys sql_actions::new_paste (pqxx::dbtransaction& txn, int64_t login) {
+keys sql_actions::new_paste (pqxx::dbtransaction& txn, int64_t login, const std::string& password) {
 	unsigned long long seq_pb_key = sql_actions::execute_get_sequence_for_public_key(txn);
 	unsigned long long seq_pr_key = sql_actions::execute_get_sequence_for_private_key(txn);
 	paste_hash::Base64 hash_seq_public_key(seq_pb_key);
@@ -154,7 +159,10 @@ keys sql_actions::new_paste (pqxx::dbtransaction& txn, int64_t login) {
 
 	sql_actions::execute_add_user(txn1, login);
 		
-	sql_actions::execute_add_paste(txn1, login, hash_seq_public_key.hash, hash_seq_private_key.hash);
+	sql_actions::execute_add_paste(txn1, login, hash_seq_public_key.hash, hash_seq_private_key.hash, password);
+	
+	sql_actions::execute_increase_amount_pastes(txn1, login);
+	
 	txn1.commit();
 
 	return {hash_seq_public_key.hash, hash_seq_private_key.hash};
@@ -206,7 +214,7 @@ void sql_actions::prepare_get_user_state (pqxx::connection_base& conn) {
 }
 
 /**
- * @brief Return current user state
+ * @brief Returns current user state
  * 
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
@@ -241,7 +249,7 @@ void sql_actions::prepare_set_flag_watch_paste_true (pqxx::connection_base& conn
 }
 
 /**
- * @brief Сhange flag new paste in users_state table to true
+ * @brief Сhanges flag new paste in users_state table to true
  * 
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
@@ -251,7 +259,7 @@ void sql_actions::execute_set_flag_new_paste_true (pqxx::transaction_base& txn, 
 }
 
 /**
- * @brief Сhange flag watch paste in users_state table to true
+ * @brief Сhanges flag watch paste in users_state table to true
  * 
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
@@ -272,11 +280,128 @@ void sql_actions::prepare_set_flags_false (pqxx::connection_base& conn) {
 }
 
 /**
- * @brief Change flags new paste and watch paste in users_state table to false
+ * @brief Changes flags new paste and watch paste in users_state table to false
  * 
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
  */
 void sql_actions::execute_set_flags_false (pqxx::transaction_base& txn, int64_t login) {
 	txn.exec_prepared0("flags_false", login);
+}
+
+// Functions for features
+
+/**
+ * @brief Prepares increase the number of pastes by 1
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_increase_amount_pastes (pqxx::connection_base& conn) {
+	conn.prepare (
+		"increase_amount_pastes",
+		"UPDATE users SET amount_pastes = amount_pastes + 1 WHERE login = $1");
+}
+
+/**
+ * @brief Increases the number of pastes by 1
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ */
+void sql_actions::execute_increase_amount_pastes (pqxx::transaction_base& txn, int64_t login) {
+	txn.exec_prepared0("increase_amount_pastes", login);
+}
+
+/**
+ * @brief Prepares decrease the number of pastes by 1
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_decrease_amount_pastes (pqxx::connection_base& conn) {
+	conn.prepare (
+		"decrease_amount_pastes",
+		"UPDATE users SET amount_pastes = amount_pastes - 1 WHERE login = $1");
+}
+
+/**
+ * @brief Decreases the number of pastes by 1
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ */
+void sql_actions::execute_decrease_amount_pastes (pqxx::transaction_base& txn, int64_t login) {
+	txn.exec_prepared0("decrease_amount_pastes", login);
+}
+
+/**
+ * @brief Prepares return amount pastes of user
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_return_amount_pastes (pqxx::connection_base& conn) {
+	conn.prepare (
+		"return_amount_pastes",
+		"SELECT amount_pastes FROM users WHERE login = $1");
+}
+
+/**
+ * @brief Returns amount pastes of user
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ * @return size_t Amount pastes of user
+ */
+size_t sql_actions::execute_return_amount_pastes (pqxx::transaction_base& txn, int64_t login) {
+	pqxx::result amount_pastes = txn.exec_prepared("return_amount_pastes", login);
+	size_t example;
+	return amount_pastes.empty() ? 0 : amount_pastes[0][0].as(example);
+}
+
+/**
+ * @brief Prepares change password of the paste
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_change_password_paste (pqxx::connection_base& conn) {
+	conn.prepare (
+		"change_password",
+		"UPDATE pastes SET password = $1 WHERE public_key = $2");
+}
+
+/**
+ * @brief Changes password of the paste
+ * 
+ * @param txn Reference to current transaction.
+ * @param password New password
+ * @param public_key Key with which people receive the file
+ */
+void sql_actions::execute_change_password_paste (pqxx::transaction_base& txn, 
+												 const std::string& password, 
+												 const std::string& public_key) {
+	txn.exec_prepared0("change_password", password, public_key);
+}
+
+/**
+ * @brief Prepares delete paste by public key
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_delete_paste (pqxx::connection_base& conn) {
+	conn.prepare (
+		"delete_paste",
+		"DELETE from pastes WHERE public_key = $1");
+}
+
+/**
+ * @brief Deletes paste by public key
+ * 
+ * @param txn Reference to current transaction.
+ * @param public_key Key with which people receive the file
+ * @param login Id telegram chat 
+ */
+void sql_actions::execute_delete_paste (pqxx::transaction_base& txn, 
+									    const std::string& public_key,
+										int64_t login) {
+	txn.exec_prepared0("delete_paste", public_key);
+	execute_decrease_amount_pastes(txn, login);
 }
