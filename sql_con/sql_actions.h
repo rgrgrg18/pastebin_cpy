@@ -4,7 +4,7 @@
 #include <pqxx/pqxx>
 
 using keys = std::pair<std::string, std::string>; // pair of public and private keys
-using user_state = std::pair<bool, bool>; // pair of new_paste and watch_paste flags
+using user_state = std::tuple<std::string, std::string, int64_t>; // tuple of condition, work_paste and work_message
 using paste_info = std::tuple<std::string, std::string, std::string>; // Private key, login, password
 
 class sql_actions {
@@ -21,9 +21,7 @@ public:
 	static void prepare_add_user_state (pqxx::connection_base& conn);
 	static void prepare_get_user_state (pqxx::connection_base& conn);
 
-	static void prepare_set_flag_new_paste_true (pqxx::connection_base& conn);
-	static void prepare_set_flag_watch_paste_true (pqxx::connection_base& conn);
-	static void prepare_set_flags_false (pqxx::connection_base& conn);
+	static void prepare_change_user_state (pqxx::connection_base& conn);
 
 	static void prepare_return_amount_pastes (pqxx::connection_base& conn);
 	static void prepare_increase_amount_pastes (pqxx::connection_base& conn);
@@ -41,12 +39,14 @@ public:
 								   const std::string& password);
 	static keys new_paste (pqxx::dbtransaction& txn, int64_t login, const std::string& password = "");
 
-	static void execute_add_user_state (pqxx::transaction_base& txn, int64_t login);
+	static void execute_add_user_state (pqxx::transaction_base& txn, int64_t login, 
+										const std::string& condition, const std::string& work_paste, 
+										int64_t message_id);
 	static user_state execute_get_user_state (pqxx::transaction_base& txn, int64_t login);
 
-	static void execute_set_flag_new_paste_true (pqxx::transaction_base& txn, int64_t login);
-	static void execute_set_flag_watch_paste_true (pqxx::transaction_base& txn, int64_t login);
-	static void execute_set_flags_false (pqxx::transaction_base& txn, int64_t login);
+	static void execute_change_user_state (pqxx::transaction_base& txn, int64_t login, 
+										  const std::string& condition, const std::string& work_paste, 
+										  int64_t message_id);
 
 	static size_t execute_return_amount_pastes (pqxx::transaction_base& txn, int64_t login);
 	static void execute_increase_amount_pastes (pqxx::transaction_base& txn, int64_t login);
