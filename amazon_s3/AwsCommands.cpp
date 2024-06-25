@@ -31,7 +31,7 @@ bool AwsCommands::PutObject(const Aws::String &bucketName,
     }
     else {
         std::cout << "Added object '" << fileName << "' to bucket '"
-                  << bucketName << "'.";
+                  << bucketName << "'." << std::endl;
     }
 
     return outcome.IsSuccess();

@@ -17,17 +17,19 @@ int main() {
 
     sql_actions::prepare_get_sequence_for_public_key(conn);
     sql_actions::prepare_get_sequence_for_private_key(conn);
-    sql_actions::prepare_get_private_key(conn);
+    sql_actions::prepare_get_info_paste(conn);
     sql_actions::prepare_check_login(conn);
     sql_actions::prepare_add_user(conn);
     sql_actions::prepare_add_paste(conn);
     sql_actions::prepare_check_state(conn);
     sql_actions::prepare_add_user_state(conn);
     sql_actions::prepare_get_user_state(conn);
-    sql_actions::prepare_set_flag_new_paste_true(conn);
-    sql_actions::prepare_set_flag_watch_paste_true(conn);
-    sql_actions::prepare_set_flags_false(conn);
-
+    sql_actions::prepare_change_user_state(conn);
+    sql_actions::prepare_return_amount_pastes(conn);
+    sql_actions::prepare_increase_amount_pastes(conn);
+    sql_actions::prepare_decrease_amount_pastes(conn);
+    sql_actions::prepare_change_password_paste(conn);
+    sql_actions::prepare_delete_paste(conn);
 
     Aws::SDKOptions options;
     Aws::InitAPI(options);
@@ -39,8 +41,8 @@ int main() {
     
     std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> all_keyboards = InlineKeyboard::make_vector_keyboards(bot, keyboards_args);
 
-    BotCommands::callback(bot, conn);
-    BotCommands::answer(bot, all_keyboards, options, clientConfig, conn);
+    BotCommands::message_handler(bot, all_keyboards, clientConfig, conn);
+    BotCommands::callback_handler(bot, all_keyboards, conn);
 
 
     signal(SIGINT, [](int s) {
