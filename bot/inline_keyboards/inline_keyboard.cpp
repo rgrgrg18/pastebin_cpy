@@ -27,11 +27,11 @@ TgBot::InlineKeyboardMarkup::Ptr InlineKeyboard::make_keyboard(TgBot::Bot& bot,
     return keyboard;
 }
 
-std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> InlineKeyboard::make_vector_keyboards(TgBot::Bot& bot, 
-                std::unordered_map<int, std::vector<std::pair<std::string, std::string>>>& keyboards_args,
-                std::unordered_map<int, std::vector<int>>& keyboards_settings) {
+std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr> InlineKeyboard::make_vector_keyboards(TgBot::Bot& bot, 
+                std::unordered_map<std::string, std::vector<std::pair<std::string, std::string>>>& keyboards_args,
+                std::unordered_map<std::string, std::vector<int>>& keyboards_settings) {
 
-    std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> ans;
+    std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr> ans;
 
     for (auto elem : keyboards_args) {
         ans[elem.first] = make_keyboard(bot, elem.second, keyboards_settings[elem.first]);

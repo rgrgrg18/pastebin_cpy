@@ -2,7 +2,7 @@
 
 // processing of all messages
 void BotCommands::message_handler(TgBot::Bot& bot, 
-                std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 Aws::Client::ClientConfiguration& clientConfig, 
                 pqxx::connection_base& conn) {
 
@@ -17,24 +17,21 @@ void BotCommands::message_handler(TgBot::Bot& bot,
         }
         
         // all types of conditions
-        if (condition == conditions::choose_password_option) {
+        if (condition == conditions::basic) {
 
-            bot.getApi().editMessageText("✅success✅\nuniq identifier: `" + workPaste + "`", 
-                                    message->chat->id, old_message_id, "", "MARKDOWN");
-
-            SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, "", 0);
-
-        } else if (condition == conditions::basic) {
-
-            basic_message(bot, all_keyboards, conn, clientConfig, message);
+            basic_message(bot, all_keyboards, conn, clientConfig, message, workPaste);
 
         } else if (condition == conditions::new_paste_file) {
 
             make_new_paste(bot, all_keyboards, conn, clientConfig, message);
 
-        } else if (condition == conditions::set_password) {
+        } else if (condition == conditions::new_paste_password) {
 
-            set_password(bot, all_keyboards, conn, message);
+            change_new_paste_password(bot, all_keyboards, conn, message);
+
+        } else if (condition == conditions::new_paste_rename) {
+
+            rename_new_paste(bot, all_keyboards, conn, message);
 
         } else if (condition == conditions::watch_paste_key) {
 
@@ -44,141 +41,133 @@ void BotCommands::message_handler(TgBot::Bot& bot,
 
             watch_paste_password(bot, all_keyboards, conn, clientConfig, message);
 
-        } else if (condition == conditions::change_password_key) {
-
-            
-
-        } else if (condition == conditions::change_password_old) {
-
-            
-
-        } else if (condition == conditions::change_password_new) {
-
-
-
-        }
+        } 
     });
 
 }
 
+// processing basic condition message
+void BotCommands::basic_message(TgBot::Bot& bot, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn,
+                Aws::Client::ClientConfiguration& clientConfig, 
+                TgBot::Message::Ptr message,
+                const std::string& workPaste) {
+
+    if (message->text == "/start") {
+        send_menu(bot, all_keyboards, conn, message->chat->id);
+    }
+
+    // reply to all other messages
+    bot.getApi().deleteMessage(message->chat->id, message->messageId);
+}
+
+
 // processing of all callbacks
 void BotCommands::callback_handler(TgBot::Bot& bot, 
-                std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                Aws::Client::ClientConfiguration& clientConfig, 
                 pqxx::connection_base& conn) {
     bot.getEvents().onCallbackQuery([&](TgBot::CallbackQuery::Ptr query) {
 
         auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, query->message->chat->id);
 
-        if (query->data == "yes_c") {
+        if (query->data == "new_paste_c") {
 
-            TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards[3];
+            TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-            int new_message_id = bot.getApi().editMessageText("✅success✅\nuniq identifier: `" + workPaste + "`\nwrite the password", 
-                                    query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard) -> messageId;
+            int new_message_id = bot.getApi().editMessageText("Send me a message thats include your text or textfile",
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+            
+            SqlRelation::changeUserState(conn, query->message->chat->id, conditions::new_paste_file, workPaste, new_message_id);
 
-            SqlRelation::changeUserState(conn, query->message->chat->id, conditions::set_password, workPaste, new_message_id);
+        } else if (query->data == "watch_paste_c") {
 
-            return;
+            TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
+
+            int new_message_id = bot.getApi().editMessageText("Send me a key of the paste",
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+            
+            SqlRelation::changeUserState(conn, query->message->chat->id, conditions::watch_paste_key, workPaste, new_message_id);
+
+
+        } else if (query->data == "my_pastes_c") {
+
         }
 
-        auto setBasic = [&](){
-            SqlRelation::changeUserState(conn, query->message->chat->id, conditions::basic, "", 0);
-        };
+        if (query->data == "change_new_paste_password") {
 
-        if (query->data == "cancel_c") {
+            TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-            bot.getApi().editMessageText("ok", 
-                                    query->message->chat->id, old_message_id);
+            int new_message_id = bot.getApi().editMessageText("send your new password",
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
             
-            setBasic();
+            SqlRelation::changeUserState(conn, query->message->chat->id, conditions::new_paste_password, workPaste, new_message_id);
 
-        } else if (query->data == "no_c") {
+        } else if (query->data == "rename_new_paste") {
+
+            TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
+
+            int new_message_id = bot.getApi().editMessageText("send new name",
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
             
-            bot.getApi().editMessageText("✅success✅\nuniq identifier: `" + workPaste + "`", 
-                                    query->message->chat->id, old_message_id, "", "MARKDOWN");
+            SqlRelation::changeUserState(conn, query->message->chat->id, conditions::new_paste_rename, workPaste, new_message_id);
 
-            setBasic();
+        } else if (query->data == "save_new_paste") {
+
+            edit_to_menu(bot, all_keyboards, conn, query->message, workPaste, old_message_id, "✅new paste succecfully safed\n\n");
+
+        } else if (query->data == "delete_new_paste") {
+
+            auto [private_key, login, password, title] = SqlRelation::getInfoPaste(conn, workPaste);
+
+            AwsCommands::DeleteObject(Aws::String(private_key + ".bin"), Aws::String(Config::Bucket_name), clientConfig);
+
+            edit_to_menu(bot, all_keyboards, conn, query->message, workPaste, old_message_id, "");
+
         }
+
+        if (query->data == "exit_c") {
+
+            edit_to_menu(bot, all_keyboards, conn, query->message, workPaste, old_message_id, "");
+
+        } else if (query->data == "back_new_paste_configure") {
+
+            int new_message_id = new_paste_condition(bot, all_keyboards, conn, clientConfig, query->message, workPaste, old_message_id);
+            SqlRelation::changeUserState(conn, query->message->chat->id, conditions::basic, workPaste, new_message_id);
+
+        }
+
 
     });
 }
 
-// processing basic condition message
-void BotCommands::basic_message(TgBot::Bot& bot, 
-                std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
-                TgBot::Message::Ptr message) {
-    
-    std::string curr_command = message->text.substr(1, message->text.size());
-
-    //checking if the message is a command
-    if (command_list.count(curr_command)) {
-        commands(bot, all_keyboards, conn, curr_command, message);
-        return;
-    }
-
-    // reply to all other messages
-    bot.getApi().sendMessage(message->chat->id, "Sorry. I don't know this.\nUse /help");
-}
-
-// processing all types of commands
-void BotCommands::commands(TgBot::Bot& bot, 
-                std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+void BotCommands::edit_to_menu(TgBot::Bot& bot, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn, 
-                const std::string& command,
-                TgBot::Message::Ptr message) {
-    
-    std::string answer = command_list[command];
+                TgBot::Message::Ptr message,
+                const std::string& workPaste,
+                int old_message_id,
+                const std::string& start_message) {
 
-    TgBot::InlineKeyboardMarkup::Ptr keyboard = nullptr;
-    if (command_keyboards.count(command)) {
-        keyboard = all_keyboards[command_keyboards[command]];
-    }
+    TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["main menu"];
 
-    int new_message_id = 0;
-    if (keyboard != nullptr) {
-        new_message_id = bot.getApi().sendMessage(message->chat->id, answer, false, 0, keyboard, "Markdown", true) -> messageId;
-    } else {
-        new_message_id = bot.getApi().sendMessage(message->chat->id, answer) -> messageId;
-    }
+    int new_message_id = bot.getApi().editMessageText(start_message + "Menu",
+                    message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
 
-    
-    if (command == "new_paste") {
-        
-        SqlRelation::changeUserState(conn, message->chat->id, conditions::new_paste_file, "", new_message_id);
-        
-
-    } else if (command == "watch_paste") {
-
-        SqlRelation::changeUserState(conn, message->chat->id, conditions::watch_paste_key, "", new_message_id);
-
-    }
+    SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, workPaste, new_message_id);
 
 }
 
+void BotCommands::send_menu(TgBot::Bot& bot, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn,
+                int user_id) {
 
-// getting text from a message or document
-std::string BotCommands::getFileContent(TgBot::Bot& bot, 
-                TgBot::Message::Ptr message) {
+    TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["main menu"];
 
-    // take text or txt file
-    std::string fileContent = "";
+    int new_message_id = bot.getApi().sendMessage(user_id, "Menu", false, 0, keyboard, "MARKDOWN", true) -> messageId;
 
-    if (message->text != "") {
+    SqlRelation::changeUserState(conn, user_id, conditions::basic, "", new_message_id);
 
-        fileContent = message->text;
-
-    } else if (message->document) {
-        TgBot::File::Ptr file_ptr = bot.getApi().getFile(message->document->fileId);
-
-        if (FileCommands::file_type(message->document->fileName) != "txt") {
-            bot.getApi().sendMessage(message->chat->id, "incorrect! \nfile must be .txt");
-        } else {
-            fileContent = bot.getApi().downloadFile(file_ptr->filePath);
-        }
-
-    } 
-
-    return fileContent;
 }

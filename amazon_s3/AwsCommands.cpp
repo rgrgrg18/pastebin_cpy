@@ -73,3 +73,28 @@ bool AwsCommands::DownloadObject(const Aws::String &objectKey,
     return outcome.IsSuccess();
 }
 
+bool AwsCommands::DeleteObject(const Aws::String &objectKey,
+                              const Aws::String &fromBucket,
+                              const Aws::Client::ClientConfiguration &clientConfig) {
+
+    Aws::S3::S3Client client(clientConfig);
+    Aws::S3::Model::DeleteObjectRequest request;
+
+    request.WithKey(objectKey)
+            .WithBucket(fromBucket);
+
+    Aws::S3::Model::DeleteObjectOutcome outcome =
+            client.DeleteObject(request);
+
+    if (!outcome.IsSuccess()) {
+        auto err = outcome.GetError();
+        std::cerr << "Error: DeleteObject: " <<
+                  err.GetExceptionName() << ": " << err.GetMessage() << std::endl;
+    }
+    else {
+        std::cout << "Successfully deleted the object." << std::endl;
+    }
+
+    return outcome.IsSuccess();
+}
+

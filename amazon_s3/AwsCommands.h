@@ -8,6 +8,7 @@
 #include <aws/s3/S3Client.h>
 #include <aws/s3/model/PutObjectRequest.h>
 #include <aws/s3/model/GetObjectRequest.h>
+#include <aws/s3/model/DeleteObjectRequest.h>
 #include <fstream>
 
 class AwsCommands {
@@ -19,6 +20,9 @@ public:
                            const Aws::String &fromBucket,
                            const Aws::String &saveFilePath,
                            const Aws::Client::ClientConfiguration &clientConfig);
+    static bool DeleteObject(const Aws::String &objectKey,
+                              const Aws::String &fromBucket,
+                              const Aws::Client::ClientConfiguration &clientConfig);
 };
 
 #endif

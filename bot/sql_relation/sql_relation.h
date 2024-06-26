@@ -27,6 +27,13 @@ public:
     static void changePastePassword(pqxx::connection_base& conn,
                 const std::string& newPassword,
                 const std::string& workPaste);
+
+    static keys makeNewPaste(pqxx::connection_base& conn,
+                int user_id);
+
+    static void changePasteTitle(pqxx::connection_base& conn,
+                const std::string& newName,
+                const std::string& workPaste);
 };
 
 

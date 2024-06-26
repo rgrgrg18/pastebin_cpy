@@ -59,3 +59,23 @@ void SqlRelation::changePastePassword(pqxx::connection_base& conn,
     txn.commit();
 
 }
+
+keys SqlRelation::makeNewPaste(pqxx::connection_base& conn,
+                int user_id) {
+
+    pqxx::work txn(conn);
+    keys pasteKeys = sql_actions::new_paste(txn, user_id);
+    txn.commit();
+
+    return pasteKeys;
+
+}
+
+void SqlRelation::changePasteTitle(pqxx::connection_base& conn,
+                const std::string& newName,
+                const std::string& workPaste) {
+
+    pqxx::work txn(conn);
+    sql_actions::execute_change_title_paste(txn, newName, workPaste);
+    txn.commit();
+}
