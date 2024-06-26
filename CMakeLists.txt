@@ -27,7 +27,19 @@ if (CURL_FOUND)
 endif()
 
 
-add_executable(pastebin_cpy bot/main.cpp bot/commands.cpp bot/inline_keyboard.cpp file_commands/file_commands.cpp amazon_s3/AwsCommands.cpp validate/validate_uniq_code.cpp sql_con/sql_actions.cpp hash_generate/HashGenerator.cpp)
+add_executable(pastebin_cpy 
+            bot/main.cpp 
+            bot/sql_relation/sql_relation.cpp 
+            bot/bot_commands/paste_password.cpp 
+            bot/bot_commands/watch_paste.cpp 
+            bot/bot_commands/new_paste.cpp 
+            bot/bot_commands/commands.cpp 
+            bot/inline_keyboards/inline_keyboard.cpp 
+            file_commands/file_commands.cpp 
+            amazon_s3/AwsCommands.cpp 
+            validate/validate_uniq_code.cpp 
+            sql_con/sql_actions.cpp 
+            hash_generate/HashGenerator.cpp)
 
 
 target_link_libraries(pastebin_cpy ${AWSSDK_LINK_LIBRARIES}

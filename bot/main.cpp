@@ -2,8 +2,8 @@
 #include <thread>
 
 #include "config.h"
-#include "inline_keyboard.h"
-#include "commands.h"
+#include "inline_keyboards/inline_keyboard.h"
+#include "bot_commands/commands.h"
 
 #include "../sql_con/sql_actions.h"
 
@@ -30,6 +30,7 @@ int main() {
     sql_actions::prepare_decrease_amount_pastes(conn);
     sql_actions::prepare_change_password_paste(conn);
     sql_actions::prepare_delete_paste(conn);
+    sql_actions::prepare_change_title_paste(conn);
 
     Aws::SDKOptions options;
     Aws::InitAPI(options);
@@ -39,10 +40,10 @@ int main() {
 
     TgBot::Bot bot(Config::Token);
     
-    std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> all_keyboards = InlineKeyboard::make_vector_keyboards(bot, keyboards_args);
+    std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr> all_keyboards = InlineKeyboard::make_vector_keyboards(bot, keyboards_args, keyboards_settings);
 
     BotCommands::message_handler(bot, all_keyboards, clientConfig, conn);
-    BotCommands::callback_handler(bot, all_keyboards, conn);
+    BotCommands::callback_handler(bot, all_keyboards, clientConfig, conn);
 
 
     signal(SIGINT, [](int s) {
