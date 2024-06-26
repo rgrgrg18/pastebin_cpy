@@ -2,8 +2,8 @@
 #include <thread>
 
 #include "config.h"
-#include "inline_keyboard.h"
-#include "commands.h"
+#include "inline_keyboards/inline_keyboard.h"
+#include "bot_commands/commands.h"
 
 #include "../sql_con/sql_actions.h"
 

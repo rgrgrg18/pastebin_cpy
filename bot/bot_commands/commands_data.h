@@ -24,7 +24,8 @@ std::unordered_map<std::string, int> __attribute__((weak)) command_keyboards = {
 std::unordered_map<int, std::vector<std::string>> __attribute__((weak)) keyboards_args = {
     {1, {"cancel"}},
     {2, {"yes", "no"}},
-    {3, {"no"}}
+    {3, {"no"}},
+    {4, {"rename", "   set\npassword"}}
 };
 
 namespace conditions {
@@ -41,6 +42,7 @@ namespace conditions {
     std::string __attribute__((weak)) change_password_new = "password_new"; //wait for new password paste to change
 
     std::string __attribute__((weak)) choose_password_option = "password_option"; 
+    std::string __attribute__((weak)) choose_settings_option = "settings_option"; 
 };
 
 #endif

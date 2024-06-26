@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <tgbot/tgbot.h>
 #include "commands_data.h"
-#include "../amazon_s3/AwsCommands.h"
-#include "../validate/validate_uniq_code.h"
-#include "../file_commands/file_commands.h"
-#include "../sql_con/sql_actions.h"
+#include "../../amazon_s3/AwsCommands.h"
+#include "../../validate/validate_uniq_code.h"
+#include "../../file_commands/file_commands.h"
+#include "../sql_relation/sql_relation.h"
+#include "../config.h"
 
 class BotCommands {
 public:
@@ -64,6 +65,15 @@ private:
                 std::string& public_key,
                 std::string& private_key,
                 int old_message_id);
+
+    static void my_paste_settings(TgBot::Bot& bot,
+                std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards,
+                pqxx::connection_base& conn,
+                Aws::Client::ClientConfiguration& clientConfig, 
+                TgBot::Message::Ptr message,
+                const std::string& workPaste,
+                int old_message_id,
+                const std::string& start_message = "");
 
     static std::string getFileContent(TgBot::Bot& bot, 
                 TgBot::Message::Ptr message);
