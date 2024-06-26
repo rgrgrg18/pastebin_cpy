@@ -56,7 +56,7 @@ unsigned long long sql_actions::execute_get_sequence_for_private_key (pqxx::tran
 void sql_actions::prepare_get_info_paste (pqxx::connection_base& conn) {
 	conn.prepare (
 		"get_info_about_paste",
-		"SELECT private_key, login, password FROM pastes WHERE public_key = $1");
+		"SELECT private_key, login, password, title FROM pastes WHERE public_key = $1");
 }
 
 /**
@@ -71,8 +71,8 @@ void sql_actions::prepare_get_info_paste (pqxx::connection_base& conn) {
 paste_info sql_actions::execute_get_info_paste (pqxx::transaction_base& txn, const std::string& public_key) {
 	pqxx::result pr_key = txn.exec_prepared("get_info_about_paste", public_key);
 	if (pr_key.empty())
-		return {"", "", ""};
-	return {pr_key[0][0].c_str(), pr_key[0][1].c_str(), pr_key[0][2].c_str()};
+		return {"", "", "", ""};
+	return {pr_key[0][0].c_str(), pr_key[0][1].c_str(), pr_key[0][2].c_str(), pr_key[0][3].c_str()};
 } 
 
 // Work with adding users and pastes
@@ -351,6 +351,30 @@ void sql_actions::execute_change_password_paste (pqxx::transaction_base& txn,
 }
 
 /**
+ * @brief Prepares change title of the paste
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_change_title_paste (pqxx::connection_base& conn) {
+	conn.prepare (
+		"change_title",
+		"UPDATE pastes SET title = $1 WHERE public_key = $2");
+}
+
+/**
+ * @brief Changes title of the paste
+ * 
+ * @param txn Reference to current transaction.
+ * @param title New title
+ * @param public_key Key with which people receive the file
+ */
+void sql_actions::execute_change_title_paste (pqxx::transaction_base& txn, 
+												 const std::string& title, 
+												 const std::string& public_key) {
+	txn.exec_prepared0("change_title", title, public_key);
+}
+
+/**
  * @brief Prepares delete paste by public key
  * 
  * @param conn Reference to current connection
@@ -373,4 +397,41 @@ void sql_actions::execute_delete_paste (pqxx::transaction_base& txn,
 										int64_t login) {
 	txn.exec_prepared0("delete_paste", public_key);
 	execute_decrease_amount_pastes(txn, login);
+}
+
+/**
+ * @brief Prepares return last pastes of user
+ * 
+ * @param conn Reference to current connection
+ */
+void sql_actions::prepare_get_last_user_pastes (pqxx::connection_base& conn) {
+	conn.prepare(
+		"get_user_pastes",
+		"SELECT title, public_key, created_at FROM pastes WHERE login = $1 \
+		ORDER BY created_at DESC  \
+		LIMIT $2");
+}
+
+/**
+ * @brief Returns last pastes of user
+ * 
+ * @param txn Reference to current transaction.
+ * @param login Id telegram chat 
+ * @param limit Maximum number of output pastes
+ * @return std::vector<std::vector<std::string>> Public key and password of last pastes
+ */
+last_pastes_info sql_actions::execute_get_last_user_pastes (pqxx::transaction_base& txn, int64_t login, int64_t limit) {
+	pqxx::result res = txn.exec_prepared("get_user_pastes", login, limit);
+	size_t amount_columns = res.columns();
+	size_t amount_lines = res.size();
+	last_pastes_info user_pastes(amount_lines, std::vector<std::string>(amount_columns, ""));
+	if (!res.empty()) {
+		for (size_t line = 0; line < amount_lines; ++line) {
+			for (int column = 0; column < amount_columns; ++column) {
+				user_pastes[line][column] = std::move(res[line][column].c_str());
+			}
+		}
+	}
+	
+	return user_pastes;
 }

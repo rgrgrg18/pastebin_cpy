@@ -26,14 +26,14 @@ namespace cache {
 
 	public:
 		template <typename U, typename... Types>
-		T get (const KeyT& key, U slow_get, Types... args) {
+		T get (const KeyT& key, U slow_get, Types&&... args) {
 			auto bucket = hash.find(key);
 			if (bucket == hash.end()) {
 				if (full()) {
 					hash.erase(cache.back());
 					cache.pop_back();
 				}
-				T cached_item = slow_get(args..., key);
+				T cached_item = slow_get(std::forward<Types>(args)..., key);
 				cache.push_front(cached_item);
 				hash[key] = cache.begin();
 				return cached_item;
