@@ -39,7 +39,7 @@ int main() {
 
     TgBot::Bot bot(Config::Token);
     
-    std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> all_keyboards = InlineKeyboard::make_vector_keyboards(bot, keyboards_args);
+    std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> all_keyboards = InlineKeyboard::make_vector_keyboards(bot, keyboards_args, keyboards_settings);
 
     BotCommands::message_handler(bot, all_keyboards, clientConfig, conn);
     BotCommands::callback_handler(bot, all_keyboards, conn);

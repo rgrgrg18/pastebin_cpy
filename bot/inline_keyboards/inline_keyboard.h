@@ -9,8 +9,13 @@
 
 class InlineKeyboard {
 public:
-    static TgBot::InlineKeyboardMarkup::Ptr make_keyboard(TgBot::Bot& bot, std::vector<std::string>& button_names);
-    static std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> make_vector_keyboards(TgBot::Bot& bot, std::unordered_map<int, std::vector<std::string>>& keyboards_args);
+    static TgBot::InlineKeyboardMarkup::Ptr make_keyboard(TgBot::Bot& bot, 
+                const std::vector<std::pair<std::string, std::string>>& button_names,
+                const std::vector<int>& number_buttons_row);
+
+    static std::unordered_map<int, TgBot::InlineKeyboardMarkup::Ptr> make_vector_keyboards(TgBot::Bot& bot, 
+                std::unordered_map<int, std::vector<std::pair<std::string, std::string>>>& keyboards_args,
+                std::unordered_map<int, std::vector<int>>& keyboards_settings);
 };
 
 #endif

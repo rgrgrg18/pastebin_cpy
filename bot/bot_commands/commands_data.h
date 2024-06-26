@@ -21,11 +21,18 @@ std::unordered_map<std::string, int> __attribute__((weak)) command_keyboards = {
 };
 
 // inline keyboards and their buttons
-std::unordered_map<int, std::vector<std::string>> __attribute__((weak)) keyboards_args = {
-    {1, {"cancel"}},
-    {2, {"yes", "no"}},
-    {3, {"no"}},
-    {4, {"rename", "   set\npassword"}}
+std::unordered_map<int, std::vector<std::pair<std::string, std::string>>> __attribute__((weak)) keyboards_args = {
+    {1, {{"cancel", "cancel_c"}}},
+    {2, {{"yes", "yes_c"}, {"no", "no_c"}}},
+    {3, {{"no", "no_c"}}},
+    {4, {{"rename", "rename_c"}, {"set password", "set_password_c"}, {"watch", "watch_c"}}}
+};
+
+std::unordered_map<int, std::vector<int>> __attribute__((weak)) keyboards_settings = {
+    {1, {1}},
+    {2, {2}},
+    {3, {1}},
+    {4, {2, 1}}
 };
 
 namespace conditions {
