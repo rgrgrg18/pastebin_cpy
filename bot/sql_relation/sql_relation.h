@@ -30,10 +30,18 @@ public:
 
     static keys makeNewPaste(pqxx::connection_base& conn,
                 int user_id);
+    
+    static void delNewPaste(pqxx::connection_base& conn,
+                const std::string& workPaste,
+                int user_id);
 
     static void changePasteTitle(pqxx::connection_base& conn,
                 const std::string& newName,
                 const std::string& workPaste);
+
+    static last_pastes_info getLastPastes(pqxx::connection_base& conn,
+                int64_t login,
+                int64_t limit);
 };
 
 

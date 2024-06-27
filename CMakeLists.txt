@@ -30,7 +30,7 @@ endif()
 add_executable(pastebin_cpy 
             bot/main.cpp 
             bot/sql_relation/sql_relation.cpp 
-            bot/bot_commands/paste_password.cpp 
+            bot/bot_commands/my_pastes.cpp 
             bot/bot_commands/watch_paste.cpp 
             bot/bot_commands/new_paste.cpp 
             bot/bot_commands/commands.cpp 

@@ -15,6 +15,7 @@
 #include "../config.h"
 
 class BotCommands {
+
 // commands.cpp
 public:
     static void message_handler(TgBot::Bot& bot, 
@@ -67,13 +68,13 @@ private:
     static std::string getFileContent(TgBot::Bot& bot, 
                 TgBot::Message::Ptr message);
     
-    static int new_paste_condition(TgBot::Bot& bot,
+    static int  new_paste_condition(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message,
                 std::string& workPaste,
-                int old_message_id);
+                int old_message_id,
+                const std::string& start_message);
 
     static void change_new_paste_password(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
@@ -106,6 +107,76 @@ private:
                 std::string& public_key,
                 std::string& private_key,
                 int old_message_id);
+
+// my_pastes.cpp
+
+    static std::vector<std::pair<std::string, std::string>> make_paste_buttons(TgBot::Bot& bot, 
+                pqxx::connection_base& conn,
+                TgBot::Message::Ptr message);
+    
+    static void edit_to_my_pastes_menu(TgBot::Bot& bot, 
+                pqxx::connection_base& conn, 
+                TgBot::Message::Ptr message,
+                const std::string& workPaste,
+                int old_message_id,
+                const std::string& start_message);
+
+    static void send_my_pastes_menu(TgBot::Bot& bot, 
+                pqxx::connection_base& conn, 
+                TgBot::Message::Ptr message);
+        
+    static void edit_to_paste_settings(TgBot::Bot& bot, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn, 
+                TgBot::Message::Ptr message,
+                const std::string& workPaste,
+                int old_message_id,
+                const std::string& start_message);
+    
+    static void rename_paste(TgBot::Bot& bot,
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn,
+                TgBot::Message::Ptr message);
+
+    static void watch_my_paste(TgBot::Bot& bot,
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn,
+                Aws::Client::ClientConfiguration& clientConfig, 
+                TgBot::Message::Ptr message,
+                std::string& public_key,
+                std::string& private_key,
+                int old_message_id);
+    
+    static void send_paste_settings(TgBot::Bot& bot, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn, 
+                int user_id,
+                const std::string& workPaste);
+
+    static void validate_paste_old_password(TgBot::Bot& bot, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn,
+                TgBot::Message::Ptr message,
+                const std::string& workPaste,
+                int old_message_id);
+
+    static void change_paste_password(TgBot::Bot& bot, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn,
+                TgBot::Message::Ptr message,
+                const std::string& workPaste,
+                int old_message_id);
+    
+    static void validate_my_paste_key(TgBot::Bot& bot, 
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
+                pqxx::connection_base& conn,
+                TgBot::Message::Ptr message);
+
+    static void send_my_pastes_list(TgBot::Bot& bot, 
+                pqxx::connection_base& conn,
+                TgBot::Message::Ptr message);
+    
+    
 };
 
 #endif

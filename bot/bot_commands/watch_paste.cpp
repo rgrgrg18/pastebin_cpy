@@ -10,27 +10,22 @@ void BotCommands::watch_paste_key(TgBot::Bot& bot,
 
     auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, message->chat->id);
 
-    auto incorrect_key = [&](){
+    auto incorrect_key = [&](const std::string& start_message){
 
-        TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
-        
-        int new_message_id = bot.getApi().editMessageText("incorrect code\ntry again", 
-                                    message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
-
+        edit_to_menu(bot, all_keyboards, conn, message, workPaste, old_message_id, start_message);
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
-
-        SqlRelation::changeUserState(conn, message->chat->id, conditions::watch_paste_key, "", new_message_id);
+        
     };            
     
     if (!validate::validate_code(message->text)) {
-        incorrect_key();
+        incorrect_key("incorrect key\n\n");
         return;
     }
 
     auto [private_key, login, password, title] = SqlRelation::getInfoPaste(conn, message->text);
 
     if (private_key == "") {
-        incorrect_key();
+        incorrect_key("incorrect key\n\n");
         return;
     }
 
@@ -98,7 +93,7 @@ void BotCommands::watch_paste(TgBot::Bot& bot,
         send_menu(bot, all_keyboards, conn, message->chat->id);
         bot.getApi().deleteMessage(message->chat->id, old_message_id);
 
-        remove((Config::Files_directory + public_key + ".bin").c_str());
+        remove((Config::Files_directory + public_key + ".txt").c_str());
     }
 
 }

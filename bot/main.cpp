@@ -10,7 +10,7 @@
 int main() {
 
     // set webhook settings
-    std::string webhookUrl(Config::Webhook_url);
+    //std::string webhookUrl(Config::Webhook_url);
 
     // connect with db
     pqxx::connection conn{Config::Conn};
@@ -31,6 +31,7 @@ int main() {
     sql_actions::prepare_change_password_paste(conn);
     sql_actions::prepare_delete_paste(conn);
     sql_actions::prepare_change_title_paste(conn);
+    sql_actions::prepare_get_last_user_pastes(conn);
 
     Aws::SDKOptions options;
     Aws::InitAPI(options);
@@ -59,7 +60,7 @@ int main() {
         printf("Server starting\n");
         bot.getApi().setWebhook(webhookUrl);
         webhookServer.start();
-
+    
     } catch (TgBot::TgException& e) {
         printf("error: %s\n", e.what());
     }

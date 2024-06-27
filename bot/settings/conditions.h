@@ -14,6 +14,11 @@ namespace conditions {
     std::string __attribute__((weak)) watch_paste_password = "paste_password"; // wait for password to watch paste
 
     std::string __attribute__((weak)) rename_paste = "rename_paste"; 
+
+    std::string __attribute__((weak)) change_paste_password = "op_password";
+    std::string __attribute__((weak)) validate_paste_old_password = "op_o_password";
+
+    std::string __attribute__((weak)) my_paste_key = "my_paste_key";
 };
 
 #endif

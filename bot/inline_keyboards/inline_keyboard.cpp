@@ -39,4 +39,3 @@ std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr> InlineKeyboard
 
     return ans;
 }
-

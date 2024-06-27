@@ -27,7 +27,7 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
 
     } else {
         
-        new_message_id = new_paste_condition(bot, all_keyboards, conn, clientConfig, message, pasteKeys.first, old_message_id);
+        new_message_id = new_paste_condition(bot, all_keyboards, conn, message, pasteKeys.first, old_message_id, "");
         
     }
 
@@ -67,26 +67,25 @@ std::string BotCommands::getFileContent(TgBot::Bot& bot,
     return fileContent;
 }
 
-
 // the user's post settings window
 int BotCommands::new_paste_condition(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message,
                 std::string& workPaste,
-                int old_message_id) {
+                int old_message_id,
+                const std::string& start_message) {
     
     auto [private_key, login, password, title] = SqlRelation::getInfoPaste(conn, workPaste);
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["configure_new_paste_keyboard"];
 
     if (password == "") {
-        return bot.getApi().editMessageText("✅new paste✅\n\n" + title + "\n*key:* `" + workPaste + "`\n\n❌password",
+        return bot.getApi().editMessageText("✅new paste✅\n\n" + start_message + title + "\n*key:* `" + workPaste + "`\n\n❌password",
                     message->chat->id, old_message_id, "", "MARKDOWNV2", false, keyboard) -> messageId;
     }
 
-    return bot.getApi().editMessageText("✅new paste✅\n\n" + title + "\n*key:* `" + workPaste + "`\n\n✅password",
+    return bot.getApi().editMessageText("✅new paste✅\n\n" + start_message + title + "\n*key:* `" + workPaste + "`\n\n✅password",
                     message->chat->id, old_message_id, "", "MARKDOWNV2", false, keyboard) -> messageId;
 
 }
@@ -100,19 +99,15 @@ void BotCommands::change_new_paste_password(TgBot::Bot& bot,
 
     auto invalid_password = [&](const std::string& start_message){
 
-        TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
-
-        int new_message_id = bot.getApi().editMessageText(start_message + "send your new password",
-                        message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
-            
-        SqlRelation::changeUserState(conn, message->chat->id, conditions::new_paste_password, workPaste, new_message_id);
+        int new_message_id = new_paste_condition(bot, all_keyboards, conn, message, workPaste, old_message_id, start_message);
+        SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, workPaste, new_message_id);
 
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
 
     };
 
     if (message->text.size() > 20) {
-        invalid_password("password must be shorter than 20 characters");
+        invalid_password("password must be shorter than 20 characters\n\n");
         return;
     }
 
@@ -137,9 +132,22 @@ void BotCommands::rename_new_paste(TgBot::Bot& bot,
 
     auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, message->chat->id);
 
+    auto invalid_name = [&](const std::string& start_message){
+
+        int new_message_id = new_paste_condition(bot, all_keyboards, conn, message, workPaste, old_message_id, start_message);
+        SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, workPaste, new_message_id);
+
+        bot.getApi().deleteMessage(message->chat->id, message->messageId);
+
+    };
+
+    if (message->text.size() > 50) {
+        invalid_name("name must be shorter than 50 characters\n\n");
+        return;
+    }
+
 
     SqlRelation::changePasteTitle(conn, message->text, workPaste);
-
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 

@@ -71,6 +71,16 @@ keys SqlRelation::makeNewPaste(pqxx::connection_base& conn,
 
 }
 
+void SqlRelation::delNewPaste(pqxx::connection_base& conn,
+                const std::string& workPaste,
+                int user_id) {
+
+    pqxx::work txn(conn);
+    sql_actions::execute_delete_paste(txn, workPaste, user_id);
+    txn.commit();              
+
+}
+
 void SqlRelation::changePasteTitle(pqxx::connection_base& conn,
                 const std::string& newName,
                 const std::string& workPaste) {
@@ -78,4 +88,16 @@ void SqlRelation::changePasteTitle(pqxx::connection_base& conn,
     pqxx::work txn(conn);
     sql_actions::execute_change_title_paste(txn, newName, workPaste);
     txn.commit();
+}
+
+last_pastes_info SqlRelation::getLastPastes(pqxx::connection_base& conn,
+                int64_t login,
+                int64_t limit) {
+
+    pqxx::work txn(conn);
+    last_pastes_info ans = sql_actions::execute_get_last_user_pastes(txn, login, limit);
+    txn.commit();
+
+    return ans;
+
 }
