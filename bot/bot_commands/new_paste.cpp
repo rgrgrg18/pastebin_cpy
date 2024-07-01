@@ -4,7 +4,6 @@
 void BotCommands::make_new_paste(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message) {
 
     auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, message->chat->id);
@@ -18,7 +17,7 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
 
     // push file
     int new_message_id;
-    if (!AwsCommands::PutObject(Aws::String(Config::Bucket_name), Aws::String(pasteKeys.second + ".bin"), clientConfig)) {
+    if (!AWS_connect::PutObject(Config::Bucket_name, pasteKeys.second + ".bin")) {
 
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 

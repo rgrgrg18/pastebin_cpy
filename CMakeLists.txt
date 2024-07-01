@@ -29,17 +29,19 @@ endif()
 
 add_executable(pastebin_cpy 
             bot/main.cpp 
-            bot/sql_relation/sql_relation.cpp 
             bot/bot_commands/my_pastes.cpp 
             bot/bot_commands/watch_paste.cpp 
             bot/bot_commands/new_paste.cpp 
             bot/bot_commands/commands.cpp 
+            bot/aws_connect/aws_connect.cpp
+            bot/sql_relation/sql_relation.cpp 
             bot/inline_keyboards/inline_keyboard.cpp 
             file_commands/file_commands.cpp 
             amazon_s3/AwsCommands.cpp 
             validate/validate_uniq_code.cpp 
             sql_con/sql_actions.cpp 
-            hash_generate/HashGenerator.cpp)
+            hash_generate/HashGenerator.cpp
+            )
 
 
 target_link_libraries(pastebin_cpy ${AWSSDK_LINK_LIBRARIES}
