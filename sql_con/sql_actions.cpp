@@ -56,7 +56,7 @@ unsigned long long sql_actions::execute_get_sequence_for_private_key (pqxx::tran
 void sql_actions::prepare_get_info_paste (pqxx::connection_base& conn) {
 	conn.prepare (
 		"get_info_about_paste",
-		"SELECT private_key, login, password, title FROM pastes WHERE public_key = $1");
+		"SELECT private_key, login, password, title, created_at FROM pastes WHERE public_key = $1");
 }
 
 /**
@@ -71,8 +71,8 @@ void sql_actions::prepare_get_info_paste (pqxx::connection_base& conn) {
 paste_info sql_actions::execute_get_info_paste (pqxx::transaction_base& txn, const std::string& public_key) {
 	pqxx::result pr_key = txn.exec_prepared("get_info_about_paste", public_key);
 	if (pr_key.empty())
-		return {"", "", "", ""};
-	return {pr_key[0][0].c_str(), pr_key[0][1].c_str(), pr_key[0][2].c_str(), pr_key[0][3].c_str()};
+		return {"", "", "", "", ""};
+	return {pr_key[0][0].c_str(), pr_key[0][1].c_str(), pr_key[0][2].c_str(), pr_key[0][3].c_str(), pr_key[0][4].c_str()};
 } 
 
 // Work with adding users and pastes

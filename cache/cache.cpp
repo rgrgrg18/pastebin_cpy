@@ -39,7 +39,7 @@ namespace cache {
 		}
 
 	public:
-		std::pair<T, bool> get(KeyT key) {
+		std::pair<T, bool> get(const KeyT& key) {
 			auto objectIt = key_object.find(key);
 			if (objectIt == key_object.end()) {
 				return {T(), false};
@@ -56,7 +56,13 @@ namespace cache {
 			return {objectIt->second.value, true};
 		}
 
-		void insert(KeyT key, T&& value) {
+		void insert(const KeyT& key, T&& value) {
+			auto [_, is_find] = get(key);
+			if (is_find) {
+				key_object[key].value = value;
+				return;
+			}
+
 			if (full()) {
 				auto min_freqIt = freq_key.find(min_freq);
 				auto objectIt = key_object.find(min_freqIt->second.back());
@@ -70,7 +76,7 @@ namespace cache {
 			}
 
 			freq_key[1].push_front(key);
-			key_object.insert({key, {value, 1, freq_key[1].begin()}});
+			key_object.insert({key, {std::forward<T>(value), 1, freq_key[1].begin()}});
 
 			min_freq = 1;
 		}
