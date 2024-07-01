@@ -49,7 +49,7 @@ unsigned long long sql_actions::execute_get_sequence_for_private_key (pqxx::tran
 }
 
 /**
- * @brief Prepares a query that returns private key, login, password of the paste by public key
+ * @brief Prepares a query that returns private key, login, password and title of the paste by public key
  * 
  * @param conn Reference to current connection
  */
@@ -60,13 +60,13 @@ void sql_actions::prepare_get_info_paste (pqxx::connection_base& conn) {
 }
 
 /**
- * @brief Returns private key, login and password of the paste by public key
+ * @brief Returns private key, login, password and title of the paste by public key
  * 
  * If paste does not exist in the table, then the private key is empty.
  * 
  * @param txn Reference to current transaction.
  * @param public_key Public key for this paste
- * @return paste_info Private key, login, password of the paste
+ * @return paste_info Private key, login, password, title of the paste
  */
 paste_info sql_actions::execute_get_info_paste (pqxx::transaction_base& txn, const std::string& public_key) {
 	pqxx::result pr_key = txn.exec_prepared("get_info_about_paste", public_key);

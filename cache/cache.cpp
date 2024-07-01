@@ -3,47 +3,68 @@
 #include <cstddef>
 #include <list>
 #include <unordered_map>
+#include <iostream>
 
 namespace cache {
 	template <typename T, typename KeyT = int>
-	class LRU {
-	public:
+	class LFU {
+	public:		
+		using listIt = typename std::list<KeyT>::iterator;
+
 		size_t size;
-		std::list<T> cache;
+		size_t min_freq = 1;
 
-		using ListIt = typename std::list<T>::iterator;
-		std::unordered_map<KeyT, ListIt> hash;
+		struct object {
+			T value;
+			size_t freq;
+			listIt it; 
+		};
+
+		std::unordered_map<KeyT, object> key_object;
+		std::unordered_map<size_t, std::list<KeyT>> freq_key;
 	public:
-		explicit LRU(size_t size): size(size) {}
+		explicit LFU(size_t size): size(size) {}
 
-		LRU() = delete;
-		LRU(const LRU& other) = delete;
-		LRU& operator=(const LRU& other) = delete;	
+		LFU() = delete;
+		LFU(const LFU& other) = delete;
+		LFU& operator=(const LFU& other) = delete;
+
 	private:
 		bool full() const {
-			return (cache.size() == size);
+			return (key_object.size() == size);
 		}
 
 	public:
-		template <typename U, typename... Types>
-		T get (const KeyT& key, U slow_get, Types&&... args) {
-			auto bucket = hash.find(key);
-			if (bucket == hash.end()) {
-				if (full()) {
-					hash.erase(cache.back());
-					cache.pop_back();
-				}
-				T cached_item = slow_get(std::forward<Types>(args)..., key);
-				cache.push_front(cached_item);
-				hash[key] = cache.begin();
-				return cached_item;
+		std::pair<T, bool> get(KeyT key) {
+			auto objectIt = key_object.find(key);
+			if (objectIt == key_object.end()) {
+				return {T(), false};
 			}
-			auto cache_it = bucket->second;
-			if (cache_it != cache.begin()) 
-				cache.splice(cache.begin(), cache, cache_it, std::next(cache_it));
-			return *cache_it;
+
+			freq_key[objectIt->second.freq].erase(objectIt->second.it);
+			++objectIt->second.freq;
+						
+			freq_key[objectIt->second.freq].push_front(key);
+			objectIt->second.it = freq_key[objectIt->second.freq].begin();
+
+			min_freq += freq_key[min_freq].empty();
+
+			return {objectIt->second.value, true};
 		}
-	};		
+
+		void insert(KeyT key, T&& value) {
+			if (full()) {
+				auto it_min_freq = freq_key.find(min_freq);
+				key_object.erase(it_min_freq->second.back());
+				it_min_freq->second.pop_back();
+			}
+
+			freq_key[1].push_front(key);
+			key_object.insert({key, {value, 1, freq_key[1].begin()}});
+
+			min_freq = 1;
+		}
+	};
 }
 
 #endif
