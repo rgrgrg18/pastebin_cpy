@@ -6,7 +6,10 @@
 #include <iostream>
 
 namespace cache {
-	template <typename T, typename KeyT = int>
+	template <typename T>
+	struct basic {};
+
+	template <typename T, typename KeyT = int, typename Deleter = cache::basic<T>>
 	class LFU {
 	public:		
 		using listIt = typename std::list<KeyT>::iterator;
@@ -22,6 +25,7 @@ namespace cache {
 
 		std::unordered_map<KeyT, object> key_object;
 		std::unordered_map<size_t, std::list<KeyT>> freq_key;
+		Deleter del_value;
 	public:
 		explicit LFU(size_t size): size(size) {}
 
@@ -54,9 +58,15 @@ namespace cache {
 
 		void insert(KeyT key, T&& value) {
 			if (full()) {
-				auto it_min_freq = freq_key.find(min_freq);
-				key_object.erase(it_min_freq->second.back());
-				it_min_freq->second.pop_back();
+				auto min_freqIt = freq_key.find(min_freq);
+				auto objectIt = key_object.find(min_freqIt->second.back());
+				
+				if constexpr (std::is_same_v<Deleter, cache::basic<T>> == false) {
+					del_value(std::move(objectIt->second.value));
+				}
+				
+				key_object.erase(objectIt);
+				min_freqIt->second.pop_back();
 			}
 
 			freq_key[1].push_front(key);
