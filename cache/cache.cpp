@@ -56,10 +56,10 @@ namespace cache {
 			return {objectIt->second.value, true};
 		}
 
-		void insert(const KeyT& key, T&& value) {
-			auto [_, is_find] = get(key);
-			if (is_find) {
-				key_object[key].value = value;
+		void insert(const KeyT& key, const T& value) {
+			auto objectIt = key_object.find(key);
+			if (objectIt != key_object.end()) {
+				objectIt->second.value = value;
 				return;
 			}
 
@@ -76,7 +76,7 @@ namespace cache {
 			}
 
 			freq_key[1].push_front(key);
-			key_object.insert({key, {std::forward<T>(value), 1, freq_key[1].begin()}});
+			key_object.insert({key, {value, 1, freq_key[1].begin()}});
 
 			min_freq = 1;
 		}
