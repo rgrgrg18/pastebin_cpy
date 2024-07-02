@@ -210,7 +210,8 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             send_my_pastes_list(bot, query->message);
             send_my_pastes_menu(bot, query->message);
-            bot.getApi().deleteMessage(query->message->chat->id, query->message->messageId);
+            bot.getApi().editMessageText("This is all your pastes",
+                            query->message->chat->id, query->message->messageId);
 
         } else {
 
