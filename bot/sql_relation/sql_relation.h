@@ -2,47 +2,58 @@
 #define _sql_relation_h_
 
 #include <string>
+#include <vector>
 #include "../../sql_con/sql_actions.h"
+#include "../../cache/cache.cpp"
+#include "../config.h"
+
+pqxx::connection connect(std::string conn);
 
 class SqlRelation {
+
+    static pqxx::connection conn;
+    static size_t PasteCacheSize;
+
 public:
-    static void addUserState(pqxx::connection_base& conn,
-                int user_id,
-                const std::string& condition,
-                const std::string& workPaste,
-                int messageId);
+    class PasteCache {
 
-    static void changeUserState(pqxx::connection_base& conn,
-                int user_id,
-                const std::string& condition,
-                const std::string& workPaste,
-                int messageId);
+        static cache::LFU<paste_info, std::string> LFU_cache;
 
-    static user_state getUserState(pqxx::connection_base& conn,
-                int user_id);
+    public:
 
-    static paste_info getInfoPaste(pqxx::connection_base& conn,
+        static paste_info getInfoPaste(const std::string& workPaste);
+
+        static void changePastePassword(const std::string& newPassword,
                 const std::string& workPaste);
 
-    static void changePastePassword(pqxx::connection_base& conn,
-                const std::string& newPassword,
+        static void changePasteTitle(const std::string& newName,
                 const std::string& workPaste);
 
-    static keys makeNewPaste(pqxx::connection_base& conn,
-                int user_id);
-    
-    static void delNewPaste(pqxx::connection_base& conn,
-                const std::string& workPaste,
-                int user_id);
+        static keys makeNewPaste(int user_id);
 
-    static void changePasteTitle(pqxx::connection_base& conn,
-                const std::string& newName,
-                const std::string& workPaste);
+        static void delNewPaste(const std::string& workPaste,
+                int user_id);
+    };
 
-    static last_pastes_info getLastPastes(pqxx::connection_base& conn,
-                int64_t login,
-                int64_t limit);
+    static void addUserState(int user_id,
+            const std::string& condition,
+            const std::string& workPaste,
+            int messageId);
+
+    static void changeUserState(int user_id,
+            const std::string& condition,
+            const std::string& workPaste,
+            int messageId);
+
+    static user_state getUserState(int user_id);
+
+    static last_pastes_info getLastPastes(int64_t login,
+            int64_t limit);
+
 };
+
+
+
 
 
 #endif
