@@ -3,15 +3,14 @@
 // make new paste from message
 void BotCommands::make_new_paste(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                pqxx::connection_base& conn,
                 TgBot::Message::Ptr message) {
 
-    auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, message->chat->id);
+    auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(message->chat->id);
 
     std::string fileContent = getFileContent(bot, message);
 
     // make local file privateKey
-    keys pasteKeys = SqlRelation::makeNewPaste(conn, message->chat->id);
+    keys pasteKeys = SqlRelation::PasteCache::makeNewPaste(message->chat->id);
 
     FileCommands::string_to_bin(pasteKeys.second, fileContent, Config::Files_directory);
 
@@ -26,12 +25,12 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
 
     } else {
         
-        new_message_id = new_paste_condition(bot, all_keyboards, conn, message, pasteKeys.first, old_message_id, "");
+        new_message_id = new_paste_condition(bot, all_keyboards, message, pasteKeys.first, old_message_id, "");
         
     }
 
     // update user statement
-    SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, pasteKeys.first, new_message_id);
+    SqlRelation::changeUserState(message->chat->id, conditions::basic, pasteKeys.first, new_message_id);
 
     bot.getApi().deleteMessage(message->chat->id, message->messageId);
 
@@ -69,13 +68,12 @@ std::string BotCommands::getFileContent(TgBot::Bot& bot,
 // the user's post settings window
 int BotCommands::new_paste_condition(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                pqxx::connection_base& conn,
                 TgBot::Message::Ptr message,
                 std::string& workPaste,
                 int old_message_id,
                 const std::string& start_message) {
     
-    auto [private_key, login, password, title] = SqlRelation::getInfoPaste(conn, workPaste);
+    auto [private_key, login, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(workPaste);
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["configure_new_paste_keyboard"];
 
@@ -91,15 +89,14 @@ int BotCommands::new_paste_condition(TgBot::Bot& bot,
 
 void BotCommands::change_new_paste_password(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                pqxx::connection_base& conn,
                 TgBot::Message::Ptr message) {
 
-    auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, message->chat->id);
+    auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(message->chat->id);
 
     auto invalid_password = [&](const std::string& start_message){
 
-        int new_message_id = new_paste_condition(bot, all_keyboards, conn, message, workPaste, old_message_id, start_message);
-        SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, workPaste, new_message_id);
+        int new_message_id = new_paste_condition(bot, all_keyboards, message, workPaste, old_message_id, start_message);
+        SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
 
@@ -110,7 +107,7 @@ void BotCommands::change_new_paste_password(TgBot::Bot& bot,
         return;
     }
 
-    SqlRelation::changePastePassword(conn, message->text, workPaste);
+    SqlRelation::PasteCache::changePastePassword(message->text, workPaste);
 
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
@@ -118,23 +115,22 @@ void BotCommands::change_new_paste_password(TgBot::Bot& bot,
     int new_message_id = bot.getApi().editMessageText("password has been successfully changed",
                     message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
             
-    SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, workPaste, new_message_id);
+    SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
     bot.getApi().deleteMessage(message->chat->id, message->messageId);
 }
 
 void BotCommands::rename_new_paste(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                pqxx::connection_base& conn,
                 TgBot::Message::Ptr message) {
 
 
-    auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, message->chat->id);
+    auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(message->chat->id);
 
     auto invalid_name = [&](const std::string& start_message){
 
-        int new_message_id = new_paste_condition(bot, all_keyboards, conn, message, workPaste, old_message_id, start_message);
-        SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, workPaste, new_message_id);
+        int new_message_id = new_paste_condition(bot, all_keyboards, message, workPaste, old_message_id, start_message);
+        SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
 
@@ -146,14 +142,14 @@ void BotCommands::rename_new_paste(TgBot::Bot& bot,
     }
 
 
-    SqlRelation::changePasteTitle(conn, message->text, workPaste);
+    SqlRelation::PasteCache::changePasteTitle(message->text, workPaste);
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
     int new_message_id = bot.getApi().editMessageText("name has been successfully changed",
                     message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
             
-    SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, workPaste, new_message_id);
+    SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
     bot.getApi().deleteMessage(message->chat->id, message->messageId);
 
