@@ -12,6 +12,8 @@
 #include "../../validate/validate_uniq_code.h"
 #include "../../file_commands/file_commands.h"
 
+#include "../aws_connect/aws_connect.h"
+
 #include "../config.h"
 
 class BotCommands {
@@ -20,21 +22,19 @@ class BotCommands {
 public:
     static void message_handler(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                Aws::Client::ClientConfiguration& clientConfig, 
                 pqxx::connection_base& conn);
 
     static void callback_handler(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                Aws::Client::ClientConfiguration& clientConfig, 
                 pqxx::connection_base& conn);
 
 private:
     static void basic_message(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message,
-                const std::string& workPaste);
+                const std::string& workPaste,
+                int old_message_id);
 
     static void commands(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
@@ -62,7 +62,6 @@ private:
     static void make_new_paste(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message);
 
     static std::string getFileContent(TgBot::Bot& bot, 
@@ -90,19 +89,16 @@ private:
     static void watch_paste_key(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message);
     
     static void watch_paste_password(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message);
     
     static void watch_paste(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message,
                 std::string& public_key,
                 std::string& private_key,
@@ -141,7 +137,6 @@ private:
     static void watch_my_paste(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message,
                 std::string& public_key,
                 std::string& private_key,

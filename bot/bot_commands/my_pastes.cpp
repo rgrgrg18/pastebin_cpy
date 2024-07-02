@@ -5,7 +5,7 @@
 
 std::string short_name(const std::string& name, int limit) {
     std::string ans;
-    if (name.size() <= limit - 3) {
+    if (name.size() <= limit) {
         ans = name;
     } else {
         ans = name.substr(0, limit - 3) + "...";
@@ -17,21 +17,21 @@ std::vector<std::pair<std::string, std::string>> BotCommands::make_paste_buttons
                 pqxx::connection_base& conn,
                 TgBot::Message::Ptr message) {
     
-    std::vector<std::vector<std::string> > last_pastes = SqlRelation::getLastPastes(conn, message->chat->id, 5);
+    std::vector<std::vector<std::string> > last_pastes = SqlRelation::getLastPastes(conn, message->chat->id, 8);
 
     std::vector<std::pair<std::string, std::string> > buttons;
     int inx = 0;
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 8; ++i) {
         if (inx > last_pastes.size()) {
             buttons.push_back({"", "_"});
         } else {
-            buttons.push_back({short_name(last_pastes[inx][0], 15) + ' ' + last_pastes[inx][2].substr(0, 10), last_pastes[inx][1]});
+            buttons.push_back({short_name(last_pastes[inx][0], 15), last_pastes[inx][1]});
         }
         ++inx;
     }
-    buttons.push_back({"all pastes", "my_pastes_all_list"});
-    buttons.push_back({"other paste", "my_pastes_other_paste"});
-    buttons.push_back({"exit", "exit_c"});
+    buttons.push_back({"📋 all pastes 📋", "my_pastes_all_list"});
+    buttons.push_back({"⚙️ other paste ⚙️", "my_pastes_other_paste"});
+    buttons.push_back({"🔙 exit 🔙", "exit_c"});
 
     return buttons;
 }
@@ -47,7 +47,7 @@ void BotCommands::edit_to_my_pastes_menu(TgBot::Bot& bot,
                     make_paste_buttons(bot, conn, message),
                     keyboards_settings["my pastes keyboard"]);
     
-    int new_message_id = bot.getApi().editMessageText(start_message + "These are your last 5 pastes\n\nto see the entire list, click *all pastes*\nto view another paste click *other paste*",
+    int new_message_id = bot.getApi().editMessageText(start_message + "*These are your last 8 pastes*\n\nto see your pastes list, click *all pastes*\nto change another paste click *other paste*",
                     message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard) -> messageId;
 
     SqlRelation::changeUserState(conn, message->chat->id, conditions::basic, workPaste, new_message_id);
@@ -130,13 +130,12 @@ void BotCommands::rename_paste(TgBot::Bot& bot,
 void BotCommands::watch_my_paste(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message,
                 std::string& public_key,
                 std::string& private_key,
                 int old_message_id) {
 
-    if (!AwsCommands::DownloadObject(Aws::String(private_key + ".bin"), Aws::String(Config::Bucket_name), Aws::String(Config::Files_directory + private_key + ".bin"), clientConfig)) {
+    if (!AWS_connect::DownloadObject(Config::Bucket_name, private_key + ".bin", Config::Files_directory + private_key + ".bin")) {
         
         edit_to_paste_settings(bot, all_keyboards, conn, message, "", old_message_id, "we have some problems with DataBase\ntry later...\n\n");
 
@@ -145,7 +144,8 @@ void BotCommands::watch_my_paste(TgBot::Bot& bot,
 
         bot.getApi().sendDocument(message->chat->id, TgBot::InputFile::fromFile(Config::Files_directory + public_key + ".txt", "txt"));
         send_paste_settings(bot, all_keyboards, conn, message->chat->id, public_key);
-        bot.getApi().deleteMessage(message->chat->id, old_message_id);
+        bot.getApi().editMessageText("success",
+                    message->chat->id, old_message_id);
 
         remove((Config::Files_directory + public_key + ".txt").c_str());
     }

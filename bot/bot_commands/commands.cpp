@@ -3,7 +3,6 @@
 // processing of all messages
 void BotCommands::message_handler(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                Aws::Client::ClientConfiguration& clientConfig, 
                 pqxx::connection_base& conn) {
 
     bot.getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
@@ -19,11 +18,11 @@ void BotCommands::message_handler(TgBot::Bot& bot,
         // all types of conditions
         if (condition == conditions::basic) {
 
-            basic_message(bot, all_keyboards, conn, clientConfig, message, workPaste);
+            basic_message(bot, all_keyboards, conn, message, workPaste, old_message_id);
 
         } else if (condition == conditions::new_paste_file) {
 
-            make_new_paste(bot, all_keyboards, conn, clientConfig, message);
+            make_new_paste(bot, all_keyboards, conn, message);
 
         } else if (condition == conditions::new_paste_password) {
 
@@ -35,11 +34,11 @@ void BotCommands::message_handler(TgBot::Bot& bot,
 
         } else if (condition == conditions::watch_paste_key) {
 
-            watch_paste_key(bot, all_keyboards, conn, clientConfig, message);
+            watch_paste_key(bot, all_keyboards, conn, message);
 
         } else if (condition == conditions::watch_paste_password) {
 
-            watch_paste_password(bot, all_keyboards, conn, clientConfig, message);
+            watch_paste_password(bot, all_keyboards, conn, message);
 
         } else if (condition == conditions::rename_paste) {
 
@@ -66,11 +65,12 @@ void BotCommands::message_handler(TgBot::Bot& bot,
 void BotCommands::basic_message(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message,
-                const std::string& workPaste) {
+                const std::string& workPaste,
+                int old_message_id) {
 
     if (message->text == "/start") {
+        bot.getApi().editMessageText(".", message->chat->id, old_message_id);
         send_menu(bot, all_keyboards, conn, message->chat->id);
     }
 
@@ -78,14 +78,12 @@ void BotCommands::basic_message(TgBot::Bot& bot,
     bot.getApi().deleteMessage(message->chat->id, message->messageId);
 }
 
-
 // processing of all callbacks
 void BotCommands::callback_handler(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                Aws::Client::ClientConfiguration& clientConfig, 
                 pqxx::connection_base& conn) {
     bot.getEvents().onCallbackQuery([&](TgBot::CallbackQuery::Ptr query) {
-
+        
         auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, query->message->chat->id);
 
         if (query->data == "new_paste_c") {
@@ -138,8 +136,9 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             auto [private_key, login, password, title] = SqlRelation::getInfoPaste(conn, workPaste);
 
-            AwsCommands::DeleteObject(Aws::String(private_key + ".bin"), Aws::String(Config::Bucket_name), clientConfig);
+            AWS_connect::DeleteObject(Config::Bucket_name, private_key + ".bin");
             SqlRelation::delNewPaste(conn, workPaste, query->message->chat->id);
+
             edit_to_menu(bot, all_keyboards, conn, query->message, workPaste, old_message_id, "");
 
         } else if (query->data == "exit_c") {
@@ -168,13 +167,15 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
         
             auto [private_key, login, password, title] = SqlRelation::getInfoPaste(conn, workPaste);
 
-            watch_my_paste(bot, all_keyboards, conn, clientConfig, query->message, workPaste, private_key, old_message_id);
+            watch_my_paste(bot, all_keyboards, conn, query->message, workPaste, private_key, old_message_id);
 
         } else if (query->data == "delete_my_paste") {
 
             auto [private_key, login, password, title] = SqlRelation::getInfoPaste(conn, workPaste);
-            AwsCommands::DeleteObject(Aws::String(private_key + ".bin"), Aws::String(Config::Bucket_name), clientConfig);
+
+            AWS_connect::DeleteObject(Config::Bucket_name, private_key + ".bin");
             SqlRelation::delNewPaste(conn, workPaste, query->message->chat->id);
+
             edit_to_my_pastes_menu(bot, conn, query->message, workPaste, old_message_id, "");
 
         } else if (query->data == "change_my_paste_password") {

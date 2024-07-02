@@ -5,7 +5,6 @@
 void BotCommands::watch_paste_key(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message) {
 
     auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, message->chat->id);
@@ -31,7 +30,7 @@ void BotCommands::watch_paste_key(TgBot::Bot& bot,
 
 
     if (password == "") {
-        watch_paste(bot, all_keyboards, conn, clientConfig, message, message->text, private_key, old_message_id);
+        watch_paste(bot, all_keyboards, conn, message, message->text, private_key, old_message_id);
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
     } else {
 
@@ -49,7 +48,6 @@ void BotCommands::watch_paste_key(TgBot::Bot& bot,
 void BotCommands::watch_paste_password(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message) {
 
     auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, message->chat->id);
@@ -63,7 +61,7 @@ void BotCommands::watch_paste_password(TgBot::Bot& bot,
 
     } else {
 
-        watch_paste(bot, all_keyboards, conn, clientConfig, message, workPaste, private_key, old_message_id);
+        watch_paste(bot, all_keyboards, conn, message, workPaste, private_key, old_message_id);
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
 
     }
@@ -73,14 +71,12 @@ void BotCommands::watch_paste_password(TgBot::Bot& bot,
 void BotCommands::watch_paste(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
-                Aws::Client::ClientConfiguration& clientConfig, 
                 TgBot::Message::Ptr message,
                 std::string& public_key,
                 std::string& private_key,
                 int old_message_id) {
 
-
-    if (!AwsCommands::DownloadObject(Aws::String(private_key + ".bin"), Aws::String(Config::Bucket_name), Aws::String(Config::Files_directory + private_key + ".bin"), clientConfig)) {
+    if (!AWS_connect::DownloadObject(Config::Bucket_name, private_key + ".bin", Config::Files_directory + private_key + ".bin")) {
         
         edit_to_menu(bot, all_keyboards, conn, message, "", old_message_id, "we have some problems with DataBase\ntry later...");
 
@@ -91,7 +87,8 @@ void BotCommands::watch_paste(TgBot::Bot& bot,
 
         bot.getApi().sendDocument(message->chat->id, TgBot::InputFile::fromFile(Config::Files_directory + public_key + ".txt", "txt"));
         send_menu(bot, all_keyboards, conn, message->chat->id);
-        bot.getApi().deleteMessage(message->chat->id, old_message_id);
+        bot.getApi().editMessageText("success",
+                    message->chat->id, old_message_id);
 
         remove((Config::Files_directory + public_key + ".txt").c_str());
     }
