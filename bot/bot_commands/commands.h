@@ -33,7 +33,8 @@ private:
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
                 TgBot::Message::Ptr message,
-                const std::string& workPaste);
+                const std::string& workPaste,
+                int old_message_id);
 
     static void commands(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 

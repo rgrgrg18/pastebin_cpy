@@ -18,7 +18,7 @@ void BotCommands::message_handler(TgBot::Bot& bot,
         // all types of conditions
         if (condition == conditions::basic) {
 
-            basic_message(bot, all_keyboards, conn, message, workPaste);
+            basic_message(bot, all_keyboards, conn, message, workPaste, old_message_id);
 
         } else if (condition == conditions::new_paste_file) {
 
@@ -66,9 +66,11 @@ void BotCommands::basic_message(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn,
                 TgBot::Message::Ptr message,
-                const std::string& workPaste) {
+                const std::string& workPaste,
+                int old_message_id) {
 
     if (message->text == "/start") {
+        bot.getApi().editMessageText(".", message->chat->id, old_message_id);
         send_menu(bot, all_keyboards, conn, message->chat->id);
     }
 
@@ -81,7 +83,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 pqxx::connection_base& conn) {
     bot.getEvents().onCallbackQuery([&](TgBot::CallbackQuery::Ptr query) {
-
+        
         auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(conn, query->message->chat->id);
 
         if (query->data == "new_paste_c") {
