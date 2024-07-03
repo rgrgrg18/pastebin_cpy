@@ -6,6 +6,7 @@
 
 #include "../settings/conditions.h"
 #include "../settings/keyboards_settings.h"
+#include "../settings/file_settings.h"
 #include "../sql_relation/sql_relation.h"
 
 #include "../../amazon_s3/AwsCommands.h"
@@ -57,8 +58,10 @@ private:
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message);
 
-    static std::string getFileContent(TgBot::Bot& bot, 
-                TgBot::Message::Ptr message);
+    static std::string getFileContent(TgBot::Bot& bot,
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards,        
+                TgBot::Message::Ptr message,
+                int old_message_id);
     
     static int  new_paste_condition(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 

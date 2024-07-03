@@ -68,7 +68,7 @@ void BotCommands::basic_message(TgBot::Bot& bot,
                 int old_message_id) {
 
     if (message->text == "/start") {
-        bot.getApi().editMessageText(".", message->chat->id, old_message_id);
+        if (old_message_id != 0) bot.getApi().editMessageText(".", message->chat->id, old_message_id);
         send_menu(bot, all_keyboards, message->chat->id);
     }
 
@@ -82,6 +82,12 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
     bot.getEvents().onCallbackQuery([&](TgBot::CallbackQuery::Ptr query) {
         
         auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(query->message->chat->id);
+
+        if (old_message_id != query->message->messageId) {
+            bot.getApi().editMessageText(".",
+                        query->message->chat->id, query->message->messageId);
+            return;
+        }
 
         if (query->data == "new_paste_c") {
 

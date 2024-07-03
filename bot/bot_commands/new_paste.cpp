@@ -7,7 +7,12 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
 
     auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(message->chat->id);
 
-    std::string fileContent = getFileContent(bot, message);
+    std::string fileContent = getFileContent(bot, all_keyboards, message, old_message_id);
+
+    if (fileContent == "") {
+        bot.getApi().deleteMessage(message->chat->id, message->messageId); 
+        return;
+    }
 
     // make local file privateKey
     keys pasteKeys = SqlRelation::PasteCache::makeNewPaste(message->chat->id);
@@ -41,11 +46,22 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
 }
 
 // getting text from a message or document
-std::string BotCommands::getFileContent(TgBot::Bot& bot, 
-                TgBot::Message::Ptr message) {
+std::string BotCommands::getFileContent(TgBot::Bot& bot,
+                std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards,        
+                TgBot::Message::Ptr message,
+                int old_message_id) {
 
     // take text or txt file
     std::string fileContent = "";
+
+    auto incorrect_file = [&](const std::string& start_message){
+        TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
+
+        int new_message_id = bot.getApi().editMessageText(start_message, 
+                                    message->chat->id, old_message_id, "", "MARKDOWNV2", false, keyboard) -> messageId;
+        
+        SqlRelation::changeUserState(message->chat->id, conditions::basic, "", new_message_id);
+    };
 
     if (message->text != "") {
 
@@ -54,8 +70,11 @@ std::string BotCommands::getFileContent(TgBot::Bot& bot,
     } else if (message->document) {
         TgBot::File::Ptr file_ptr = bot.getApi().getFile(message->document->fileId);
 
-        if (FileCommands::file_type(message->document->fileName) != "txt") {
-            bot.getApi().sendMessage(message->chat->id, "incorrect! \nfile must be .txt");
+
+        if (message->document->fileSize > FileSettings::maxSize) {
+            incorrect_file("file size has been exceeded\nthe file must be no more than 1 MB");
+        } else if (FileCommands::file_type(message->document->fileName) != "txt") {
+            incorrect_file("incorrect \nfile must be txt");
         } else {
             fileContent = bot.getApi().downloadFile(file_ptr->filePath);
         }
