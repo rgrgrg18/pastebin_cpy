@@ -6,6 +6,9 @@
 #include "../../sql_con/sql_actions.h"
 #include "../../cache/cache.cpp"
 #include "../config.h"
+#include "../../redis/redis_actions.h"
+#include "../settings/redis.h"
+#include "../settings/conditions.h"
 
 pqxx::connection connect(std::string conn);
 

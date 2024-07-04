@@ -1,6 +1,5 @@
 #include "sql_relation.h"
 
-
 pqxx::connection connect(std::string connectionPath) {
     pqxx::connection conn{connectionPath};
 
@@ -105,9 +104,8 @@ void SqlRelation::addUserState(int user_id,
                 const std::string& workPaste,
                 int messageId) {
 
-    pqxx::work txn(conn);
-    sql_actions::execute_add_user_state(txn, user_id, condition, workPaste, messageId);
-    txn.commit();
+    RedisActions<std::vector<std::string>, std::string>::insert(std::to_string(user_id), 
+                {condition, workPaste, std::to_string(messageId)}, redisSettins::lifeTime);
 
 }
 
@@ -116,24 +114,20 @@ void SqlRelation::changeUserState(int user_id,
                 const std::string& workPaste,
                 int messageId) {
     
-    pqxx::work txn(conn);
-
-    sql_actions::execute_change_user_state(txn, 
-            user_id, 
-            condition, 
-            workPaste, 
-            messageId);
-    
-    txn.commit();                
+    RedisActions<std::vector<std::string>, std::string>::update(std::to_string(user_id), 
+                {condition, workPaste, std::to_string(messageId)}, redisSettins::lifeTime);              
 }
 
 user_state SqlRelation::getUserState(int user_id) {
 
-    pqxx::work txn(conn);
-    user_state ans = sql_actions::execute_get_user_state(txn, user_id);
-    txn.commit();  
+    std::vector<std::string> ans = RedisActions<std::vector<std::string>, std::string>::get(std::to_string(user_id));
 
-    return ans;              
+    if (ans.size() == 0) {
+        ans = {conditions::basic, "", "0"};
+        RedisActions<std::vector<std::string>, std::string>::insert(std::to_string(user_id), ans, redisSettins::lifeTime);
+    }
+
+    return {ans[0], ans[1], std::stoi(ans[2])};
 }
 
 last_pastes_info SqlRelation::getLastPastes(int64_t login,

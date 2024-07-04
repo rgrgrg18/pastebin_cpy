@@ -17,6 +17,8 @@ namespace Config {
 
     std::string __attribute__((weak)) Webhook_url = <WEBHOOK_URL>;
 
+    std::string __attribute__((weak)) Redis_conn = "tcp://{ip}:{port}";
+
 };
 
 #endif

@@ -41,6 +41,7 @@ add_executable(pastebin_cpy
             validate/validate_uniq_code.cpp 
             sql_con/sql_actions.cpp 
             hash_generate/HashGenerator.cpp
+            redis/redis_actions.cpp
             )
 
 
