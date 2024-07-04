@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project("pastebin_cpy")
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 if(NOT BUILD_SHARED_LIBS)
     set(BUILD_SHARED_LIBS ON)
@@ -50,3 +50,15 @@ ${AWSSDK_PLATFORM_DEPS})
 target_link_libraries(pastebin_cpy /usr/local/lib/libTgBot.a ${CMAKE_THREAD_LIBS_INIT} ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${CURL_LIBRARIES})
 
 target_link_libraries(pastebin_cpy pqxx)
+
+find_path(HIREDIS_HEADER hiredis)
+target_include_directories("pastebin_cpy" PUBLIC ${HIREDIS_HEADER})
+
+find_library(HIREDIS_LIB hiredis)
+target_link_libraries("pastebin_cpy" ${HIREDIS_LIB})
+
+find_path(REDIS_PLUS_PLUS_HEADER sw)
+target_include_directories("pastebin_cpy" PUBLIC ${REDIS_PLUS_PLUS_HEADER})
+
+find_library(REDIS_PLUS_PLUS_LIB redis++)
+target_link_libraries("pastebin_cpy" ${REDIS_PLUS_PLUS_LIB})
