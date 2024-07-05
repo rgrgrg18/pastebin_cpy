@@ -94,7 +94,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
             int new_message_id = bot.getApi().editMessageText("Send me a message thats include your text or textfile",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_file, workPaste, new_message_id);
 
@@ -103,7 +103,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
             int new_message_id = bot.getApi().editMessageText("Send me a key of the paste",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::watch_paste_key, workPaste, new_message_id);
 
@@ -118,7 +118,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
             int new_message_id = bot.getApi().editMessageText("send your new password",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_password, workPaste, new_message_id);
 
@@ -127,7 +127,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
             int new_message_id = bot.getApi().editMessageText("send new name",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_rename, workPaste, new_message_id);
 
@@ -158,7 +158,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my paste settings"];
 
             int new_message_id = bot.getApi().editMessageText("send new name",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::rename_paste, workPaste, new_message_id);
 
@@ -190,14 +190,14 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
             if (password == "") {
 
                 int new_message_id = bot.getApi().editMessageText("send your new password",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
 
                 SqlRelation::changeUserState(query->message->chat->id, conditions::change_paste_password, workPaste, new_message_id);
 
             } else {
 
                 int new_message_id = bot.getApi().editMessageText("send your old password",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
 
                 SqlRelation::changeUserState(query->message->chat->id, conditions::validate_paste_old_password, workPaste, new_message_id);
         
@@ -208,7 +208,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my pastes menu"];
 
             int new_message_id = bot.getApi().editMessageText("send key of the paste",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
 
             SqlRelation::changeUserState(query->message->chat->id, conditions::my_paste_key, workPaste, new_message_id);
 
@@ -239,7 +239,7 @@ void BotCommands::edit_to_menu(TgBot::Bot& bot,
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["main menu"];
 
     int new_message_id = bot.getApi().editMessageText(start_message + "Menu",
-                    message->chat->id, old_message_id, "", "MARKDOWN", false, keyboard)-> messageId;
+                    message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
 
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
@@ -251,7 +251,7 @@ void BotCommands::send_menu(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["main menu"];
 
-    int new_message_id = bot.getApi().sendMessage(user_id, "Menu", false, 0, keyboard, "MARKDOWN", true) -> messageId;
+    int new_message_id = bot.getApi().sendMessage(user_id, "Menu", nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
 
     SqlRelation::changeUserState(user_id, conditions::basic, "", new_message_id);
 
