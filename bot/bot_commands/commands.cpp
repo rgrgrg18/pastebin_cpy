@@ -67,7 +67,7 @@ void BotCommands::basic_message(TgBot::Bot& bot,
                 const std::string& workPaste,
                 int old_message_id) {
 
-    if (message->text == "/start") {
+    if (message->text == "/start" || message->text == "/menu") {
         if (old_message_id != 0) bot.getApi().editMessageText(".", message->chat->id, old_message_id);
         send_menu(bot, all_keyboards, message->chat->id);
     }

@@ -56,3 +56,48 @@ void RedisActions<std::vector<std::string>, std::string>::update(const std::stri
     del(key);
     insert(key, value, lifeTime);
 }
+
+void RedisActions<std::string, std::string>::insert(const std::string& key, 
+            const std::string& value, 
+            int lifeTime = -1) {
+
+    try {
+
+        redis.set(key, value);
+
+        if (lifeTime != -1) redis.expire(key, std::chrono::seconds(lifeTime));
+
+    } catch (const Error &err) {
+
+        std::cout << err.what() << std::endl;
+
+    }
+
+}
+
+void RedisActions<std::string, std::string>::del(const std::string& key) {
+
+    try {
+
+        redis.del(key);
+
+    } catch (const Error &err) {
+
+        std::cout << err.what() << std::endl;
+        
+    }
+}
+
+std::string RedisActions<std::string, std::string>::get(const std::string& key) {
+
+    try {
+
+        return *redis.get(key);
+
+    } catch (const Error &err) {
+
+        std::cout << err.what() << std::endl;
+        
+    }
+
+}

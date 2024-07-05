@@ -38,5 +38,19 @@ public:
 
 };
 
+template <>
+class RedisActions<std::string, std::string>: public RedisConnection {
+public:
+
+    static void insert(const std::string& key, 
+                const std::string& value, 
+                int lifeTime);
+
+    static void del(const std::string& key);
+
+    static std::string get(const std::string& key);
+
+};
+
 
 #endif

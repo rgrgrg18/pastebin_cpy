@@ -73,11 +73,9 @@ void BotCommands::watch_paste(TgBot::Bot& bot,
                 std::string& private_key,
                 int old_message_id) {
 
-    if (!AWS_connect::DownloadObject(Config::Bucket_name, private_key + ".bin", Config::Files_directory + private_key + ".bin")) {
+    if (!AWS_connect::DownloadObject(Config::Bucket_name, private_key, Config::Files_directory)) {
         
-        edit_to_menu(bot, all_keyboards, message, "", old_message_id, "we have some problems with DataBase\ntry later...");
-
-        bot.getApi().deleteMessage(message->chat->id, message->messageId);
+        edit_to_menu(bot, all_keyboards, message, "", old_message_id, "we have some problems with DataBase\ntry later...\n");
 
     } else {
         FileCommands::bin_to_txt(Config::Files_directory + private_key + ".bin", public_key);

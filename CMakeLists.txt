@@ -37,6 +37,7 @@ add_executable(pastebin_cpy
             bot/sql_relation/sql_relation.cpp 
             bot/inline_keyboards/inline_keyboard.cpp 
             file_commands/file_commands.cpp 
+            file_commands/base64.cpp 
             amazon_s3/AwsCommands.cpp 
             validate/validate_uniq_code.cpp 
             sql_con/sql_actions.cpp 
