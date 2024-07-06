@@ -14,7 +14,7 @@ A file sharing system based on the telegram API
 
 ## Application structure
 
-* For security, we generate a pair of public and private keys for each paste, the private one is used inside the system, the public one is available to users
+* For security, we generate a pair of public and private keys for each paste using sequences in SQL, the private one is used inside the system, the public one is available to users
 
 * AWS services are used to store post data, each paste takes up no more than 1MB data
 
@@ -67,7 +67,7 @@ cd <BUILD_DIR>
 cmake <path-to-root-of-this-source-code> \
 -DCMAKE_BUILD_TYPE=Debug \
 -DCMAKE_INSTALL_PREFIX=<path-to-install> \
--DBUILD_ONLY="s3"
+
 cmake --build . --config=Debug
 cmake --install . --config=Debug
 ```

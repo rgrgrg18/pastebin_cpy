@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project("pastebin_cpy")
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 if(NOT BUILD_SHARED_LIBS)
     set(BUILD_SHARED_LIBS ON)
