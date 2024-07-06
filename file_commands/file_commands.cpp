@@ -6,8 +6,8 @@ std::string FileCommands::file_type(const std::string& path) {
     int i = path.size() - 1;
     while (i >= 0 && path[i] != '.') --i;
     ++i;
-    for (i; i < path.size(); ++i) {
-        ans.push_back(path[i]);
+    for (int j = i; j < path.size(); ++j) {
+        ans.push_back(path[j]);
     }
     return ans;
 }
