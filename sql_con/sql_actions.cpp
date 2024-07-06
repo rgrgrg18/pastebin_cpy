@@ -33,7 +33,7 @@ void sql_actions::prepare_get_sequence_for_private_key (pqxx::connection_base& c
  * @return unsigned long long Next value in the sequence
  */
 unsigned long long sql_actions::execute_get_sequence_for_public_key (pqxx::transaction_base& txn) {
-	unsigned long long sequence;
+	unsigned long long sequence = 0;
 	return txn.exec_prepared("get_sequence_for_public_key")[0][0].as(sequence);
 }
 
@@ -44,7 +44,7 @@ unsigned long long sql_actions::execute_get_sequence_for_public_key (pqxx::trans
  * @return unsigned long long Next value in the sequence
  */
 unsigned long long sql_actions::execute_get_sequence_for_private_key (pqxx::transaction_base& txn) {
-	unsigned long long sequence;
+	unsigned long long sequence = 0;
 	return txn.exec_prepared("get_sequence_for_private_key")[0][0].as(sequence);
 }
 
@@ -322,7 +322,7 @@ void sql_actions::prepare_return_amount_pastes (pqxx::connection_base& conn) {
  */
 size_t sql_actions::execute_return_amount_pastes (pqxx::transaction_base& txn, int64_t login) {
 	pqxx::result amount_pastes = txn.exec_prepared("return_amount_pastes", login);
-	size_t example;
+	size_t example = 0;
 	return amount_pastes.empty() ? 0 : amount_pastes[0][0].as(example);
 }
 
