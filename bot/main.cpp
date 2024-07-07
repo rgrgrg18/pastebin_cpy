@@ -5,14 +5,14 @@
 #include "inline_keyboards/inline_keyboard.h"
 #include "bot_commands/commands.h"
 #include "../cache/cache.cpp"
+#include "sql_relation/sql_relation.h"
 
 #include "../sql_con/sql_actions.h"
 
 int main() {
-    pqxx::connection(Config::Conn);
-    
+    prepare_functions();
     // set webhook settings
-    std::string webhookUrl(Config::Webhook_url);
+    //std::string webhookUrl(Config::Webhook_url);
 
     TgBot::Bot bot(Config::Token);
     
@@ -30,11 +30,19 @@ int main() {
     try {
         printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
         
-        TgBot::TgWebhookTcpServer webhookServer(8000, bot);
+        /*TgBot::TgWebhookTcpServer webhookServer(8000, bot);
 
         printf("Server starting\n");
         bot.getApi().setWebhook(webhookUrl);
-        webhookServer.start();
+        webhookServer.start();*/
+
+        bot.getApi().deleteWebhook();
+        TgBot::TgLongPoll long_poll(bot);
+
+        while (true) {
+            printf("Long poll started\n");
+            long_poll.start();
+        }
 
     
     } catch (TgBot::TgException& e) {

@@ -10,6 +10,8 @@
 #include "../settings/redis.h"
 #include "../settings/conditions.h"
 
+void prepare_functions();
+
 class SqlRelation {
 
     static size_t PasteCacheSize;
