@@ -3,12 +3,15 @@
 // returns the file type
 std::string FileCommands::file_type(const std::string& path) {
     std::string ans;
-    int i = path.size() - 1;
+
+    size_t i = path.size() - 1;
     while (i >= 0 && path[i] != '.') --i;
     ++i;
-    for (int j = i; j < path.size(); ++j) {
+
+    for (size_t j = i; j < path.size(); ++j) {
         ans.push_back(path[j]);
     }
+
     return ans;
 }
 
@@ -77,11 +80,12 @@ bool FileCommands::txt_to_bin(const std::string& txt_path, const std::string& bi
         return false;
     }
 
-    for (int i = 0; i < txt_path.size() - 3; ++i) {
-        bin_path.push_back(txt_path[i]);
+    for (size_t i = 3; i < txt_path.size(); ++i) {
+        size_t inx = i - 3;
+        bin_path.push_back(txt_path[inx]);
     }
     
-    while (bin_path.back() != '/') bin_path.pop_back();
+    while (!bin_path.empty() && bin_path.back() != '/') bin_path.pop_back();
     bin_path += bin_name + ".bin";
 
     std::ifstream txt_file(txt_path);
@@ -117,11 +121,12 @@ bool FileCommands::bin_to_txt(const std::string& bin_path, const std::string& tx
         return false;
     }
 
-    for (int i = 0; i < bin_path.size() - 3; ++i) {
-        txt_path.push_back(bin_path[i]);
+    for (size_t i = 3; i < bin_path.size(); ++i) {
+        size_t inx = i - 3;
+        txt_path.push_back(bin_path[inx]);
     }
 
-    while (txt_path.back() != '/') txt_path.pop_back();
+    while (!txt_path.empty() && txt_path.back() != '/') txt_path.pop_back();
     txt_path += txt_name + ".txt";
 
     std::ofstream txt_file(txt_path,
