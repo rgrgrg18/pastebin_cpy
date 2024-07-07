@@ -9,7 +9,8 @@
 #include "../sql_con/sql_actions.h"
 
 int main() {
-
+    pqxx::connection(Config::Conn);
+    
     // set webhook settings
     std::string webhookUrl(Config::Webhook_url);
 

@@ -10,14 +10,12 @@
 #include "../settings/redis.h"
 #include "../settings/conditions.h"
 
-pqxx::connection connect(std::string conn);
-
 class SqlRelation {
 
-    static pqxx::connection conn;
     static size_t PasteCacheSize;
 
 public:
+
     class PasteCache {
 
         static cache::LFU<paste_info, std::string> LFU_cache;

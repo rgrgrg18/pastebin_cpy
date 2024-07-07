@@ -3,7 +3,7 @@
 
 #include <fstream>
 
-std::string short_name(const std::string& name, int limit) {
+std::string short_name(const std::string& name, size_t limit) {
     std::string ans;
     if (name.size() <= limit) {
         ans = name;
@@ -19,8 +19,8 @@ std::vector<std::pair<std::string, std::string>> BotCommands::make_paste_buttons
     std::vector<std::vector<std::string> > last_pastes = SqlRelation::getLastPastes(message->chat->id, 8);
 
     std::vector<std::pair<std::string, std::string> > buttons;
-    int inx = 0;
-    for (int i = 0; i < 8; ++i) {
+    size_t inx = 0;
+    for (size_t i = 0; i < 8; ++i) {
         if (inx > last_pastes.size()) {
             buttons.push_back({"", "_"});
         } else {
@@ -279,7 +279,7 @@ void BotCommands::send_my_pastes_list(TgBot::Bot& bot,
     std::ofstream txt_file(Config::Files_directory + std::to_string(message->chat->id) + ".txt",
                             std::ios_base::out);
     
-    for (int i = 0; i < last_pastes.size(); ++i) {
+    for (size_t i = 0; i < last_pastes.size(); ++i) {
         txt_file << i << ") " << last_pastes[i][0] << "\n";
         txt_file << last_pastes[i][1] << " " << last_pastes[i][2].substr(0, 10);
         txt_file << "\n";

@@ -6,11 +6,11 @@ TgBot::InlineKeyboardMarkup::Ptr InlineKeyboard::make_keyboard(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard(new TgBot::InlineKeyboardMarkup);
 
-    int inx = 0;
-    for (int i = 0; i < number_buttons_row.size(); ++i) {
+    size_t inx = 0;
+    for (size_t i = 0; i < number_buttons_row.size(); ++i) {
         std::vector<TgBot::InlineKeyboardButton::Ptr> curr_row;
 
-        for (int j = 0; j < number_buttons_row[i]; ++j) {
+        for (size_t j = 0; j < number_buttons_row[i]; ++j) {
             TgBot::InlineKeyboardButton::Ptr checkButton(new TgBot::InlineKeyboardButton);
 
             checkButton->text = button_names[inx].first;

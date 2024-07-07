@@ -1,6 +1,6 @@
 #include "sql_relation.h"
 
-pqxx::connection connect(std::string connectionPath) {
+void connect(std::string connectionPath) {
     pqxx::connection conn{connectionPath};
 
     sql_actions::prepare_get_sequence_for_public_key(conn);
@@ -20,11 +20,9 @@ pqxx::connection connect(std::string connectionPath) {
     sql_actions::prepare_delete_paste(conn);
     sql_actions::prepare_change_title_paste(conn);
     sql_actions::prepare_get_last_user_pastes(conn);
-
-    return conn;
 }
 
-pqxx::connection SqlRelation::conn = connect(Config::Conn);
+pqxx::connection conn;
 size_t SqlRelation::PasteCacheSize = 500;
 
 cache::LFU<paste_info, std::string> SqlRelation::PasteCache::LFU_cache = cache::LFU<paste_info, std::string>(SqlRelation::PasteCacheSize);
