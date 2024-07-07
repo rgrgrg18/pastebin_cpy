@@ -26,7 +26,7 @@ public:
 
     static void insert(const std::string& key, 
                 const std::vector<std::string>& value, 
-                int lifeTime);
+                int lifeTime = -1);
 
     static void del(const std::string& key);
 
@@ -34,7 +34,7 @@ public:
 
     static void update(const std::string& key, 
                 const std::vector<std::string>& value, 
-                int lifeTime);
+                int lifeTime = -1);
 
 };
 
@@ -44,7 +44,7 @@ public:
 
     static void insert(const std::string& key, 
                 const std::string& value, 
-                int lifeTime);
+                int lifeTime = -1);
 
     static void del(const std::string& key);
 
