@@ -18,7 +18,7 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
     keys pasteKeys = SqlRelation::PasteCache::makeNewPaste(message->chat->id);
 
     FileCommands::string_to_bin(pasteKeys.second, fileContent, Config::Files_directory);
-
+    
     // push file
     int new_message_id;
     if (!AWS_connect::PutObject(Config::Bucket_name, pasteKeys.second + ".bin")) {
@@ -157,6 +157,11 @@ void BotCommands::rename_new_paste(TgBot::Bot& bot,
 
     if (message->text.size() > 50) {
         invalid_name("name must be shorter than 50 characters\n\n");
+        return;
+    }
+
+    if (message->text.size() == 1 && message->text == "-") {
+        invalid_name("You can't set name '\\-' \n\n");
         return;
     }
 
