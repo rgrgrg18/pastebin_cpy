@@ -21,8 +21,8 @@ std::vector<std::pair<std::string, std::string>> BotCommands::make_paste_buttons
     std::vector<std::pair<std::string, std::string> > buttons;
     size_t inx = 0;
     for (size_t i = 0; i < 8; ++i) {
-        if (inx > last_pastes.size()) {
-            buttons.push_back({"", "_"});
+        if (inx >= last_pastes.size()) {
+            buttons.push_back({"-", "_"});
         } else {
             buttons.push_back({short_name(last_pastes[inx][0], 15), last_pastes[inx][1]});
         }
@@ -59,7 +59,7 @@ void BotCommands::send_my_pastes_menu(TgBot::Bot& bot,
                     make_paste_buttons(bot, message),
                     keyboards_settings["my pastes keyboard"]);
     
-    int new_message_id = bot.getApi().sendMessage(message->chat->id, "These are your last 5 pastes\n\nto see the entire list, click *all pastes*\nto view another paste click *other paste*",
+    int new_message_id = bot.getApi().sendMessage(message->chat->id, "These are your last 8 pastes\n\nto see the entire list, click *all pastes*\nto view another paste click *other paste*",
                     nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
 
     SqlRelation::changeUserState(message->chat->id, conditions::basic, "", new_message_id);
@@ -106,6 +106,11 @@ void BotCommands::rename_paste(TgBot::Bot& bot,
 
     if (message->text.size() > 50) {
         invalid_name("name must be shorter than 50 characters\n\n");
+        return;
+    }
+
+    if (message->text.size() == 1 && message->text == "-") {
+        invalid_name("You can't set name '-' \n\n");
         return;
     }
 
@@ -279,11 +284,17 @@ void BotCommands::send_my_pastes_list(TgBot::Bot& bot,
     std::ofstream txt_file(Config::Files_directory + std::to_string(message->chat->id) + ".txt",
                             std::ios_base::out);
     
-    for (size_t i = 0; i < last_pastes.size(); ++i) {
+    txt_file << "this is all your pastes:\n\n";
+
+    size_t last_pastes_size = last_pastes.size();
+
+    for (size_t i = 0; i < last_pastes_size; ++i) {
         txt_file << i << ") " << last_pastes[i][0] << "\n";
         txt_file << last_pastes[i][1] << " " << last_pastes[i][2].substr(0, 10);
         txt_file << "\n";
     }
+
+    txt_file.close();
 
     bot.getApi().sendDocument(message->chat->id, 
             TgBot::InputFile::fromFile(Config::Files_directory + std::to_string(message->chat->id) + ".txt", "txt"));
