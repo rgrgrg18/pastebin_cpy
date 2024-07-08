@@ -95,7 +95,10 @@ std::string RedisActions<std::string, std::string>::get(const std::string& key) 
 
     try {
 
-        ans = *redis.get(key);
+        auto val = redis.get(key);
+        if (val) {
+           ans = *val;
+        }
 
     } catch (const Error &err) {
 
