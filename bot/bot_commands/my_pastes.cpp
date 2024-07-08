@@ -59,8 +59,8 @@ void BotCommands::send_my_pastes_menu(TgBot::Bot& bot,
                     make_paste_buttons(bot, message),
                     keyboards_settings["my pastes keyboard"]);
     
-    int new_message_id = bot.getApi().sendMessage(message->chat->id, "These are your last 8 pastes\n\nto see the entire list, click *all pastes*\nto view another paste click *other paste*",
-                    nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
+    int new_message_id = sendMessage(bot, message->chat->id, 
+                    "These are your last 8 pastes\n\nto see the entire list, click *all pastes*\nto view another paste click *other paste*", keyboard);
 
     SqlRelation::changeUserState(message->chat->id, conditions::basic, "", new_message_id);
 
@@ -168,13 +168,13 @@ void BotCommands::send_paste_settings(TgBot::Bot& bot,
 
     int new_message_id;
     if (password == "") {
-        new_message_id = bot.getApi().sendMessage(user_id, 
-                        created_at.substr(0, 10) + "\n\n" + title + "\n\n*key:* `" + workPaste + "`\n\n❌password", 
-                        nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
+        new_message_id = sendMessage(bot, user_id, 
+                    created_at.substr(0, 10) + "\n\n" + title + "\n\n*key:* `" + workPaste + "`\n\n❌password", keyboard);
+
     } else {
-        new_message_id = bot.getApi().sendMessage(user_id, 
-                        created_at.substr(0, 10) + "\n\n" + title + "\n\n*key:* `" + workPaste + "`\n\n✅password", 
-                        nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
+        new_message_id = sendMessage(bot, user_id, 
+                    created_at.substr(0, 10) + "\n\n" + title + "\n\n*key:* `" + workPaste + "`\n\n✅password", keyboard);
+
     }
 
     SqlRelation::changeUserState(user_id, conditions::basic, workPaste, new_message_id);

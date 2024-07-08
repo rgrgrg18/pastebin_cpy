@@ -56,6 +56,11 @@ private:
                     int old_message_id,
                     const std::string& new_message,
                     TgBot::InlineKeyboardMarkup::Ptr keyboard);
+    
+    static int sendMessage(TgBot::Bot& bot, 
+                int user_id,
+                const std::string& text,
+                TgBot::InlineKeyboardMarkup::Ptr keyboard);
 
     
 // new_paste.cpp

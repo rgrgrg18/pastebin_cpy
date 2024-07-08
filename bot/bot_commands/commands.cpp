@@ -220,7 +220,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             send_my_pastes_list(bot, query->message);
             send_my_pastes_menu(bot, query->message);
-            int new_message_id = editMessage(bot, query->message, old_message_id, 
+            editMessage(bot, query->message, old_message_id, 
                     "This is all your pastes", nullptr);
 
         } else if (query->data == "_") {
@@ -258,7 +258,7 @@ void BotCommands::send_menu(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["main menu"];
 
-    int new_message_id = bot.getApi().sendMessage(user_id, "Menu", nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
+    int new_message_id = sendMessage(bot, user_id, "Menu", keyboard);
 
     SqlRelation::changeUserState(user_id, conditions::basic, "", new_message_id);
 
@@ -272,7 +272,7 @@ int BotCommands::editMessage(TgBot::Bot& bot,
     std::string id = std::to_string(message->chat->id) + "+";
 
     auto oldText = RedisActions<std::string, std::string>::get(id);
-    
+
     if (oldText == new_message) return old_message_id;
 
     RedisActions<std::string, std::string>::del(id);
@@ -280,4 +280,17 @@ int BotCommands::editMessage(TgBot::Bot& bot,
 
     return bot.getApi().editMessageText(new_message,
                     message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard) -> messageId;
+}
+
+int BotCommands::sendMessage(TgBot::Bot& bot, 
+                int user_id,
+                const std::string& text,
+                TgBot::InlineKeyboardMarkup::Ptr keyboard = nullptr) {
+
+    int new_message_id = bot.getApi().sendMessage(user_id, text, nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
+
+    RedisActions<std::string, std::string>::del(std::to_string(user_id) + "+");
+
+    return new_message_id;
+
 }
