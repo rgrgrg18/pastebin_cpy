@@ -25,8 +25,8 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
 
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-        new_message_id = bot.getApi().editMessageText("we have some problems with DataBase\ntry later...", 
-                                    message->chat->id, old_message_id, "", "MARKDOWNV2", nullptr, keyboard) -> messageId;
+        new_message_id = editMessage(bot, message, old_message_id, 
+                    "we have some problems with DataBase\ntry later...", keyboard);
 
     } else {
         
@@ -57,8 +57,8 @@ std::string BotCommands::getFileContent(TgBot::Bot& bot,
     auto incorrect_file = [&](const std::string& start_message){
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-        int new_message_id = bot.getApi().editMessageText(start_message, 
-                                    message->chat->id, old_message_id, "", "MARKDOWNV2", nullptr, keyboard) -> messageId;
+        int new_message_id = editMessage(bot, message, old_message_id, 
+                    start_message, keyboard);
         
         SqlRelation::changeUserState(message->chat->id, conditions::basic, "", new_message_id);
     };
@@ -97,12 +97,12 @@ int BotCommands::new_paste_condition(TgBot::Bot& bot,
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["configure_new_paste_keyboard"];
 
     if (password == "") {
-        return bot.getApi().editMessageText("✅new paste✅\n\n" + start_message + title + "\n*key:* `" + workPaste + "`\n\n❌password",
-                    message->chat->id, old_message_id, "", "MARKDOWNV2", nullptr, keyboard) -> messageId;
+        return editMessage(bot, message, old_message_id, 
+                    "✅new paste✅\n\n" + start_message + title + "\n*key:* `" + workPaste + "`\n\n❌password", keyboard);
     }
 
-    return bot.getApi().editMessageText("✅new paste✅\n\n" + start_message + title + "\n*key:* `" + workPaste + "`\n\n✅password",
-                    message->chat->id, old_message_id, "", "MARKDOWNV2", nullptr, keyboard) -> messageId;
+    return editMessage(bot, message, old_message_id, 
+                    "✅new paste✅\n\n" + start_message + title + "\n*key:* `" + workPaste + "`\n\n✅password", keyboard);
 
 }
 
@@ -131,8 +131,8 @@ void BotCommands::change_new_paste_password(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-    int new_message_id = bot.getApi().editMessageText("password has been successfully changed",
-                    message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+    int new_message_id = editMessage(bot, message, old_message_id, 
+                    "password has been successfully changed", keyboard);
             
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
@@ -170,8 +170,8 @@ void BotCommands::rename_new_paste(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-    int new_message_id = bot.getApi().editMessageText("name has been successfully changed",
-                    message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+    int new_message_id = editMessage(bot, message, old_message_id, 
+                    "name has been successfully changed", keyboard);
             
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 

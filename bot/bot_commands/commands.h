@@ -51,6 +51,12 @@ private:
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 int user_id);
 
+    static int editMessage(TgBot::Bot& bot, 
+                    TgBot::Message::Ptr message,
+                    int old_message_id,
+                    const std::string& new_message,
+                    TgBot::InlineKeyboardMarkup::Ptr keyboard);
+
     
 // new_paste.cpp
 private:

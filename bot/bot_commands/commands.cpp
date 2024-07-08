@@ -68,8 +68,10 @@ void BotCommands::basic_message(TgBot::Bot& bot,
                 int old_message_id) {
 
     if (message->text == "/start" || message->text == "/menu") {
-        if (old_message_id != 0) bot.getApi().editMessageText(".", message->chat->id, old_message_id);
+        
+        if (old_message_id != 0) editMessage(bot, message, old_message_id, ".", nullptr);
         send_menu(bot, all_keyboards, message->chat->id);
+        
     }
 
     // reply to all other messages
@@ -84,17 +86,19 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
         auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(query->message->chat->id);
         
         if (old_message_id != query->message->messageId) {
-            bot.getApi().editMessageText(".",
-                        query->message->chat->id, query->message->messageId);
+
+            editMessage(bot, query->message, query->message->messageId, ".", nullptr);
+
             return;
+
         }
 
         if (query->data == "new_paste_c") {
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-            int new_message_id = bot.getApi().editMessageText("Send me a message thats include your text or textfile",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+            int new_message_id = editMessage(bot, query->message, old_message_id, 
+                "Send me a message thats include your text or textfile", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_file, workPaste, new_message_id);
 
@@ -102,8 +106,8 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-            int new_message_id = bot.getApi().editMessageText("Send me a key of the paste",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+            int new_message_id = editMessage(bot, query->message, old_message_id, 
+                "Send me a key of the paste", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::watch_paste_key, workPaste, new_message_id);
 
@@ -117,8 +121,8 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-            int new_message_id = bot.getApi().editMessageText("send your new password",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+            int new_message_id = editMessage(bot, query->message, old_message_id, 
+                "send your new password", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_password, workPaste, new_message_id);
 
@@ -126,8 +130,8 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-            int new_message_id = bot.getApi().editMessageText("send new name",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+            int new_message_id = editMessage(bot, query->message, old_message_id, 
+                "send new name", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_rename, workPaste, new_message_id);
 
@@ -157,8 +161,8 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my paste settings"];
 
-            int new_message_id = bot.getApi().editMessageText("send new name",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+            int new_message_id = editMessage(bot, query->message, old_message_id, 
+                "send new name", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::rename_paste, workPaste, new_message_id);
 
@@ -189,15 +193,15 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             if (password == "") {
 
-                int new_message_id = bot.getApi().editMessageText("send your new password",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+                int new_message_id = editMessage(bot, query->message, old_message_id, 
+                    "send your new password", keyboard);
 
                 SqlRelation::changeUserState(query->message->chat->id, conditions::change_paste_password, workPaste, new_message_id);
 
             } else {
 
-                int new_message_id = bot.getApi().editMessageText("send your old password",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+                int new_message_id = editMessage(bot, query->message, old_message_id, 
+                    "send your old password", keyboard);
 
                 SqlRelation::changeUserState(query->message->chat->id, conditions::validate_paste_old_password, workPaste, new_message_id);
         
@@ -206,9 +210,9 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
         } else if (query->data == "my_pastes_other_paste") {
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my pastes menu"];
-
-            int new_message_id = bot.getApi().editMessageText("send key of the paste",
-                            query->message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+            
+            int new_message_id = editMessage(bot, query->message, old_message_id, 
+                    "send key of the paste", keyboard);
 
             SqlRelation::changeUserState(query->message->chat->id, conditions::my_paste_key, workPaste, new_message_id);
 
@@ -216,8 +220,8 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             send_my_pastes_list(bot, query->message);
             send_my_pastes_menu(bot, query->message);
-            bot.getApi().editMessageText("This is all your pastes",
-                            query->message->chat->id, query->message->messageId);
+            int new_message_id = editMessage(bot, query->message, old_message_id, 
+                    "This is all your pastes", nullptr);
 
         } else if (query->data == "_") {
 
@@ -241,8 +245,8 @@ void BotCommands::edit_to_menu(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["main menu"];
 
-    int new_message_id = bot.getApi().editMessageText(start_message + "Menu",
-                    message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard)-> messageId;
+    int new_message_id = editMessage(bot, message, old_message_id, 
+                    start_message + "Menu", keyboard);
 
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
@@ -258,4 +262,22 @@ void BotCommands::send_menu(TgBot::Bot& bot,
 
     SqlRelation::changeUserState(user_id, conditions::basic, "", new_message_id);
 
+}
+
+int BotCommands::editMessage(TgBot::Bot& bot, 
+                    TgBot::Message::Ptr message,
+                    int old_message_id,
+                    const std::string& new_message,
+                    TgBot::InlineKeyboardMarkup::Ptr keyboard = nullptr) {
+    std::string id = std::to_string(message->chat->id) + "+";
+
+    auto oldText = RedisActions<std::string, std::string>::get(id);
+    
+    if (oldText == new_message) return old_message_id;
+
+    RedisActions<std::string, std::string>::del(id);
+    RedisActions<std::string, std::string>::insert(id, new_message, redisSettins::lifeTime);
+
+    return bot.getApi().editMessageText(new_message,
+                    message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard) -> messageId;
 }

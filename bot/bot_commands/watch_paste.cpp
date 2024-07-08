@@ -34,8 +34,9 @@ void BotCommands::watch_paste_key(TgBot::Bot& bot,
     } else {
 
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
-        int new_message_id = bot.getApi().editMessageText("type password", 
-                                    message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard) -> messageId;
+
+        int new_message_id = editMessage(bot, message, old_message_id, 
+                    "type password", keyboard);
         
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
 
