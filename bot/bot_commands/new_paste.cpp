@@ -20,7 +20,7 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
     FileCommands::string_to_bin(pasteKeys.second, fileContent, Config::Files_directory);
     
     // push file
-    int new_message_id;
+    int32_t new_message_id;
     if (!AWS_connect::PutObject(Config::Bucket_name, pasteKeys.second + ".bin")) {
 
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
@@ -49,7 +49,7 @@ void BotCommands::make_new_paste(TgBot::Bot& bot,
 std::string BotCommands::getFileContent(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards,        
                 TgBot::Message::Ptr message,
-                int old_message_id) {
+                int32_t old_message_id) {
 
     // take text or txt file
     std::string fileContent = "";
@@ -57,7 +57,7 @@ std::string BotCommands::getFileContent(TgBot::Bot& bot,
     auto incorrect_file = [&](const std::string& start_message){
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-        int new_message_id = editMessage(bot, message, old_message_id, 
+        int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     start_message, keyboard);
         
         SqlRelation::changeUserState(message->chat->id, conditions::basic, "", new_message_id);
@@ -85,11 +85,11 @@ std::string BotCommands::getFileContent(TgBot::Bot& bot,
 }
 
 // the user's post settings window
-int BotCommands::new_paste_condition(TgBot::Bot& bot,
+int32_t BotCommands::new_paste_condition(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 std::string& workPaste,
-                int old_message_id,
+                int32_t old_message_id,
                 const std::string& start_message) {
     
     auto [private_key, login, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(workPaste);
@@ -114,7 +114,7 @@ void BotCommands::change_new_paste_password(TgBot::Bot& bot,
 
     auto invalid_password = [&](const std::string& start_message){
 
-        int new_message_id = new_paste_condition(bot, all_keyboards, message, workPaste, old_message_id, start_message);
+        int32_t new_message_id = new_paste_condition(bot, all_keyboards, message, workPaste, old_message_id, start_message);
         SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
@@ -131,7 +131,7 @@ void BotCommands::change_new_paste_password(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-    int new_message_id = editMessage(bot, message, old_message_id, 
+    int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     "password has been successfully changed", keyboard);
             
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
@@ -148,7 +148,7 @@ void BotCommands::rename_new_paste(TgBot::Bot& bot,
 
     auto invalid_name = [&](const std::string& start_message){
 
-        int new_message_id = new_paste_condition(bot, all_keyboards, message, workPaste, old_message_id, start_message);
+        int32_t new_message_id = new_paste_condition(bot, all_keyboards, message, workPaste, old_message_id, start_message);
         SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
 
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
@@ -170,7 +170,7 @@ void BotCommands::rename_new_paste(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-    int new_message_id = editMessage(bot, message, old_message_id, 
+    int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     "name has been successfully changed", keyboard);
             
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);

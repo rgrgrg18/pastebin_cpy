@@ -32,7 +32,7 @@ private:
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id);
+                int32_t old_message_id);
 
     static void commands(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
@@ -44,21 +44,21 @@ private:
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id,
+                int32_t old_message_id,
                 const std::string& start_message);
     
     static void send_menu(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                int user_id);
+                int64_t user_id);
 
-    static int editMessage(TgBot::Bot& bot, 
+    static int32_t editMessage(TgBot::Bot& bot, 
                     TgBot::Message::Ptr message,
-                    int old_message_id,
+                    int32_t old_message_id,
                     const std::string& new_message,
                     TgBot::InlineKeyboardMarkup::Ptr keyboard);
     
-    static int sendMessage(TgBot::Bot& bot, 
-                int user_id,
+    static int32_t sendMessage(TgBot::Bot& bot, 
+                int64_t user_id,
                 const std::string& text,
                 TgBot::InlineKeyboardMarkup::Ptr keyboard);
 
@@ -72,13 +72,13 @@ private:
     static std::string getFileContent(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards,        
                 TgBot::Message::Ptr message,
-                int old_message_id);
+                int32_t old_message_id);
     
-    static int  new_paste_condition(TgBot::Bot& bot,
+    static int32_t new_paste_condition(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 std::string& workPaste,
-                int old_message_id,
+                int32_t old_message_id,
                 const std::string& start_message);
 
     static void change_new_paste_password(TgBot::Bot& bot,
@@ -103,7 +103,7 @@ private:
                 TgBot::Message::Ptr message,
                 std::string& public_key,
                 std::string& private_key,
-                int old_message_id);
+                int32_t old_message_id);
 
 // my_pastes.cpp
 
@@ -113,7 +113,7 @@ private:
     static void edit_to_my_pastes_menu(TgBot::Bot& bot, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id,
+                int32_t old_message_id,
                 const std::string& start_message);
 
     static void send_my_pastes_menu(TgBot::Bot& bot, 
@@ -123,7 +123,7 @@ private:
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id,
+                int32_t old_message_id,
                 const std::string& start_message);
     
     static void rename_paste(TgBot::Bot& bot,
@@ -135,24 +135,24 @@ private:
                 TgBot::Message::Ptr message,
                 std::string& public_key,
                 std::string& private_key,
-                int old_message_id);
+                int32_t old_message_id);
     
     static void send_paste_settings(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards,
-                int user_id,
+                int64_t user_id,
                 const std::string& workPaste);
 
     static void validate_paste_old_password(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id);
+                int32_t old_message_id);
 
     static void change_paste_password(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id);
+                int32_t old_message_id);
     
     static void validate_my_paste_key(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 

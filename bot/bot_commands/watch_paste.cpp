@@ -35,7 +35,7 @@ void BotCommands::watch_paste_key(TgBot::Bot& bot,
 
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-        int new_message_id = editMessage(bot, message, old_message_id, 
+        int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     "type password", keyboard);
         
         bot.getApi().deleteMessage(message->chat->id, message->messageId);
@@ -72,7 +72,7 @@ void BotCommands::watch_paste(TgBot::Bot& bot,
                 TgBot::Message::Ptr message,
                 std::string& public_key,
                 std::string& private_key,
-                int old_message_id) {
+                int32_t old_message_id) {
 
     if (!AWS_connect::DownloadObject(Config::Bucket_name, private_key, Config::Files_directory)) {
         

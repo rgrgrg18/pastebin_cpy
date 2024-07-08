@@ -38,14 +38,14 @@ std::vector<std::pair<std::string, std::string>> BotCommands::make_paste_buttons
 void BotCommands::edit_to_my_pastes_menu(TgBot::Bot& bot, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id,
+                int32_t old_message_id,
                 const std::string& start_message){
     
     TgBot::InlineKeyboardMarkup::Ptr keyboard = InlineKeyboard::make_keyboard(bot,
                     make_paste_buttons(bot, message),
                     keyboards_settings["my pastes keyboard"]);
     
-    int new_message_id = editMessage(bot, message, old_message_id, 
+    int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     start_message + "*These are your last 8 pastes*\n\nto see your pastes list, click *all pastes*\nto change another paste click *other paste*", keyboard);
 
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
@@ -59,7 +59,7 @@ void BotCommands::send_my_pastes_menu(TgBot::Bot& bot,
                     make_paste_buttons(bot, message),
                     keyboards_settings["my pastes keyboard"]);
     
-    int new_message_id = sendMessage(bot, message->chat->id, 
+    int32_t new_message_id = sendMessage(bot, message->chat->id, 
                     "These are your last 8 pastes\n\nto see the entire list, click *all pastes*\nto view another paste click *other paste*", keyboard);
 
     SqlRelation::changeUserState(message->chat->id, conditions::basic, "", new_message_id);
@@ -70,14 +70,14 @@ void BotCommands::edit_to_paste_settings(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id,
+                int32_t old_message_id,
                 const std::string& start_message) {
 
     auto [private_key, login, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(workPaste);
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["my_paste_settings"];
 
-    int new_message_id;
+    int32_t new_message_id;
     if (password == "") {
         new_message_id = editMessage(bot, message, old_message_id, 
                     start_message + created_at.substr(0, 10) + "\n\n" + title + "\n\n*key:* `" + workPaste + "`\n\n❌password", keyboard);
@@ -119,7 +119,7 @@ void BotCommands::rename_paste(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my paste settings"];
 
-    int new_message_id = editMessage(bot, message, old_message_id, 
+    int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     "name has been successfully changed", keyboard);
             
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
@@ -132,13 +132,13 @@ void BotCommands::watch_my_paste(TgBot::Bot& bot,
                 TgBot::Message::Ptr message,
                 std::string& public_key,
                 std::string& private_key,
-                int old_message_id) {
+                int32_t old_message_id) {
 
     if (!AWS_connect::DownloadObject(Config::Bucket_name, private_key, Config::Files_directory)) {
         
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my paste settings"];
 
-        int new_message_id = editMessage(bot, message, old_message_id, 
+        int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     "we have some problems with DataBase\ntry later...\n", keyboard);
 
         SqlRelation::changeUserState(message->chat->id, conditions::basic, public_key, new_message_id);
@@ -159,14 +159,14 @@ void BotCommands::watch_my_paste(TgBot::Bot& bot,
 
 void BotCommands::send_paste_settings(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                int user_id,
+                int64_t user_id,
                 const std::string& workPaste){
 
     auto [private_key, login, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(workPaste);
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["my_paste_settings"];
 
-    int new_message_id;
+    int32_t new_message_id;
     if (password == "") {
         new_message_id = sendMessage(bot, user_id, 
                     created_at.substr(0, 10) + "\n\n" + title + "\n\n*key:* `" + workPaste + "`\n\n❌password", keyboard);
@@ -185,7 +185,7 @@ void BotCommands::validate_paste_old_password(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id) {
+                int32_t old_message_id) {
 
     auto [private_key, login, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(workPaste);
 
@@ -199,7 +199,7 @@ void BotCommands::validate_paste_old_password(TgBot::Bot& bot,
 
         TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my paste settings"];
 
-        int new_message_id = editMessage(bot, message, old_message_id, 
+        int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     "type new password", keyboard);
         
         SqlRelation::changeUserState(message->chat->id, conditions::change_paste_password, workPaste, new_message_id);
@@ -212,7 +212,7 @@ void BotCommands::change_paste_password(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id) {
+                int32_t old_message_id) {
 
     auto invalid_password = [&](const std::string& start_message){
 
@@ -232,7 +232,7 @@ void BotCommands::change_paste_password(TgBot::Bot& bot,
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my paste settings"];
 
-    int new_message_id = editMessage(bot, message, old_message_id, 
+    int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     "password has been successfully changed", keyboard);
             
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);

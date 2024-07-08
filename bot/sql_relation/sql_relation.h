@@ -32,23 +32,23 @@ public:
         static void changePasteTitle(const std::string& newName,
                 const std::string& workPaste);
 
-        static keys makeNewPaste(int user_id);
+        static keys makeNewPaste(int64_t user_id);
 
         static void delNewPaste(const std::string& workPaste,
-                int user_id);
+                int64_t user_id);
     };
 
-    static void addUserState(int user_id,
+    static void addUserState(int64_t user_id,
             const std::string& condition,
             const std::string& workPaste,
-            int messageId);
+            int32_t messageId);
 
-    static void changeUserState(int user_id,
+    static void changeUserState(int64_t user_id,
             const std::string& condition,
             const std::string& workPaste,
-            int messageId);
+            int32_t messageId);
 
-    static user_state getUserState(int user_id);
+    static user_state getUserState(int64_t user_id);
 
     static last_pastes_info getLastPastes(int64_t login,
             int64_t limit);

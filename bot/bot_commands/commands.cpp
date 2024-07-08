@@ -65,7 +65,7 @@ void BotCommands::basic_message(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id) {
+                int32_t old_message_id) {
 
     if (message->text == "/start" || message->text == "/menu") {
         
@@ -97,7 +97,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-            int new_message_id = editMessage(bot, query->message, old_message_id, 
+            int32_t new_message_id = editMessage(bot, query->message, old_message_id, 
                 "Send me a message thats include your text or textfile", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_file, workPaste, new_message_id);
@@ -106,7 +106,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to main menu"];
 
-            int new_message_id = editMessage(bot, query->message, old_message_id, 
+            int32_t new_message_id = editMessage(bot, query->message, old_message_id, 
                 "Send me a key of the paste", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::watch_paste_key, workPaste, new_message_id);
@@ -121,7 +121,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-            int new_message_id = editMessage(bot, query->message, old_message_id, 
+            int32_t new_message_id = editMessage(bot, query->message, old_message_id, 
                 "send your new password", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_password, workPaste, new_message_id);
@@ -130,7 +130,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back_to_new_paste_configure"];
 
-            int new_message_id = editMessage(bot, query->message, old_message_id, 
+            int32_t new_message_id = editMessage(bot, query->message, old_message_id, 
                 "send new name", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::new_paste_rename, workPaste, new_message_id);
@@ -154,14 +154,14 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
         } else if (query->data == "back_new_paste_configure") {
 
-            int new_message_id = new_paste_condition(bot, all_keyboards, query->message, workPaste, old_message_id, "");
+            int32_t new_message_id = new_paste_condition(bot, all_keyboards, query->message, workPaste, old_message_id, "");
             SqlRelation::changeUserState(query->message->chat->id, conditions::basic, workPaste, new_message_id);
 // my_paste_settings
         } else if (query->data == "rename_my_paste") {
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my paste settings"];
 
-            int new_message_id = editMessage(bot, query->message, old_message_id, 
+            int32_t new_message_id = editMessage(bot, query->message, old_message_id, 
                 "send new name", keyboard);
             
             SqlRelation::changeUserState(query->message->chat->id, conditions::rename_paste, workPaste, new_message_id);
@@ -193,14 +193,14 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             if (password == "") {
 
-                int new_message_id = editMessage(bot, query->message, old_message_id, 
+                int32_t new_message_id = editMessage(bot, query->message, old_message_id, 
                     "send your new password", keyboard);
 
                 SqlRelation::changeUserState(query->message->chat->id, conditions::change_paste_password, workPaste, new_message_id);
 
             } else {
 
-                int new_message_id = editMessage(bot, query->message, old_message_id, 
+                int32_t new_message_id = editMessage(bot, query->message, old_message_id, 
                     "send your old password", keyboard);
 
                 SqlRelation::changeUserState(query->message->chat->id, conditions::validate_paste_old_password, workPaste, new_message_id);
@@ -211,7 +211,7 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
 
             TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["back to my pastes menu"];
             
-            int new_message_id = editMessage(bot, query->message, old_message_id, 
+            int32_t new_message_id = editMessage(bot, query->message, old_message_id, 
                     "send key of the paste", keyboard);
 
             SqlRelation::changeUserState(query->message->chat->id, conditions::my_paste_key, workPaste, new_message_id);
@@ -240,12 +240,12 @@ void BotCommands::edit_to_menu(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
                 TgBot::Message::Ptr message,
                 const std::string& workPaste,
-                int old_message_id,
+                int32_t old_message_id,
                 const std::string& start_message) {
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["main menu"];
 
-    int new_message_id = editMessage(bot, message, old_message_id, 
+    int32_t new_message_id = editMessage(bot, message, old_message_id, 
                     start_message + "Menu", keyboard);
 
     SqlRelation::changeUserState(message->chat->id, conditions::basic, workPaste, new_message_id);
@@ -254,21 +254,22 @@ void BotCommands::edit_to_menu(TgBot::Bot& bot,
 
 void BotCommands::send_menu(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards, 
-                int user_id) {
+                int64_t user_id) {
 
     TgBot::InlineKeyboardMarkup::Ptr keyboard = all_keyboards["main menu"];
 
-    int new_message_id = sendMessage(bot, user_id, "Menu", keyboard);
+    int32_t new_message_id = sendMessage(bot, user_id, "Menu", keyboard);
 
     SqlRelation::changeUserState(user_id, conditions::basic, "", new_message_id);
 
 }
 
-int BotCommands::editMessage(TgBot::Bot& bot, 
+int32_t BotCommands::editMessage(TgBot::Bot& bot, 
                     TgBot::Message::Ptr message,
-                    int old_message_id,
+                    int32_t old_message_id,
                     const std::string& new_message,
                     TgBot::InlineKeyboardMarkup::Ptr keyboard = nullptr) {
+                        
     std::string id = std::to_string(message->chat->id) + "+";
 
     auto oldText = RedisActions<std::string, std::string>::get(id);
@@ -278,19 +279,37 @@ int BotCommands::editMessage(TgBot::Bot& bot,
     RedisActions<std::string, std::string>::del(id);
     RedisActions<std::string, std::string>::insert(id, new_message, redisSettins::lifeTime);
 
-    return bot.getApi().editMessageText(new_message,
+    int32_t new_message_id = 0;
+    try {
+
+        new_message_id = bot.getApi().editMessageText(new_message,
                     message->chat->id, old_message_id, "", "MARKDOWN", nullptr, keyboard) -> messageId;
+
+    } catch (...) {
+        std::cout << "exception: botEditMessage";
+    }
+
+    return new_message_id;
 }
 
-int BotCommands::sendMessage(TgBot::Bot& bot, 
-                int user_id,
+int32_t BotCommands::sendMessage(TgBot::Bot& bot, 
+                int64_t user_id,
                 const std::string& text,
                 TgBot::InlineKeyboardMarkup::Ptr keyboard = nullptr) {
 
-    int new_message_id = bot.getApi().sendMessage(user_id, text, nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
+    int32_t new_message_id = 0;
+
+    try {
+        new_message_id = bot.getApi().sendMessage(user_id, text, nullptr, nullptr, keyboard, "MARKDOWN", true) -> messageId;
+        RedisActions<std::string, std::string>::del(std::to_string(user_id) + "+");
+
+        return new_message_id;
+    } catch (...) {
+        std::cout << "exception: botSendMessage";
+        
+    }
 
     RedisActions<std::string, std::string>::del(std::to_string(user_id) + "+");
-
     return new_message_id;
 
 }

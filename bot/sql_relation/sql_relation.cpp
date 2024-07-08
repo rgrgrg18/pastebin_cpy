@@ -73,7 +73,7 @@ void SqlRelation::PasteCache::changePasteTitle(const std::string& newName,
     txn.commit();
 }
 
-keys SqlRelation::PasteCache::makeNewPaste(int user_id) {
+keys SqlRelation::PasteCache::makeNewPaste(int64_t user_id) {
 
     pqxx::work txn(conn);
     keys pasteKeys = sql_actions::new_paste(txn, user_id);
@@ -83,7 +83,7 @@ keys SqlRelation::PasteCache::makeNewPaste(int user_id) {
 }
 
 void SqlRelation::PasteCache::delNewPaste(const std::string& pasteKey,
-                int user_id) {
+                int64_t user_id) {
 
     auto [ans, count] = LFU_cache.get(pasteKey);  
 
@@ -97,26 +97,26 @@ void SqlRelation::PasteCache::delNewPaste(const std::string& pasteKey,
     txn.commit();
 }
 
-void SqlRelation::addUserState(int user_id,
+void SqlRelation::addUserState(int64_t user_id,
                 const std::string& condition,
                 const std::string& workPaste,
-                int messageId) {
+                int32_t messageId) {
 
-    RedisActions<std::vector<std::string>, std::string>::insert(std::to_string(user_id), 
+    RedisActions<std::vector<std::string>, std::string>::update(std::to_string(user_id), 
                 {condition, workPaste, std::to_string(messageId)}, redisSettins::lifeTime);
 
 }
 
-void SqlRelation::changeUserState(int user_id,
+void SqlRelation::changeUserState(int64_t user_id,
                 const std::string& condition,
                 const std::string& workPaste,
-                int messageId) {
+                int32_t messageId) {
     
     RedisActions<std::vector<std::string>, std::string>::update(std::to_string(user_id), 
                 {condition, workPaste, std::to_string(messageId)}, redisSettins::lifeTime);              
 }
 
-user_state SqlRelation::getUserState(int user_id) {
+user_state SqlRelation::getUserState(int64_t user_id) {
 
     std::vector<std::string> ans = RedisActions<std::vector<std::string>, std::string>::get(std::to_string(user_id));
 
@@ -138,3 +138,4 @@ last_pastes_info SqlRelation::getLastPastes(int64_t login,
     return ans;
 
 }
+
