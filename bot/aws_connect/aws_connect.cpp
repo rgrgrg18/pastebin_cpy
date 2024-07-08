@@ -12,13 +12,14 @@ Aws::Client::ClientConfiguration setConnection() {
 
 Aws::Client::ClientConfiguration AWS_connect::clientConfig = setConnection();
 
-bool AWS_connect::PutObject(std::string BucketName, std::string filePath) {
+bool AWS_connect::PutObject(const std::string& BucketName, const std::string& filePath) {
     return AwsCommands::PutObject(Aws::String(BucketName), Aws::String(filePath), clientConfig);
 }
 
-bool AWS_connect::DownloadObject(std::string BucketName, std::string fileKey, std::string savePath) {
+bool AWS_connect::DownloadObject(const std::string& BucketName, const std::string& fileKey, const std::string& savePath) {
 
     std::string value = RedisActions<std::string, std::string>::get(fileKey);
+    
     if (value == "") {
         bool download = AwsCommands::DownloadObject(Aws::String(fileKey + ".bin"), Aws::String(BucketName), Aws::String(savePath + fileKey + ".bin"), clientConfig);
         if (download) {
@@ -36,7 +37,7 @@ bool AWS_connect::DownloadObject(std::string BucketName, std::string fileKey, st
     }
 }
 
-bool AWS_connect::DeleteObject(std::string BucketName, std::string fileKey) {
+bool AWS_connect::DeleteObject(const std::string& BucketName, const std::string& fileKey) {
     RedisActions<std::string, std::string>::del(fileKey);
     return AwsCommands::DeleteObject(Aws::String(fileKey + ".bin"), Aws::String(BucketName), clientConfig);
 }

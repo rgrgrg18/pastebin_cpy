@@ -5,9 +5,9 @@ void BotCommands::message_handler(TgBot::Bot& bot,
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards) {
 
     bot.getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
-
+        
         auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(message->chat->id);
-
+        
         // set basic settings if user not exist
         if (condition == "") {
             SqlRelation::addUserState(message->chat->id, conditions::basic, "", 0);
@@ -80,9 +80,9 @@ void BotCommands::basic_message(TgBot::Bot& bot,
 void BotCommands::callback_handler(TgBot::Bot& bot, 
                 std::unordered_map<std::string, TgBot::InlineKeyboardMarkup::Ptr>& all_keyboards) {
     bot.getEvents().onCallbackQuery([&](TgBot::CallbackQuery::Ptr query) {
-        
-        auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(query->message->chat->id);
 
+        auto [condition, workPaste, old_message_id] = SqlRelation::getUserState(query->message->chat->id);
+        
         if (old_message_id != query->message->messageId) {
             bot.getApi().editMessageText(".",
                         query->message->chat->id, query->message->messageId);
@@ -218,6 +218,9 @@ void BotCommands::callback_handler(TgBot::Bot& bot,
             send_my_pastes_menu(bot, query->message);
             bot.getApi().editMessageText("This is all your pastes",
                             query->message->chat->id, query->message->messageId);
+
+        } else if (query->data == "_") {
+
 
         } else {
 

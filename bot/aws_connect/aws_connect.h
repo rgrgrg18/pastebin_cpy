@@ -14,11 +14,11 @@ class AWS_connect {
     
 public:
 
-    static bool PutObject(std::string BucketName, std::string filePath);
+    static bool PutObject(const std::string& BucketName, const std::string& filePath);
 
-    static bool DownloadObject(std::string BucketName, std::string fileKey, std::string savePath);
+    static bool DownloadObject(const std::string& BucketName, const std::string& fileKey, const std::string& savePath);
 
-    static bool DeleteObject(std::string BucketName, std::string fileKey);
+    static bool DeleteObject(const std::string& BucketName, const std::string& fileKey);
     
 };
 
