@@ -1,6 +1,6 @@
 # Pastebin cpy
 
-A file sharing system based on the telegram API
+API for quick interaction with text files
 
 
 ## The main features of the application
@@ -26,7 +26,7 @@ A file sharing system based on the telegram API
 
 ## How to build and run locally
 
-* Install all the necessary libraries: [aws-sdk-cpp](https://github.com/aws/aws-sdk-cpp), [tgbot-cpp](https://github.com/reo7sp/tgbot-cpp), [pqxx](https://github.com/jtv/libpqxx), [redis-plus-plus](https://github.com/sewenew/redis-plus-plus) and their dependencies
+* Install all the necessary libraries: [aws-sdk-cpp](https://github.com/aws/aws-sdk-cpp), [pqxx](https://github.com/jtv/libpqxx), [redis-plus-plus](https://github.com/sewenew/redis-plus-plus), [gRPC](https://grpc.io/docs/languages/cpp/quickstart/) and their dependencies
 
 * To work with aws, go to the directory `~/.aws/` (macOS / Linux) 
 
@@ -52,11 +52,18 @@ Also, if you do not have such a directory, use the command `aws configure` in te
 (in our project, we use yandex cloud, so the instructions for changing the make file are relevant for us [yandex_cloud](https://yandex.cloud/ru/docs/storage/tools/aws-sdk-cpp))
 
 
-* Copy our repository and after that open `bot/config.h` and change the parameters according to the sample
+* Copy our repository and after that open `config.h` and change the parameters according to the sample
 
 * Set a redis size limit to use it as a LRU cache [guide](https://cndoc.github.io/redis-doc-cn/cn/topics/lru-cache.html)
 
 * Change file CMakeLists.txt for yourself
+
+* Generate proto code using and move them to `proto` dir:
+
+```bash
+$ protoc -I ../proto --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ../proto/server.proto
+$ protoc -I ../proto --cpp_out=. ../proto/server.proto
+```
 
 * Create your buid directory and navigate there
 
