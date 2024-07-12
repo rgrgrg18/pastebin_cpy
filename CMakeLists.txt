@@ -46,8 +46,6 @@ target_link_libraries(${PROJECT_NAME} gRPC::grpc++)
 target_link_libraries(${PROJECT_NAME} ${AWSSDK_LINK_LIBRARIES}
 ${AWSSDK_PLATFORM_DEPS})
 
-target_link_libraries(${PROJECT_NAME} /usr/local/lib/libTgBot.a ${CMAKE_THREAD_LIBS_INIT} ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${CURL_LIBRARIES})
-
 target_link_libraries(${PROJECT_NAME} pqxx)
 
 find_path(HIREDIS_HEADER hiredis)
