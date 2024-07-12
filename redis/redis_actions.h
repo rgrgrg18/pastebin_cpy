@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 #include <sw/redis++/redis++.h>
-#include "../bot/config.h"
-#include "../bot/settings/redis.h"
+#include "../config.h"
+#include "../methods/settings/redis.h"
 
 using namespace sw::redis;
 
@@ -19,24 +19,6 @@ protected:
 
 template <typename T, typename keyT>
 class RedisActions: public RedisConnection {};
-
-template <>
-class RedisActions<std::vector<std::string>, std::string>: public RedisConnection {
-public:
-
-    static void insert(const std::string& key, 
-                const std::vector<std::string>& value, 
-                int lifeTime = -1);
-
-    static void del(const std::string& key);
-
-    static std::vector<std::string> get(const std::string& key);
-
-    static void update(const std::string& key, 
-                const std::vector<std::string>& value, 
-                int lifeTime = -1);
-
-};
 
 template <>
 class RedisActions<std::string, std::string>: public RedisConnection {

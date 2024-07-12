@@ -5,7 +5,7 @@
 
 namespace Config {
 
-    std::string __attribute__((weak)) Token = <BOT_TOKEN>;
+    std::string __attribute__((weak)) ListenPort = <LISTEN_PORT>;
 
     std::string __attribute__((weak)) Files_directory = <WORK_FILES_DIR>;
 
@@ -15,10 +15,7 @@ namespace Config {
 
     std::string __attribute__((weak)) Endpoint = <AWS_ENDPOINT>;
 
-    std::string __attribute__((weak)) Webhook_url = <WEBHOOK_URL>;
-
     std::string __attribute__((weak)) Redis_conn = "tcp://{ip}:{port}";
-
 };
 
 #endif

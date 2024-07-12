@@ -5,10 +5,9 @@
 #include <vector>
 #include "../../sql_con/sql_actions.h"
 #include "../../cache/cache.cpp"
-#include "../config.h"
+#include "../../config.h"
 #include "../../redis/redis_actions.h"
 #include "../settings/redis.h"
-#include "../settings/conditions.h"
 
 void prepare_functions();
 
@@ -37,18 +36,6 @@ public:
         static void delNewPaste(const std::string& workPaste,
                 int64_t user_id);
     };
-
-    static void addUserState(int64_t user_id,
-            const std::string& condition,
-            const std::string& workPaste,
-            int32_t messageId);
-
-    static void changeUserState(int64_t user_id,
-            const std::string& condition,
-            const std::string& workPaste,
-            int32_t messageId);
-
-    static user_state getUserState(int64_t user_id);
 
     static last_pastes_info getLastPastes(int64_t login,
             int64_t limit);

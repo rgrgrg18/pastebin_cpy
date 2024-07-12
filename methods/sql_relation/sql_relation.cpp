@@ -1,5 +1,4 @@
 #include "sql_relation.h"
-#include "../config.h"
 
 pqxx::connection conn(Config::Conn);
 
@@ -75,9 +74,11 @@ void SqlRelation::PasteCache::changePasteTitle(const std::string& newName,
 
 keys SqlRelation::PasteCache::makeNewPaste(int64_t user_id) {
 
+    
     pqxx::work txn(conn);
     keys pasteKeys = sql_actions::new_paste(txn, user_id);
     txn.commit();
+    
 
     return pasteKeys;
 }
@@ -95,37 +96,6 @@ void SqlRelation::PasteCache::delNewPaste(const std::string& pasteKey,
 
     sql_actions::execute_delete_paste(txn, pasteKey, user_id);
     txn.commit();
-}
-
-void SqlRelation::addUserState(int64_t user_id,
-                const std::string& condition,
-                const std::string& workPaste,
-                int32_t messageId) {
-
-    RedisActions<std::vector<std::string>, std::string>::update(std::to_string(user_id), 
-                {condition, workPaste, std::to_string(messageId)}, redisSettins::lifeTime);
-
-}
-
-void SqlRelation::changeUserState(int64_t user_id,
-                const std::string& condition,
-                const std::string& workPaste,
-                int32_t messageId) {
-    
-    RedisActions<std::vector<std::string>, std::string>::update(std::to_string(user_id), 
-                {condition, workPaste, std::to_string(messageId)}, redisSettins::lifeTime);              
-}
-
-user_state SqlRelation::getUserState(int64_t user_id) {
-
-    std::vector<std::string> ans = RedisActions<std::vector<std::string>, std::string>::get(std::to_string(user_id));
-
-    if (ans.size() == 0) {
-        ans = {conditions::basic, "", "0"};
-        RedisActions<std::vector<std::string>, std::string>::insert(std::to_string(user_id), ans, redisSettins::lifeTime);
-    }
-
-    return {ans[0], ans[1], std::stoi(ans[2])};
 }
 
 last_pastes_info SqlRelation::getLastPastes(int64_t login,

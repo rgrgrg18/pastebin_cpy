@@ -36,6 +36,8 @@ public:
 
     static std::string getPasteText(const std::string& public_key);
 
+    static std::vector<std::vector<std::string> > getLastPastes(int64_t user_id, int limit);
+
 };
 
 #endif

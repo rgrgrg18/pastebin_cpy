@@ -16,7 +16,7 @@ bool AWS_connect::PutObject(const std::string& BucketName, const std::string& fi
     return AwsCommands::PutObject(Aws::String(BucketName), Aws::String(filePath), clientConfig);
 }
 
-bool AWS_connect::DownloadObject(const std::string& BucketName, const std::string& fileKey, const std::string& savePath) {
+std::string AWS_connect::GetObjectData(const std::string& BucketName, const std::string& fileKey, const std::string& savePath) {
 
     std::string value = RedisActions<std::string, std::string>::get(fileKey);
     
@@ -24,16 +24,15 @@ bool AWS_connect::DownloadObject(const std::string& BucketName, const std::strin
         bool download = AwsCommands::DownloadObject(Aws::String(fileKey + ".bin"), Aws::String(BucketName), Aws::String(savePath + fileKey + ".bin"), clientConfig);
         if (download) {
             auto [value, correct] = FileCommands::bin_to_string(fileKey, savePath);
-            if (!correct) return false;
+            if (!correct) return "";
 
             RedisActions<std::string, std::string>::insert(fileKey, value, redisSettins::lifeTime);
-            return true;
+            return value;
         } else {
-            return false;
+            return "";
         }
     } else {
-        FileCommands::string_to_bin(fileKey, value, savePath);
-        return true;
+        return value;
     }
 }
 
