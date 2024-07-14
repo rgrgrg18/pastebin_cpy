@@ -67,7 +67,7 @@ class ProcessImpl final : public pastebinApi::Service {
         std::string value;
         
         for (auto elem : data) {
-            value += "{" + elem[1] + ":" + elem[2].substr(0, 19) + ":" + elem[0] + "}"; 
+            value += "{" + elem[1] + "*" + elem[2].substr(0, 19) + "*" + elem[0] + "*"; 
         }
         
         response->set_last_pastes(value);
