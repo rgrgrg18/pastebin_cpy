@@ -9,8 +9,8 @@ class ProcessImpl final : public pastebinApi::Service {
 
     ::grpc::Status makeNewPaste(::grpc::ServerContext* context, 
                     const ::newPasteArgs* request, ::newPasteResponce* response) {
-        
-        if (request->user_id() == 0 || request->text() == "") return grpc::Status::CANCELLED;
+
+        if (request->text() == "") return grpc::Status::CANCELLED;
 
         std::string publicKey = PastebinMethods::addPaste(request->user_id(), 
             std::tuple(std::to_string(request->user_id()), request->password(), request->title(), "", request->text()));

@@ -18,7 +18,6 @@ std::string PastebinMethods::addPaste(int64_t user_id, pasteData data) {
         public_key = "";
 
     } 
-
     
     remove((Config::Files_directory +  private_key + ".bin").c_str());
 
