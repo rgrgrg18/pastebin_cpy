@@ -9,7 +9,7 @@
 
 #include "aws_connect/aws_connect.h"
 #include "sql_relation/sql_relation.h"
-#include "../file_commands/file_commands.h"
+#include "../../file_interaction/file_commands.h"
 
 // password, title
 using newPasteInfo = std::tuple<std::string, std::string>;
@@ -28,9 +28,7 @@ public:
     
     static bool deletePaste(const std::string& public_key);
 
-
     static bool updatePasteInfo(const std::string& public_key, newPasteInfo data);
-
 
     static pasteInfo getPasteInfo(const std::string& public_key);
 

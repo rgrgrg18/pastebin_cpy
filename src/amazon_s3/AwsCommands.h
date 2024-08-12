@@ -1,14 +1,12 @@
 #ifndef _Aws_Commands_h_
 #define _Aws_Commands_h_
 
-#include <iostream>
-#include <fstream>
-#include <sys/stat.h>
 #include <aws/core/Aws.h>
 #include <aws/s3/S3Client.h>
 #include <aws/s3/model/PutObjectRequest.h>
 #include <aws/s3/model/GetObjectRequest.h>
 #include <aws/s3/model/DeleteObjectRequest.h>
+#include <iostream>
 #include <fstream>
 
 class AwsCommands {

@@ -1,0 +1,6 @@
+add_subdirectory(amazon_s3)
+add_subdirectory(cache)
+add_subdirectory(file_interaction)
+add_subdirectory(redis)
+add_subdirectory(server)
+add_subdirectory(sql_con)

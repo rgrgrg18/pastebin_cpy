@@ -6,7 +6,6 @@
 #include <string>
 #include <sw/redis++/redis++.h>
 #include "../config.h"
-#include "../methods/settings/redis.h"
 
 using namespace sw::redis;
 

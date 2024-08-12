@@ -1,10 +1,11 @@
 #ifndef _aws_connect_h_
 #define _aws_connect_h_
 
-#include "../../amazon_s3/AwsCommands.h"
-#include "../../config.h"
-#include "../../redis/redis_actions.h"
-#include "../../file_commands/file_commands.h"
+#include "../../../amazon_s3/AwsCommands.h"
+#include "../../../config.h"
+#include "../../../redis/redis_actions.h"
+#include "../../../file_interaction/file_commands.h"
+#include "../settings/redis.h"
 
 Aws::Client::ClientConfiguration setConnection();
 

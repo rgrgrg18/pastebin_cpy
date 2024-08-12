@@ -3,10 +3,10 @@
 
 #include <string>
 #include <vector>
-#include "../../sql_con/sql_actions.h"
-#include "../../cache/cache.cpp"
-#include "../../config.h"
-#include "../../redis/redis_actions.h"
+#include "../../../sql_con/sql_actions.h"
+#include "../../../cache/cache.cpp"
+#include "../../../config.h"
+#include "../../../redis/redis_actions.h"
 #include "../settings/redis.h"
 
 void prepare_functions();
