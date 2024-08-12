@@ -12,12 +12,15 @@
 class AwsCommands {
 public:
     static bool PutObject(const Aws::String &bucketName,
-                           const Aws::String &fileName,
+                           const Aws::String &filePath,
+                           const Aws::String &fileKey,
                            const Aws::Client::ClientConfiguration &clientConfig);
+
     static bool DownloadObject(const Aws::String &objectKey,
                            const Aws::String &fromBucket,
                            const Aws::String &saveFilePath,
                            const Aws::Client::ClientConfiguration &clientConfig);
+
     static bool DeleteObject(const Aws::String &objectKey,
                               const Aws::String &fromBucket,
                               const Aws::Client::ClientConfiguration &clientConfig);

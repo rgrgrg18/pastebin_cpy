@@ -2,21 +2,22 @@
 
 // adds an object to the specified bucket
 bool AwsCommands::PutObject(const Aws::String &bucketName,
-                           const Aws::String &fileName,
+                           const Aws::String &filePath,
+                           const Aws::String &fileKey,
                            const Aws::Client::ClientConfiguration &clientConfig) {
     Aws::S3::S3Client s3_client(clientConfig);
 
     Aws::S3::Model::PutObjectRequest request;
     request.SetBucket(bucketName);
-    request.SetKey(fileName);
+    request.SetKey(fileKey);
 
     std::shared_ptr<Aws::IOStream> inputData =
             Aws::MakeShared<Aws::FStream>("SampleAllocationTag",
-                                          fileName.c_str(),
+                                          filePath.c_str(),
                                           std::ios_base::in | std::ios_base::binary);
 
     if (!*inputData) {
-        std::cerr << "Error unable to read file " << fileName << std::endl;
+        std::cerr << "Error unable to read file " << filePath << std::endl;
         return false;
     }
 
@@ -30,7 +31,7 @@ bool AwsCommands::PutObject(const Aws::String &bucketName,
                   outcome.GetError().GetMessage() << std::endl;
     }
     else {
-        std::cout << "Added object '" << fileName << "' to bucket '"
+        std::cout << "Added object '" << fileKey << "' to bucket '"
                   << bucketName << "'." << std::endl;
     }
 

@@ -12,8 +12,8 @@ Aws::Client::ClientConfiguration setConnection() {
 
 Aws::Client::ClientConfiguration AWS_connect::clientConfig = setConnection();
 
-bool AWS_connect::PutObject(const std::string& BucketName, const std::string& filePath) {
-    return AwsCommands::PutObject(Aws::String(BucketName), Aws::String(filePath), clientConfig);
+bool AWS_connect::PutObject(const std::string& BucketName, const std::string& filePath, const std::string& fileKey) {
+    return AwsCommands::PutObject(Aws::String(BucketName), Aws::String(filePath), Aws::String(fileKey), clientConfig);
 }
 
 std::string AWS_connect::GetObjectData(const std::string& BucketName, const std::string& fileKey, const std::string& savePath) {

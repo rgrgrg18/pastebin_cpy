@@ -15,7 +15,7 @@ class AWS_connect {
     
 public:
 
-    static bool PutObject(const std::string& BucketName, const std::string& filePath);
+    static bool PutObject(const std::string& BucketName, const std::string& filePath, const std::string& fileKey);
 
     static std::string GetObjectData(const std::string& BucketName, const std::string& fileKey, const std::string& savePath);
 
