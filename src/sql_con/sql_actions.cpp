@@ -1,7 +1,7 @@
 #include "sql_actions.h"
 #include <iostream>
 #include <iomanip>
-#include "../hash_generate/HashGenerator.h"
+#include "hash_generate/HashGenerator.h"
 
 // Work with sequences public and private keys
 /**
