@@ -5,7 +5,7 @@
 
 namespace Config {
 
-    std::string __attribute__((weak)) ListenPort = "";
+    std::string __attribute__((weak)) ListenPort = "0.0.0.0:9999";
 
     std::string __attribute__((weak)) Files_directory = "";
 

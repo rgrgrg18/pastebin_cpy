@@ -2,12 +2,9 @@ add_library(redis STATIC
         redis_actions.cpp
 )
 
-find_package(Threads REQUIRED)
-find_package(OpenSSL REQUIRED)
-find_package(Boost COMPONENTS system REQUIRED)
-find_package(CURL)
+set(REDIS_PLUS_PLUS_INCLUDE_DIR "/usr/local/include/sw/redis++")
+set(REDIS_PLUS_PLUS_LIBRARIES "/usr/local/lib/libredis++.so")
 
-find_path(HIREDIS_HEADER hiredis)
 target_include_directories(redis PUBLIC ${HIREDIS_HEADER})
 
 find_library(HIREDIS_LIB hiredis)
@@ -23,7 +20,7 @@ target_include_directories(redis PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 add_executable(redis_test tests/redis_actions_tests.cpp)
-target_link_libraries(redis_test PRIVATE redis gtest gtest_main)
+target_link_libraries(redis_test PRIVATE redis ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 set_target_properties(redis_test PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test
