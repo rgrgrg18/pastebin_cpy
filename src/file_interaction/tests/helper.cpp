@@ -5,7 +5,7 @@ std::string random_string(int max_sz_) {
     if (sz_ == 0) sz_ = max_sz_;
     std::string curr_str_ = "";
     for (int inx = 0; inx < sz_; ++inx) {
-        curr_str_.push_back(rand() % 128);
+        curr_str_.push_back(rand() % 127 + 1);
     }
     return curr_str_;
 }

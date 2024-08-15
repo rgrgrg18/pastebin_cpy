@@ -3,7 +3,7 @@
 
 #include "../../../amazon_s3/AwsCommands.h"
 #include "../../../config.h"
-#include "../../../redis/redis_actions.h"
+#include "../../../redis/redis.h"
 #include "../../../file_interaction/file_commands.h"
 #include "../settings/redis.h"
 
