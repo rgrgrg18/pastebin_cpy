@@ -11,6 +11,5 @@ fi
 cd "$BUILD_DIR"
 ctest
 if [ $? -ne 0 ]; then
-    echo "Test script failed. Exiting."
     exit 1
 fi

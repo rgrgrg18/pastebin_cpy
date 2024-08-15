@@ -6,7 +6,7 @@ add_library(file_interaction STATIC
 target_include_directories(file_interaction PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 
-add_executable(file_interaction_test tests/base64_tests.cpp)
+add_executable(file_interaction_test tests/base64_tests.cpp tests/file_commands_test.cpp tests/helper.cpp)
 target_link_libraries(file_interaction_test PRIVATE file_interaction ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 set_target_properties(file_interaction_test PROPERTIES

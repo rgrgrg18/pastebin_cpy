@@ -7,7 +7,7 @@ namespace Config {
 
     std::string __attribute__((weak)) ListenPort = "0.0.0.0:9999";
 
-    std::string __attribute__((weak)) Files_directory = "";
+    std::string __attribute__((weak)) Files_directory = "/usr/src/app/build/";
 
     std::string __attribute__((weak)) Bucket_name = "";
 
