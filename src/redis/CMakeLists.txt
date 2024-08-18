@@ -1,5 +1,5 @@
 # Add the redis library
-add_library(redis STATIC redis.cpp)
+add_library(redis STATIC redis.cpp redis_actions.cpp)
 
 # Set the include directory for Redis++
 set(REDIS_PLUS_PLUS_INCLUDE_DIR "/usr/local/include/sw/redis++")

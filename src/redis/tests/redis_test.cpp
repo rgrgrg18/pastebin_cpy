@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 #include <unordered_map>
 #include <string>
-#include "../redis.h"
+#include "../redis_actions.hpp"
 
 TEST(RedisTest, setConnection) {
     try {
-        Redis& redis = Redis::getInstance();
+        Redis redis("tcp://127.0.0.1:6379");
     } catch (...) {
         FAIL();
     }
@@ -23,19 +23,18 @@ std::string random_string(int max_sz_) {
 
 TEST(RedisTest, makeRecord) {
     try {
-        Redis& redis = Redis::getInstance();
 
         std::unordered_map<std::string, std::string> keyValFirst;
         for (int i = 0; i < 100; ++i) {
             std::string key = random_string(1000);
             std::string val = random_string(1000);
             keyValFirst[key] = val;
-            redis.insert(key, val);
+            RedisActions::insert(key, val);
         }
 
         for (auto& elem : keyValFirst) {
-            EXPECT_EQ(redis.get<std::string>(elem.first), elem.second);
-            redis.del(elem.first);
+            EXPECT_EQ(RedisActions::get<std::string>(elem.first), elem.second);
+            RedisActions::del(elem.first);
         }
     } catch (const sw::redis::Error& err) {
         std::cout << err.what() << std::endl;

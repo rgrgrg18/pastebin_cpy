@@ -9,7 +9,8 @@
 
 class Redis {
 public:
-    static Redis& getInstance();
+    explicit Redis(const std::string& redisUrl);
+    ~Redis() = default;
 
     // insert string-string
     void insert(const std::string& key,
@@ -34,19 +35,11 @@ public:
 
     // get T by key
     template <typename T>
-    T get(const std::string& key);
+    T get(const std::string& key) = delete;
 
 private:
-    Redis();
-    ~Redis() = default;
-
-private:
-    std::unique_ptr<sw::redis::Redis> redis;
+    sw::redis::Redis redis;
 };
-
-// ban for all types
-template <typename T>
-T Redis::get(const std::string& key) = delete;
 
 // get for string-string
 template <>

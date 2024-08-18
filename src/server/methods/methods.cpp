@@ -11,7 +11,7 @@ std::string PastebinMethods::addPaste(int64_t user_id, pasteData data) {
 
     
     FileCommands::string_to_bin(private_key, text, Config::Files_directory);
-    //std::cout << Config::Files_directory + private_key << std::endl;
+
     if (!AWS_connect::PutObject(Config::Bucket_name, Config::Files_directory + private_key + ".bin", private_key + ".bin")) {
 
         SqlRelation::PasteCache::delNewPaste(private_key, user_id);

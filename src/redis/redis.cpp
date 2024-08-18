@@ -1,19 +1,12 @@
 #include "redis.h"
 
 // redis constructor
-Redis::Redis() {
+Redis::Redis(const std::string& redisUrl): redis(redisUrl) {
     try {
-        redis = std::make_unique<sw::redis::Redis>(Config::Redis_conn);
-        redis->ping();
+        redis.ping();
     } catch (const sw::redis::Error &e) {
         throw;
     }
-}
-
-// getInstance func
-Redis& Redis::getInstance() {
-    static Redis instance;
-    return instance;
 }
 
 
@@ -23,13 +16,12 @@ void Redis::insert(const std::string& key,
         int lifeTime) {
 
     try {
-        redis->set(key, value);
-        if (lifeTime != -1) redis->expire(key, std::chrono::seconds(lifeTime));
+        redis.set(key, value);
+        if (lifeTime != -1) redis.expire(key, std::chrono::seconds(lifeTime));
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
         throw;
     }
-
 }
 
 
@@ -39,8 +31,8 @@ void Redis::insert(const std::string& key,
         int lifeTime) {
 
     try {
-        redis->rpush(key, value.begin(), value.end());
-        if (lifeTime != -1) redis->expire(key, std::chrono::seconds(lifeTime));
+        redis.rpush(key, value.begin(), value.end());
+        if (lifeTime != -1) redis.expire(key, std::chrono::seconds(lifeTime));
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
         throw;
@@ -61,7 +53,7 @@ void Redis::update(const std::string& key,
 // delete by key
 void Redis::del(const std::string& key) {
     try {
-        redis->del(key);
+        redis.del(key);
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
         throw;
@@ -74,7 +66,7 @@ std::string Redis::get<std::string>(const std::string& key) {
 
     std::string ans;
     try {
-        auto val = redis->get(key);
+        auto val = redis.get(key);
         if (val) {
             ans = *val;
         }
@@ -92,8 +84,8 @@ std::vector<std::string> Redis::get<std::vector<std::string>>(const std::string&
 
     std::vector<std::string> vec;
     try {
-        if (redis->exists(key)) {
-            redis->lrange(key, 0, -1, std::back_inserter(vec));
+        if (redis.exists(key)) {
+            redis.lrange(key, 0, -1, std::back_inserter(vec));
         }
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
