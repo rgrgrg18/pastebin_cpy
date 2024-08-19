@@ -27,6 +27,7 @@ find_package(Threads REQUIRED)
 add_executable(redis_test
         redis.cpp
         tests/redis_test.cpp
+        tests/redis_actions_test.cpp
 )
 
 # Link the redis library and GoogleTest libraries to the test executable

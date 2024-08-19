@@ -1,7 +1,11 @@
 #include <gtest/gtest.h>
-#include <unordered_map>
+#include <vector>
 #include <string>
-#include "../redis_actions.hpp"
+#include "../redis.h"
+
+
+/* Tests for redis.h */
+
 
 TEST(RedisTest, setConnection) {
     try {
@@ -11,35 +15,55 @@ TEST(RedisTest, setConnection) {
     }
 }
 
-std::string random_string(int max_sz_) {
-    int sz_ = rand() % max_sz_;
-    if (sz_ == 0) sz_ = max_sz_;
-    std::string curr_str_ = "";
-    for (int inx = 0; inx < sz_; ++inx) {
-        curr_str_.push_back(rand() % 127 + 1);
-    }
-    return curr_str_;
-}
-
-TEST(RedisTest, makeRecord) {
+TEST(RedisTest, writeRead) {
     try {
+        Redis redis("tcp://127.0.0.1:6379");
+        redis.insert("key", "value");
+        EXPECT_EQ(redis.get<std::string>("key"), "value");
 
-        std::unordered_map<std::string, std::string> keyValFirst;
-        for (int i = 0; i < 100; ++i) {
-            std::string key = random_string(1000);
-            std::string val = random_string(1000);
-            keyValFirst[key] = val;
-            RedisActions::insert(key, val);
-        }
+        std::vector<std::string> value = {"1", "2", "3", "4", "5"};
+        redis.insert("vector", value);
+        EXPECT_EQ(redis.get<std::vector<std::string>>("vector"), value);
 
-        for (auto& elem : keyValFirst) {
-            EXPECT_EQ(RedisActions::get<std::string>(elem.first), elem.second);
-            RedisActions::del(elem.first);
-        }
-    } catch (const sw::redis::Error& err) {
-        std::cout << err.what() << std::endl;
-        FAIL() << "error make/get record in redis<string, string>";;
+    } catch (...) {
+        FAIL();
     }
 }
 
+TEST(RedisTest, update) {
+    try {
+        Redis redis("tcp://127.0.0.1:6379");
+        std::vector<std::string> new_value = {"1", "2", "3", "4", "5"};
 
+        redis.update("vector", new_value);
+        EXPECT_EQ(redis.get<std::vector<std::string>>("vector"), new_value);
+
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(RedisTest, del) {
+    try {
+        Redis redis("tcp://127.0.0.1:6379");
+        redis.del("vector");
+        EXPECT_EQ(redis.get<std::vector<std::string>>("vector"), std::vector<std::string>());
+
+        redis.del("key");
+        EXPECT_EQ(redis.get<std::string>("key"), "");
+    } catch (...) {
+        FAIL();
+    }
+}
+
+TEST(RedisTest, insertExceptions) {
+    try {
+        Redis redis("tcp://127.0.0.1:6379");
+        redis.insert("123", "1");
+        redis.insert("123", "2");
+
+        FAIL();
+    } catch (...) {
+        // Success
+    }
+}

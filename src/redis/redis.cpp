@@ -1,5 +1,11 @@
 #include "redis.h"
 
+Redis::Error::Error(const std::string& content): content_(content) {}
+
+std::string Redis::Error::what() {
+    return content_;
+}
+
 // redis constructor
 Redis::Redis(const std::string& redisUrl): redis(redisUrl) {
     try {
@@ -16,10 +22,17 @@ void Redis::insert(const std::string& key,
         int lifeTime) {
 
     try {
+        if (redis.exists(key)) {
+            throw Error("This key already exsist: " + key);
+        }
+
         redis.set(key, value);
         if (lifeTime != -1) redis.expire(key, std::chrono::seconds(lifeTime));
+
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
+        throw;
+    } catch (...) {
         throw;
     }
 }
@@ -31,10 +44,17 @@ void Redis::insert(const std::string& key,
         int lifeTime) {
 
     try {
+        if (redis.exists(key)) {
+            throw Error("This key already exsist: " + key);
+        }
+
         redis.rpush(key, value.begin(), value.end());
         if (lifeTime != -1) redis.expire(key, std::chrono::seconds(lifeTime));
+
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
+        throw;
+    } catch (...) {
         throw;
     }
 

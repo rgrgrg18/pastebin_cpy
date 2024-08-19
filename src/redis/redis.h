@@ -9,6 +9,15 @@
 
 class Redis {
 public:
+
+    class Error {
+        std::string content_;
+    public:
+        explicit Error(const std::string& content);
+        std::string what();
+    };
+
+public:
     explicit Redis(const std::string& redisUrl);
     ~Redis() = default;
 
