@@ -27,21 +27,16 @@ public:
     // Moveable
     Connection(Connection&& other) noexcept
         : conn_(std::move(other.conn_)), pool_(other.pool_) {
-        // The moved-from object should release ownership of the resource.
         other.conn_ = nullptr;
     }
 
     Connection& operator=(Connection&& other) noexcept {
         if (this != &other) {
-            // Release any existing resource
-            pool_.release(std::move(conn_));
-
-            // Transfer ownership of the resource
+            if (conn_ && pool_) {
+                pool_->release(std::move(conn_));
+            }
             conn_ = std::move(other.conn_);
-            pool_ = other.pool_;
-
-            // The moved-from object should release ownership of the resource.
-            other.conn_ = nullptr;
+            pool_ = std::move(other.pool_);
         }
         return *this;
     }
@@ -77,7 +72,11 @@ public:
     // Acquire a connection from the pool
     Connection<T> getConnection() {
         std::unique_lock<std::mutex> lock(QueueMutex_);
-        queue_not_empty_.wait(lock, [this] { return !Queue_.empty(); });
+        queue_not_empty_.wait(lock, [this] { return !Queue_.empty() || is_shutdown_; });
+
+        if (is_shutdown_) {
+            throw std::runtime_error("ConnectionPool is shutting down.");
+        }
 
         auto conn = std::move(Queue_.front());
         Queue_.pop();
@@ -86,31 +85,44 @@ public:
     }
 
 private:
+
     // Release a connection back to the pool
     void release(std::unique_ptr<T> conn) {
-        Queue_.push(std::move(conn));
-        queue_not_empty_.notify_one();
+        std::lock_guard<std::mutex> lock(QueueMutex_);
+        if (!is_shutdown_) {
+            Queue_.push(std::move(conn));
+            queue_not_empty_.notify_one();
+        }
     }
 
     template <typename... Args>
     ConnectionPool(size_t poolSize, const Args&... args) {
-        // Initialize the pool with the given size
-        for (size_t i = 0; i < poolSize; ++i) {
-            auto conn = std::make_unique<T>(args...);
-            Queue_.push(std::move(conn));
+        try {
+            for (size_t i = 0; i < poolSize; ++i) {
+                auto conn = std::make_unique<T>(args...);
+                Queue_.push(std::move(conn));
+            }
+        } catch (...) {
+            while (!Queue_.empty()) {
+                Queue_.pop();
+            }
+            throw;
         }
     }
 
     ~ConnectionPool() {
         std::lock_guard<std::mutex> lock(QueueMutex_);
+        is_shutdown_ = true;
+        queue_not_empty_.notify_all();  // Wake up all waiting threads
         while (!Queue_.empty()) {
             Queue_.pop();
         }
     }
 
     std::queue<std::unique_ptr<T>> Queue_; // Guarded by QueueMutex_
-    std::condition_variable queue_not_empty_;
     std::mutex QueueMutex_;
+    std::condition_variable queue_not_empty_;
+    bool is_shutdown_ = false;
 
     friend Connection<T>;
 };
