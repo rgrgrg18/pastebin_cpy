@@ -418,7 +418,7 @@ void sql_actions::prepare_get_last_user_pastes (pqxx::connection_base& conn) {
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
  * @param limit Maximum number of output pastes
- * @return std::vector<std::vector<std::string>> Public key and password of last pastes
+ * @return std::vector<std::vector<std::string>> Public key, title and created at of last pastes
  */
 last_pastes_info sql_actions::execute_get_last_user_pastes (pqxx::transaction_base& txn, int64_t login, int64_t limit) {
 	pqxx::result res = txn.exec_prepared("get_user_pastes", login, limit);
