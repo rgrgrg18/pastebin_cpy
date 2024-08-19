@@ -9,10 +9,6 @@ void prepare_functions() {
     sql_actions::prepare_check_login(conn);
     sql_actions::prepare_add_user(conn);
     sql_actions::prepare_add_paste(conn);
-    sql_actions::prepare_check_state(conn);
-    sql_actions::prepare_add_user_state(conn);
-    sql_actions::prepare_get_user_state(conn);
-    sql_actions::prepare_change_user_state(conn);
     sql_actions::prepare_return_amount_pastes(conn);
     sql_actions::prepare_increase_amount_pastes(conn);
     sql_actions::prepare_decrease_amount_pastes(conn);

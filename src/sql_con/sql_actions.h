@@ -18,12 +18,6 @@ public:
 	static void prepare_add_user (pqxx::connection_base& conn);
 	static void prepare_add_paste (pqxx::connection_base& conn);
 
-	static void prepare_check_state (pqxx::connection_base& conn);
-	static void prepare_add_user_state (pqxx::connection_base& conn);
-	static void prepare_get_user_state (pqxx::connection_base& conn);
-
-	static void prepare_change_user_state (pqxx::connection_base& conn);
-
 	static void prepare_return_amount_pastes (pqxx::connection_base& conn);
 	static void prepare_increase_amount_pastes (pqxx::connection_base& conn);
 	static void prepare_decrease_amount_pastes (pqxx::connection_base& conn);
@@ -41,15 +35,6 @@ public:
 								   const std::string& public_key, const std::string& private_key, 
 								   const std::string& password);
 	static keys new_paste (pqxx::dbtransaction& txn, int64_t login, const std::string& password = "");
-
-	static void execute_add_user_state (pqxx::transaction_base& txn, int64_t login, 
-										const std::string& condition, const std::string& work_paste, 
-										int64_t message_id);
-	static user_state execute_get_user_state (pqxx::transaction_base& txn, int64_t login);
-
-	static void execute_change_user_state (pqxx::transaction_base& txn, int64_t login, 
-										  const std::string& condition, const std::string& work_paste, 
-										  int64_t message_id);
 
 	static size_t execute_return_amount_pastes (pqxx::transaction_base& txn, int64_t login);
 	static void execute_increase_amount_pastes (pqxx::transaction_base& txn, int64_t login);
