@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
 
-TEST(aws_commands, basicTest) {
+TEST(Aws, basicTest) {
     // TODO
 }

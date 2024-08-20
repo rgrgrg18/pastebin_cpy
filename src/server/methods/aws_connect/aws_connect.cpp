@@ -1,27 +1,15 @@
 #include "aws_connect.h"
 
-Aws::Client::ClientConfiguration setConnection() {
-    Aws::SDKOptions options;
-    Aws::InitAPI(options);
-
-    Aws::Client::ClientConfiguration clientConfig;
-    clientConfig.endpointOverride = Aws::String(Config::Endpoint);
-    
-    return clientConfig;
-}
-
-Aws::Client::ClientConfiguration AWS_connect::clientConfig = setConnection();
-
 bool AWS_connect::PutObject(const std::string& BucketName, const std::string& filePath, const std::string& fileKey) {
-    return AwsCommands::PutObject(Aws::String(BucketName), Aws::String(filePath), Aws::String(fileKey), clientConfig);
+    return AwsActions::PutObject(BucketName, filePath, fileKey);
 }
 
 std::string AWS_connect::GetObjectData(const std::string& BucketName, const std::string& fileKey, const std::string& savePath) {
 
-    std::string value = RedisActions::get<std::string>(fileKey);
-    if (value != "") return value;
+    auto redis_val = RedisActions::get<std::string>(fileKey);
+    if (redis_val.first != "") return redis_val.first;
     
-    bool download = AwsCommands::DownloadObject(Aws::String(fileKey + ".bin"), Aws::String(BucketName), Aws::String(savePath + fileKey + ".bin"), clientConfig);
+    bool download = AwsActions::DownloadObject(fileKey + ".bin", BucketName, savePath + fileKey + ".bin");
     if (download) {
         auto [value, correct] = FileCommands::bin_to_string(fileKey, savePath);
         if (!correct) return "";
@@ -35,6 +23,6 @@ std::string AWS_connect::GetObjectData(const std::string& BucketName, const std:
 
 bool AWS_connect::DeleteObject(const std::string& BucketName, const std::string& fileKey) {
     RedisActions::del(fileKey);
-    return AwsCommands::DeleteObject(Aws::String(fileKey + ".bin"), Aws::String(BucketName), clientConfig);
+    return AwsActions::DeleteObject(fileKey + ".bin", BucketName);
 }
 

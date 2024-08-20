@@ -5,36 +5,39 @@
 #include "../tools/ConnectionPool.hpp"
 #include "../config.h"
 
-namespace RedisActions {
+class RedisActions {
 
 using RedisPool = ConnectionPool<Redis>;
 using RedisConnection = Connection<Redis>;
 
-    RedisConnection getConnection();
+public:
 
-    void insert(const std::string& key,
+    static bool insert(const std::string& key,
             const std::string& value,
             int lifeTime = -1);
 
-    void insert(const std::string& key,
+    static bool insert(const std::string& key,
         const std::vector<std::string>& value,
         int lifeTime = -1);
 
-    void update(const std::string& key,
+    static bool update(const std::string& key,
         const std::vector<std::string>& value,
         int lifeTime = -1);
 
-    void del(const std::string& key);
+    static bool del(const std::string& key);
 
     template <typename T>
-    T get(const std::string& key) = delete;
+    static std::pair<T, bool> get(const std::string& key) = delete;
 
-} // namespace RedisActions
+private:
+    static RedisConnection getConnection();
+
+}; // class RedisActions
 
 template <>
-std::string RedisActions::get<std::string>(const std::string& key);
+std::pair<std::string, bool> RedisActions::get<std::string>(const std::string& key);
 
 template <>
-std::vector<std::string> RedisActions::get<std::vector<std::string>>(const std::string& key);
+std::pair<std::vector<std::string>, bool> RedisActions::get<std::vector<std::string>>(const std::string& key);
 
 #endif // REDIS_ACTIONS_H

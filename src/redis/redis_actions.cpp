@@ -5,35 +5,71 @@ RedisActions::RedisConnection RedisActions::getConnection() {
     return pool.getConnection();
 }
 
-
-void RedisActions::insert(const std::string& key,
+bool RedisActions::insert(const std::string& key,
         const std::string& value,
         int lifeTime) {
-    getConnection()->insert(key, value, lifeTime);
+
+    try {
+         getConnection()->insert(key, value, lifeTime);
+         return true;
+    } catch (...) {
+        return false;
+    }
 }
 
-void RedisActions::insert(const std::string& key,
+bool RedisActions::insert(const std::string& key,
         const std::vector<std::string>& value,
         int lifeTime) {
-    getConnection()->insert(key, value, lifeTime);
+    try {
+        getConnection()->insert(key, value, lifeTime);
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
-void RedisActions::update(const std::string& key,
+bool RedisActions::update(const std::string& key,
         const std::vector<std::string>& value,
         int lifeTime) {
-    getConnection()->update(key, value, lifeTime);
+    try {
+        getConnection()->update(key, value, lifeTime);
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
-void RedisActions::del(const std::string& key) {
-    getConnection()->del(key);
+bool RedisActions::del(const std::string& key) {
+    try {
+        getConnection()->del(key);
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
 template <>
-std::string RedisActions::get<std::string>(const std::string& key) {
-    return getConnection()->get<std::string>(key);
+std::pair<std::string, bool> RedisActions::get<std::string>(const std::string& key) {
+    std::pair<std::string, bool> result = {"", false};
+    try {
+        result.first = std::move(getConnection()->get<std::string>(key));
+        result.second = true;
+    } catch (...) {
+        return result;
+    }
+    return result;
 }
 
 template <>
-std::vector<std::string> RedisActions::get<std::vector<std::string>>(const std::string& key) {
-    return getConnection()->get<std::vector<std::string>>(key);
+std::pair<std::vector<std::string>, bool> RedisActions::get<std::vector<std::string>>(const std::string& key) {
+
+    std::pair<std::vector<std::string>, bool> result = {std::vector<std::string>(), false};
+    try {
+        result.first = std::move(getConnection()->get<std::vector<std::string>>(key));
+        result.second = true;
+    } catch (...) {
+        return result;
+    }
+    return result;
+
 }
