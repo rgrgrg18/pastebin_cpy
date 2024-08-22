@@ -84,17 +84,16 @@ void Redis::del(const std::string& key) {
 template <>
 std::string Redis::get<std::string>(const std::string& key) {
 
-    std::string ans;
     try {
         auto val = redis.get(key);
         if (val) {
-            ans = *val;
+            return *val;
         }
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
         throw;
     }
-    return ans;
+    return "";
 }
 
 

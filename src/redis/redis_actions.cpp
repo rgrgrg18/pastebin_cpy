@@ -49,27 +49,24 @@ bool RedisActions::del(const std::string& key) {
 }
 
 template <>
-std::pair<std::string, bool> RedisActions::get<std::string>(const std::string& key) {
-    std::pair<std::string, bool> result = {"", false};
+std::string RedisActions::get<std::string>(const std::string& key) {
+    std::string result;
     try {
-        result.first = std::move(getConnection()->get<std::string>(key));
-        result.second = true;
+        result = getConnection()->get<std::string>(key);
     } catch (...) {
-        return result;
+        //
     }
     return result;
 }
 
 template <>
-std::pair<std::vector<std::string>, bool> RedisActions::get<std::vector<std::string>>(const std::string& key) {
+std::vector<std::string> RedisActions::get<std::vector<std::string>>(const std::string& key) {
 
-    std::pair<std::vector<std::string>, bool> result = {std::vector<std::string>(), false};
+    std::vector<std::string> result;
     try {
-        result.first = std::move(getConnection()->get<std::vector<std::string>>(key));
-        result.second = true;
+        result = getConnection()->get<std::vector<std::string>>(key);
     } catch (...) {
-        return result;
+        //
     }
     return result;
-
 }

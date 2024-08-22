@@ -18,9 +18,12 @@ TEST(RedisTest, setConnection) {
 TEST(RedisTest, writeRead) {
     try {
         Redis redis("tcp://127.0.0.1:6379");
+        EXPECT_EQ(redis.get<std::string>("key"), "");
         redis.insert("key", "value");
         EXPECT_EQ(redis.get<std::string>("key"), "value");
 
+
+        EXPECT_EQ(redis.get<std::vector<std::string>>("vector"), std::vector<std::string>());
         std::vector<std::string> value = {"1", "2", "3", "4", "5"};
         redis.insert("vector", value);
         EXPECT_EQ(redis.get<std::vector<std::string>>("vector"), value);

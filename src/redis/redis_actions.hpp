@@ -27,7 +27,7 @@ public:
     static bool del(const std::string& key);
 
     template <typename T>
-    static std::pair<T, bool> get(const std::string& key) = delete;
+    static T get(const std::string& key) = delete;
 
 private:
     static RedisConnection getConnection();
@@ -35,9 +35,9 @@ private:
 }; // class RedisActions
 
 template <>
-std::pair<std::string, bool> RedisActions::get<std::string>(const std::string& key);
+std::string RedisActions::get<std::string>(const std::string& key);
 
 template <>
-std::pair<std::vector<std::string>, bool> RedisActions::get<std::vector<std::string>>(const std::string& key);
+std::vector<std::string> RedisActions::get<std::vector<std::string>>(const std::string& key);
 
 #endif // REDIS_ACTIONS_H
