@@ -1,32 +1,33 @@
 #include "AwsActions.hpp"
 #include "../config.h"
 
+/* initialize the api once */
+AwsAPI::AwsAPI() {
+    Aws::InitAPI(options_);
+}
+
+AwsAPI::~AwsAPI() {
+    Aws::ShutdownAPI(options_);
+}
+
+void AwsAPI::InitAPI() {
+    static AwsAPI instance;
+}
+
 /* Aws Client */
 
 // AwsClient constructor
 AwsClient::AwsClient() {
-    Aws::SDKOptions options;
-    Aws::InitAPI(options);
-
     clientConfig = Aws::Client::ClientConfiguration();
     clientConfig.endpointOverride = Aws::String(Config::Endpoint);
 
     s3_client = Aws::S3::S3Client(clientConfig);
 }
 
-// AwsClient destructor
-AwsClient::~AwsClient() {
-    Aws::SDKOptions options;
-    Aws::ShutdownAPI(options);
-}
-
 // Function to get s3_client from AwsClient
-Aws::S3::S3Client AwsClient::getClient() {
+Aws::S3::S3Client& AwsClient::getClient() {
     return s3_client;
 }
-
-
-
 
 /* Aws Actions */
 
@@ -34,6 +35,10 @@ Aws::S3::S3Client AwsClient::getClient() {
 bool AwsActions::PutObject(const Aws::String &bucketName,
                            const Aws::String &filePath,
                            const Aws::String &fileKey) {
+
+    AwsAPI::InitAPI();
+
+    auto s3_client = AwsPool::getInstance(10).getConnection()->getClient();
 
     Aws::S3::Model::PutObjectRequest request;
     request.SetBucket(bucketName);
@@ -52,7 +57,7 @@ bool AwsActions::PutObject(const Aws::String &bucketName,
     request.SetBody(inputData);
 
     Aws::S3::Model::PutObjectOutcome outcome =
-            AwsPool::getInstance(10).getConnection()->getClient().PutObject(request);
+            s3_client.PutObject(request);
 
     if (!outcome.IsSuccess()) {
         std::cerr << "Error PutObject " <<
@@ -71,12 +76,16 @@ bool AwsActions::DownloadObject(const Aws::String &objectKey,
                            const Aws::String &fromBucket,
                            const Aws::String &saveFilePath) {
 
+    AwsAPI::InitAPI();
+
+    auto s3_client = AwsPool::getInstance(10).getConnection()->getClient();
+
     Aws::S3::Model::GetObjectRequest request;
     request.SetBucket(fromBucket);
     request.SetKey(objectKey);
 
     Aws::S3::Model::GetObjectOutcome outcome =
-            AwsPool::getInstance(10).getConnection()->getClient().GetObject(request);
+            s3_client.GetObject(request);
 
     if (!outcome.IsSuccess()) {
         const Aws::S3::S3Error &err = outcome.GetError();
@@ -103,13 +112,17 @@ bool AwsActions::DownloadObject(const Aws::String &objectKey,
 bool AwsActions::DeleteObject(const Aws::String &objectKey,
                               const Aws::String &fromBucket) {
 
+    AwsAPI::InitAPI();
+
+    auto s3_client = AwsPool::getInstance(10).getConnection()->getClient();
+
     Aws::S3::Model::DeleteObjectRequest request;
 
     request.WithKey(objectKey)
             .WithBucket(fromBucket);
 
     Aws::S3::Model::DeleteObjectOutcome outcome =
-            AwsPool::getInstance(10).getConnection()->getClient().DeleteObject(request);
+            s3_client.DeleteObject(request);
 
     if (!outcome.IsSuccess()) {
         auto err = outcome.GetError();
