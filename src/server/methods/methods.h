@@ -7,7 +7,7 @@
 
 #include <stdio.h>
 
-#include "aws_connect/aws_connect.h"
+#include "paste_data/PasteData.hpp"
 #include "sql_relation/sql_relation.h"
 #include "../../file_interaction/file_commands.h"
 

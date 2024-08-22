@@ -1,6 +1,6 @@
 add_library(server_methods
         methods.cpp
-        aws_connect/aws_connect.cpp
+        paste_data/PasteData.cpp
         sql_relation/sql_relation.cpp
 )
 
@@ -15,7 +15,9 @@ target_link_libraries(server_methods PUBLIC
 target_include_directories(server_methods PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 
-add_executable(server_methods_test tests/aws_connection_tests.cpp tests/sql_relation_tests.cpp)
+add_executable(server_methods_test
+            tests/paste_data_tests.cpp
+            tests/sql_relation_tests.cpp)
 target_link_libraries(server_methods_test PRIVATE server_methods ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 set_target_properties(server_methods_test PROPERTIES

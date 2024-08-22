@@ -1,5 +1,5 @@
-#ifndef _aws_connect_h_
-#define _aws_connect_h_
+#ifndef PASTE_DATA
+#define PASTE_DATA
 
 #include "../../../amazon_s3/AwsActions.hpp"
 #include "../../../config.h"
@@ -7,15 +7,15 @@
 #include "../../../file_interaction/file_commands.h"
 #include "../settings/redis.h"
 
-namespace AWS_connect {
+namespace PasteData {
 
-    bool PutObject(const std::string& BucketName, const std::string& filePath, const std::string& fileKey);
+    bool addNewPaste(const std::string& key, const std::string& pasteText);
 
-    std::string GetObjectData(const std::string& BucketName, const std::string& fileKey, const std::string& savePath);
+    std::string getCachedPaste(const std::string& key);
 
-    bool DeleteObject(const std::string& BucketName, const std::string& fileKey);
+    bool deletePaste(const std::string& key);
     
-} // Aws_connect
+} // namespace PasteData
 
 
-#endif
+#endif // PASTE_DATA

@@ -9,21 +9,18 @@ std::string PastebinMethods::addPaste(int64_t user_id, pasteData data) {
     std::string public_key = PasteKeys.first;
     std::string private_key = PasteKeys.second;
 
-    
-    FileCommands::string_to_bin(private_key, text, Config::Files_directory);
+    if (PasteData::addNewPaste(private_key, text)) {
+        updatePasteInfo(public_key, std::tuple(password, title));
+        return public_key;
+    }
+    return "";
+}
 
-    if (!AWS_connect::PutObject(Config::Bucket_name, Config::Files_directory + private_key + ".bin", private_key + ".bin")) {
+std::string PastebinMethods::getPasteText(const std::string& public_key) {
 
-        SqlRelation::PasteCache::delNewPaste(private_key, user_id);
-        public_key = "";
+    auto [private_key, author, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(public_key);
 
-    } 
-    
-    remove((Config::Files_directory +  private_key + ".bin").c_str());
-
-    updatePasteInfo(public_key, std::tuple(password, title));
-
-    return public_key;
+    return PasteData::getCachedPaste(private_key);
 }
 
 bool PastebinMethods::deletePaste(const std::string& public_key) {
@@ -38,7 +35,7 @@ bool PastebinMethods::deletePaste(const std::string& public_key) {
         return false;
     }
 
-    if (!AWS_connect::DeleteObject(Config::Bucket_name, private_key + ".bin")) {
+    if (!PasteData::deletePaste(private_key)) {
         return false;
     }
 
@@ -58,12 +55,8 @@ bool PastebinMethods::updatePasteInfo(const std::string& public_key, newPasteInf
     }
 
     auto [new_password, new_title] = data;
-
-
     if (new_password != "") SqlRelation::PasteCache::changePastePassword(new_password, public_key);
-
     if (new_title != "") SqlRelation::PasteCache::changePasteTitle(new_title, public_key);
-
 
     return true;
 }
@@ -74,13 +67,6 @@ pasteInfo PastebinMethods::getPasteInfo(const std::string& public_key) {
 
     return std::tuple(author, password, title, created_at);
 
-}
-
-std::string PastebinMethods::getPasteText(const std::string& public_key) {
-
-    auto [private_key, author, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(public_key);
-
-    return AWS_connect::GetObjectData(Config::Bucket_name, private_key, Config::Files_directory);
 }
 
 std::vector<std::vector<std::string> > PastebinMethods::getLastPastes(int64_t user_id, int limit) {
