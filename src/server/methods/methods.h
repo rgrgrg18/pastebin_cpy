@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #include "paste_data/PasteData.hpp"
-#include "sql_relation/sql_relation.h"
+#include "sql_cache_interface/sql_cache_interface.h"
 #include "../../file_interaction/file_commands.h"
 
 // password, title

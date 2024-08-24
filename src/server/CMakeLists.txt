@@ -13,7 +13,6 @@ target_link_libraries(pastebin_server
         gRPC::grpc++
         server_methods
         amazon_s3
-        cache
         file_interaction
         redis
         sql_con)

@@ -4,7 +4,7 @@ std::string PastebinMethods::addPaste(int64_t user_id, pasteData data) {
 
     auto [author, password, title, created_at, text] = data;
     
-    keys PasteKeys = SqlRelation::PasteCache::makeNewPaste(user_id);
+    keys PasteKeys = cached_postgres::create_new_paste(user_id);
 
     std::string public_key = PasteKeys.first;
     std::string private_key = PasteKeys.second;
@@ -18,14 +18,14 @@ std::string PastebinMethods::addPaste(int64_t user_id, pasteData data) {
 
 std::string PastebinMethods::getPasteText(const std::string& public_key) {
 
-    auto [private_key, author, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(public_key);
+    auto [private_key, author, password, title, created_at] = cached_postgres::get_paste_info(public_key);
 
     return PasteData::getCachedPaste(private_key);
 }
 
 bool PastebinMethods::deletePaste(const std::string& public_key) {
 
-    auto pasteInfo = SqlRelation::PasteCache::getInfoPaste(public_key);
+    auto pasteInfo = cached_postgres::get_paste_info(public_key);
 
     std::string private_key = std::get<0>(pasteInfo);
     std::string author = std::get<1>(pasteInfo);
@@ -39,7 +39,7 @@ bool PastebinMethods::deletePaste(const std::string& public_key) {
         return false;
     }
 
-    SqlRelation::PasteCache::delNewPaste(public_key, std::atoll(author.c_str()));
+    cached_postgres::del_paste(public_key, std::atoll(author.c_str()));
 
     return true;
 
@@ -47,7 +47,7 @@ bool PastebinMethods::deletePaste(const std::string& public_key) {
 
 bool PastebinMethods::updatePasteInfo(const std::string& public_key, newPasteInfo data) {
 
-    auto [private_key, author, old_password, old_title, created_at] = SqlRelation::PasteCache::getInfoPaste(public_key);
+    auto [private_key, author, old_password, old_title, created_at] = cached_postgres::get_paste_info(public_key);
 
     if (private_key == "") {
         std::cout << "paste to update does't exist\n";
@@ -55,20 +55,20 @@ bool PastebinMethods::updatePasteInfo(const std::string& public_key, newPasteInf
     }
 
     auto [new_password, new_title] = data;
-    if (new_password != "") SqlRelation::PasteCache::changePastePassword(new_password, public_key);
-    if (new_title != "") SqlRelation::PasteCache::changePasteTitle(new_title, public_key);
+    if (new_password != "") cached_postgres::change_password(public_key, new_password);
+    if (new_title != "") cached_postgres::change_title(public_key, new_title);
 
     return true;
 }
 
 pasteInfo PastebinMethods::getPasteInfo(const std::string& public_key) {
 
-    auto [private_key, author, password, title, created_at] = SqlRelation::PasteCache::getInfoPaste(public_key);
+    auto [private_key, author, password, title, created_at] = cached_postgres::get_paste_info(public_key);
 
     return std::tuple(author, password, title, created_at);
 
 }
 
 std::vector<std::vector<std::string> > PastebinMethods::getLastPastes(int64_t user_id, int limit) {
-    return SqlRelation::getLastPastes(user_id, limit);
+    return cached_postgres::get_last_user_pastes(user_id, limit);
 }

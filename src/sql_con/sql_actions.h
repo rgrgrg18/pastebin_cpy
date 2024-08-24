@@ -4,7 +4,6 @@
 #include <pqxx/pqxx>
 
 using keys = std::pair<std::string, std::string>; // pair of public and private keys
-using user_state = std::tuple<std::string, std::string, int64_t>; // tuple of condition, work_paste and work_message
 using paste_info = std::tuple<std::string, std::string, std::string, std::string, std::string>; // Private key, login, password, title, created at
 using last_pastes_info = std::vector<std::vector<std::string>>; // Last pastes with title, public key, created time
 
