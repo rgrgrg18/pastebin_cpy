@@ -1,76 +1,85 @@
 #include <grpcpp/grpcpp.h>
 
-#include "../proto/server.grpc.pb.h"
-#include "../proto/server.pb.h"
-#include "../methods/methods.h"
+#include "proto/server.grpc.pb.h"
+#include "proto/server.pb.h"
+#include "methods/methods.h"
 
 class ProcessImpl final : public pastebinApi::Service {
 
     ::grpc::Status makeNewPaste(::grpc::ServerContext* context, 
                     const ::newPasteArgs* request, ::newPasteResponce* response) {
 
-        if (request->text() == "") return grpc::Status::CANCELLED;
+        // test request data
+        if (request->text().size() == 0) {
+            return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Text should not be empty");
+        }
 
-        std::string publicKey = PastebinMethods::addPaste(request->user_id(), 
+        // act
+        auto result = PastebinMethods::addPaste(request->user_id(),
             std::tuple(std::to_string(request->user_id()), request->password(), request->title(), "", request->text()));
 
-        response->set_public_key(publicKey);
-    
+        // test act result
+        if (!result.first) {
+            return grpc::Status(grpc::StatusCode::UNAVAILABLE, "Service is currently unavailable");
+        }
+
+        response->set_public_key(std::move(result.second));
         return grpc::Status::OK;
     }
 
-    ::grpc::Status getPasteInfo(::grpc::ServerContext* context, 
-                    const ::getPasteInfoArgs* request, ::getPasteInfoResponce* response) {
 
-        auto [author, password, title, created_at] = PastebinMethods::getPasteInfo(request->public_key());
 
-        response->set_author(author);
-        response->set_password(password);
-        response->set_title(title);
-        response->set_created_at(created_at.substr(0, 19));
+    ::grpc::Status getPaste(::grpc::ServerContext* context,
+                    const ::getPasteArgs* request, ::getPasteResponce* response) {
 
+        // test request data
+        if (request->public_key().size() == 0) {
+            return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should not be empty");
+        }
+
+        //  act
+        auto result = PastebinMethods::getPaste(request->public_key(),
+                                                request->password());
+
+        // test result data
+        if (!result.first) {
+            return grpc::Status::CANCELLED;
+        }
+
+
+        response->set_author(std::move(std::get<0>(result.second)));
+        response->set_password(std::move(std::get<1>(result.second)));
+        response->set_title(std::move(std::get<2>(result.second)));
+        response->set_created_at(std::get<3>(result.second).substr(0, 19));
+        response->set_paste_text(std::move(std::get<4>(result.second)));
         return grpc::Status::OK;
     }
 
-    ::grpc::Status getPasteText(::grpc::ServerContext* context, 
-                    const ::getPasteTextArgs* request, ::getPasteTextResponce* response) {
 
-        response->set_paste_text(PastebinMethods::getPasteText(request->public_key()));
-
-        return grpc::Status::OK;
-    }
 
     ::grpc::Status deletePaste(::grpc::ServerContext* context, 
                     const ::delPasteArgs* request, ::delPasteResponce* response) {
 
+        // test request data
+        if (request->public_key().size() == 0) {
+            return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should not be empty");
+        }
+
+
         response->set_is_success(PastebinMethods::deletePaste(request->public_key()));
-        
         return grpc::Status::OK;
     }
 
     ::grpc::Status updatePaste(::grpc::ServerContext* context, 
                     const ::updatePasteArgs* request, ::updatePasteResponce* response) {
 
-        response->set_is_success(PastebinMethods::updatePasteInfo(request->public_key(), std::tuple(request->new_password(), request->new_title())));
-        
-        return grpc::Status::OK;
-    }
-
-    ::grpc::Status getLastPastes(::grpc::ServerContext* context, 
-                    const ::getLastePastesArgs* request, ::getLastePastesResponce* response) {
-
-        if (request->count() > 250 || request->count() < 0) return grpc::Status::CANCELLED;
-
-        auto data = PastebinMethods::getLastPastes(request->user_id(), request->count());
-
-        std::string value;
-        
-        for (auto elem : data) {
-            value += "{" + elem[1] + "*" + elem[2].substr(0, 19) + "*" + elem[0] + "*"; 
+        // test request data
+        if (request->public_key().size() == 0) {
+            return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should not be empty");
         }
-        
-        response->set_last_pastes(value);
 
+        response->set_is_success(PastebinMethods::updatePasteInfo(request->public_key(),
+                                 std::tuple(request->new_password(), request->new_title())));
         return grpc::Status::OK;
     }
 

@@ -1,26 +1,36 @@
 #include "methods.h"
 
-std::string PastebinMethods::addPaste(int64_t user_id, pasteData data) {
+std::pair<bool, std::string> PastebinMethods::addPaste(int64_t user_id, pasteData data) {
 
     auto [author, password, title, created_at, text] = data;
     
     keys PasteKeys = cached_postgres::create_new_paste(user_id);
 
-    std::string public_key = PasteKeys.first;
-    std::string private_key = PasteKeys.second;
+    std::string public_key(std::move(PasteKeys.first));
+    std::string private_key = (std::move(PasteKeys.second));
 
     if (PasteData::addNewPaste(private_key, text)) {
         updatePasteInfo(public_key, std::tuple(password, title));
-        return public_key;
+        return {true, public_key};
     }
-    return "";
+
+    return {false, ""};
 }
 
-std::string PastebinMethods::getPasteText(const std::string& public_key) {
+std::pair<bool, pasteData> PastebinMethods::getPaste(const std::string& public_key,
+                                                     const std::string& user_password) {
 
     auto [private_key, author, password, title, created_at] = cached_postgres::get_paste_info(public_key);
 
-    return PasteData::getCachedPaste(private_key);
+    if (password != user_password || private_key == "") {
+        return {false, std::tuple("", "", "", "", "")};
+    }
+
+    return {true, std::tuple(std::move(author),
+                       std::move(password),
+                       std::move(title),
+                       std::move(created_at),
+                       std::move(PasteData::getCachedPaste(private_key)))};
 }
 
 bool PastebinMethods::deletePaste(const std::string& public_key) {
@@ -31,7 +41,7 @@ bool PastebinMethods::deletePaste(const std::string& public_key) {
     std::string author = std::get<1>(pasteInfo);
 
     if (private_key == "") {
-        std::cout << "deleting a non-existent post\n";
+        std::cerr << "deleting a non-existent paste\n";
         return false;
     }
 
@@ -59,14 +69,6 @@ bool PastebinMethods::updatePasteInfo(const std::string& public_key, newPasteInf
     if (new_title != "") cached_postgres::change_title(public_key, new_title);
 
     return true;
-}
-
-pasteInfo PastebinMethods::getPasteInfo(const std::string& public_key) {
-
-    auto [private_key, author, password, title, created_at] = cached_postgres::get_paste_info(public_key);
-
-    return std::tuple(author, password, title, created_at);
-
 }
 
 std::vector<std::vector<std::string> > PastebinMethods::getLastPastes(int64_t user_id, int limit) {

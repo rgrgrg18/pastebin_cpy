@@ -12,25 +12,18 @@ message newPasteResponce {
     required string public_key = 1;
 }
 
-// get paste info
-message getPasteInfoArgs {
+// get paste
+message getPasteArgs {
     required string public_key = 1;
+    optional string password = 2;
 }
 
-message getPasteInfoResponce {
+message getPasteResponce {
     required string author = 1;
     required string password = 2;
     required string title = 3;
     required string created_at = 4;
-}
-
-// get paste text
-message getPasteTextArgs {
-    required string public_key = 1;
-}
-
-message getPasteTextResponce {
-    required string paste_text = 1;
+    required string paste_text = 5;
 }
 
 // delete paste
@@ -53,23 +46,11 @@ message updatePasteResponce {
     required bool is_success = 1;
 }
 
-// get last n pastes
-message getLastePastesArgs {
-    required int64 user_id = 1;
-    required int32 count = 2;
-}
-
-message getLastePastesResponce {
-    required string last_pastes = 1;
-}
-
 service pastebinApi {
     rpc makeNewPaste(newPasteArgs) returns(newPasteResponce) {}
-    rpc getPasteInfo(getPasteInfoArgs) returns(getPasteInfoResponce) {}
-    rpc getPasteText(getPasteTextArgs) returns(getPasteTextResponce) {}
+    rpc getPaste(getPasteArgs) returns(getPasteResponce) {}
     rpc deletePaste(delPasteArgs) returns(delPasteResponce) {}
     rpc updatePaste(updatePasteArgs) returns(updatePasteResponce) {}
-    rpc getLastPastes(getLastePastesArgs) returns(getLastePastesResponce) {}
 }
 
 
