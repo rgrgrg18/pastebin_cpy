@@ -1,0 +1,43 @@
+version: "3.8"
+services:
+  pastebin:
+    container_name: pastebin
+    build: ./docker_compose/image
+    command: bash -c "chmod +x scripts/* 
+      && tail -f /dev/null"
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./CMakeLists.txt:/usr/src/app/CMakeLists.txt
+      - ./src:/usr/src/app/src
+      - ./scripts:/usr/src/app/scripts
+    networks:
+      - backend
+
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: pastebin
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./docker_compose/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+    networks:
+      - backend
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    restart: always
+    ports:
+      - "6380:6379"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
