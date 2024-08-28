@@ -13,6 +13,9 @@ services:
       - ./scripts:/usr/src/app/scripts
     networks:
       - backend
+    profiles:
+      - no-logs
+      - release
 
   postgres:
     container_name: postgres
@@ -28,6 +31,9 @@ services:
       - ./docker_compose/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
     networks:
       - backend
+    profiles:
+      - no-logs
+      - release
 
   redis:
     container_name: redis
@@ -37,7 +43,59 @@ services:
       - "6380:6379"
     networks:
       - backend
+    profiles:
+      - no-logs
+      - release
+
+  filebeat:
+    container_name: filebeat
+    image: elastic/filebeat:8.0.1
+    user: root
+    volumes:
+      - /var/lib/docker:/var/lib/docker:ro
+      - ./docker_compose/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - elk-network
+    profiles:
+      - release
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.0.1
+    restart: always
+    #volumes:
+    #  - elasticsearch:/usr/share/elasticsearch/data:z
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+        - discovery.type=single-node # Node count
+        - xpack.security.enabled=false
+    networks:
+      - elk-network
+    profiles:
+      - release
+
+  kibana: 
+    container_name: kibana
+    image: kibana:8.0.1
+    labels:
+      - family=ui
+    restart: always
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    ports:
+      - "5601:5601" 
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk-network
+    profiles:
+      - release
 
 networks:
   backend:
+    driver: bridge
+  elk-network:
     driver: bridge

@@ -1,14 +1,14 @@
 #!/bin/bash
 
+pull_images() {
+	echo "Pulling images.."
+	docker-compose pull
+}
+
 build_app() {
 	echo "Build image of the app..."
 	docker-compose build --force-rm --no-cache -f ../../docker-compose.yaml
 }
 
-run_app() {
-	echo "Staring Docker containers..."
-	docker-compose up --detach
-}
-
+pull_images
 build_app
-run_app
