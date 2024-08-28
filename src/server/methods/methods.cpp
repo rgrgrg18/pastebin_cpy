@@ -20,6 +20,8 @@ std::pair<bool, std::string> PastebinMethods::addPaste(int64_t user_id, pasteDat
 std::pair<bool, pasteData> PastebinMethods::getPaste(const std::string& public_key,
                                                      const std::string& user_password) {
 
+    auto lock = KeyManager::lockKey(public_key);
+
     auto [private_key, author, password, title, created_at] = cached_postgres::get_paste_info(public_key);
 
     if (password != user_password || private_key == "") {
@@ -34,6 +36,8 @@ std::pair<bool, pasteData> PastebinMethods::getPaste(const std::string& public_k
 }
 
 bool PastebinMethods::deletePaste(const std::string& public_key) {
+
+    auto lock = KeyManager::lockKey(public_key);
 
     auto pasteInfo = cached_postgres::get_paste_info(public_key);
 
@@ -57,6 +61,8 @@ bool PastebinMethods::deletePaste(const std::string& public_key) {
 
 bool PastebinMethods::updatePasteInfo(const std::string& public_key, newPasteInfo data) {
 
+    auto lock = KeyManager::lockKey(public_key);
+
     auto [private_key, author, old_password, old_title, created_at] = cached_postgres::get_paste_info(public_key);
 
     if (private_key == "") {
@@ -69,8 +75,4 @@ bool PastebinMethods::updatePasteInfo(const std::string& public_key, newPasteInf
     if (new_title != "") cached_postgres::change_title(public_key, new_title);
 
     return true;
-}
-
-std::vector<std::vector<std::string> > PastebinMethods::getLastPastes(int64_t user_id, int limit) {
-    return cached_postgres::get_last_user_pastes(user_id, limit);
 }

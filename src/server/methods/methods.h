@@ -5,12 +5,13 @@
 #include <tuple>
 #include <string>
 #include <mutex>
-
-#include <stdio.h>
+#include <unordered_map>
+#include <condition_variable>
 
 #include "paste_data/PasteData.hpp"
 #include "sql_cache_interface/sql_cache_interface.h"
 #include "../../file_interaction/file_commands.h"
+#include "../../tools/KeyManager.hpp"
 
 // password, title
 using newPasteInfo = std::tuple<std::string, std::string>;
@@ -31,8 +32,6 @@ public:
     static bool deletePaste(const std::string& public_key);
 
     static bool updatePasteInfo(const std::string& public_key, newPasteInfo data);
-
-    static std::vector<std::vector<std::string> > getLastPastes(int64_t user_id, int limit);
 
 };
 

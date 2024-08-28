@@ -1,5 +1,6 @@
 add_executable(tools_test
         tests/connection_pool_tests.cpp
+        tests/key_manager_tests.cpp
 )
 
 target_link_libraries(tools_test PRIVATE ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
