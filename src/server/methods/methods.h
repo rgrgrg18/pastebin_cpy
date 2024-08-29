@@ -10,8 +10,9 @@
 
 #include "paste_data/PasteData.hpp"
 #include "sql_cache_interface/sql_cache_interface.h"
-#include "../../file_interaction/file_commands.h"
+#include "../../file_interaction/file_commands/file_commands.hpp"
 #include "../../tools/KeyManager.hpp"
+#include "../file_interaction/zip_compression/zip_compression.hpp"
 
 // password, title
 using newPasteInfo = std::tuple<std::string, std::string>;

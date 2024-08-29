@@ -1,12 +1,13 @@
-#include "file_commands.h"
+#include "file_commands.hpp"
 
 // converting a string to a bin file with the specified directory
 bool FileCommands::string_to_bin(const std::string& fileName, const std::string& str, const std::string& directory){
 
-    std::string openDir = directory + 
-                        fileName + 
+    std::string openDir = directory +
+                        fileName +
                         ".bin";
-    std::ofstream file(openDir, 
+
+    std::ofstream file(openDir,
                         std::ios_base::out);
 
     if (file.is_open()) {
@@ -14,14 +15,15 @@ bool FileCommands::string_to_bin(const std::string& fileName, const std::string&
         file.close();
         return true;
     } else {
-        std::cout << "can't open file in function string_to_bin\n"; 
         return false;
     }
 }
 
+// converting a bin file to string with file deleting
 std::pair<std::string, bool> FileCommands::bin_to_string(const std::string& fileName, const std::string& directory) {
-    std::string openDir = directory + 
-                        fileName + 
+
+    std::string openDir = directory +
+                        fileName +
                         ".bin";
     std::ifstream file(openDir);
 
@@ -37,7 +39,6 @@ std::pair<std::string, bool> FileCommands::bin_to_string(const std::string& file
         return {Base64_code::base64_decode(fileContent), true};
 
     } else {
-        std::cout << "can't open files in function bin_to_string";
         return {"", false};
     }
 }

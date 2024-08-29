@@ -4,7 +4,7 @@
 #include "../../../amazon_s3/AwsActions.hpp"
 #include "../../../config.h"
 #include "../../../redis/redis_actions.hpp"
-#include "../../../file_interaction/file_commands.h"
+#include "../../../file_interaction/file_commands/file_commands.hpp"
 #include "../settings/redis.h"
 
 namespace PasteData {

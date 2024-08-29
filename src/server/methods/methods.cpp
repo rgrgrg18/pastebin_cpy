@@ -2,14 +2,14 @@
 
 std::pair<bool, std::string> PastebinMethods::addPaste(int64_t user_id, pasteData data) {
 
-    auto [author, password, title, created_at, text] = data;
+    auto& [author, password, title, created_at, text] = data;
     
     keys PasteKeys = cached_postgres::create_new_paste(user_id);
 
     std::string public_key(std::move(PasteKeys.first));
     std::string private_key = (std::move(PasteKeys.second));
 
-    if (PasteData::addNewPaste(private_key, text)) {
+    if (PasteData::addNewPaste(private_key, zipCompression::compressString(text))) {
         updatePasteInfo(public_key, std::tuple(password, title));
         return {true, public_key};
     }
@@ -32,7 +32,7 @@ std::pair<bool, pasteData> PastebinMethods::getPaste(const std::string& public_k
                        std::move(password),
                        std::move(title),
                        std::move(created_at),
-                       std::move(PasteData::getCachedPaste(private_key)))};
+                       std::move(zipCompression::decompressString(PasteData::getCachedPaste(private_key))))};
 }
 
 bool PastebinMethods::deletePaste(const std::string& public_key) {
