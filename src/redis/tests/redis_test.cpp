@@ -60,8 +60,8 @@ TEST(RedisTest, del) {
 }
 
 TEST(RedisTest, insertExceptions) {
+    Redis redis("tcp://127.0.0.1:6379");
     try {
-        Redis redis("tcp://127.0.0.1:6379");
         redis.insert("123", "1");
         redis.insert("123", "2");
 
@@ -69,4 +69,15 @@ TEST(RedisTest, insertExceptions) {
     } catch (...) {
         // Success
     }
+
+    try {
+        Redis redis("tcp://127.0.0.1:6379");
+        redis.insert("123", {1, 2, 3});
+
+        FAIL();
+    } catch (...) {
+        // Success
+    }
+
+    redis.del("123"); // <-- clean up redis resourses
 }

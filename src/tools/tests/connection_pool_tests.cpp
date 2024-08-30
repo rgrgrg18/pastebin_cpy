@@ -12,15 +12,10 @@ class MyType {
     std::mutex m_2;
 
 public:
-    /* If two threads try to change - Deadlock */
     void change(bool increase) {
         if (increase) {
-            std::lock_guard lock1(m_1);
-            std::lock_guard lock2(m_2);
             ++x;
         } else {
-            std::lock_guard lock2(m_2);
-            std::lock_guard lock1(m_1);
             --x;
         }
     }
@@ -120,6 +115,37 @@ TEST(ConnectionPool, DataRace) {
 
         EXPECT_EQ(pool_.getConnection()->getValue(), 0);
     }
+}
+
+struct CriticalSectionStruct {
+    bool f() {
+        ++cnt;
+        bool res = cnt == 1;
+        --cnt;
+        return res;
+    }
+
+    int cnt;
+};
+
+// Checking for RaceCondition
+TEST(ConnectionPool, RaceCondition) {
+    using MyPool = ConnectionPool<CriticalSectionStruct>;
+    using MyConnection = Connection<CriticalSectionStruct>;
+
+    auto worker = [&]() {
+        MyPool& pool_ = MyPool::getInstance(1);
+        for (int i = 0; i < 1000; ++i) {
+            ASSERT_TRUE(pool_.getConnection()->f());
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+    };
+
+    std::thread t1(worker);
+    std::thread t2(worker);
+
+    t1.join();
+    t2.join();
 }
 
 

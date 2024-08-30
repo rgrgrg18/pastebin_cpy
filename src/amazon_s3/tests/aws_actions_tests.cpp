@@ -33,9 +33,9 @@ protected:
         std::remove(testFilePath.c_str());
     }
 
-    std::string bucketName;
-    std::string testFilePath;
-    std::string testFileKey;
+    Aws::String bucketName;
+    Aws::String testFilePath;
+    Aws::String testFileKey;
 };
 
 TEST_F(AwsTest, PutObject_Success) {
@@ -53,6 +53,19 @@ TEST_F(AwsTest, PutObject_Success) {
     auto outcome = s3_client.GetObject(getObjectRequest);
     EXPECT_TRUE(outcome.IsSuccess());
 }
+
+
+TEST_F(AwsTest, DownloadObject_Unsuccess) {
+    // unused configuration
+    Aws::String downloadFilePath = "downloaded-unused-file.txt";
+    testFileKey = "unused_key.txt";
+    bucketName = Config::Bucket_name;
+
+    bool result = AwsActions::DownloadObject(testFileKey, bucketName, downloadFilePath);
+
+    EXPECT_FALSE(result);
+}
+
 
 TEST_F(AwsTest, DownloadObject_Success) {
     // Put file

@@ -85,7 +85,6 @@ bool f(int& critical_section) {
 
     // critical section
     ++critical_section;
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     bool ans = critical_section == 1;
     --critical_section;
     return ans;
@@ -97,7 +96,8 @@ TEST(KeyManagerTests, RaceCondition) {
 
     auto worker = [&]() {
         for (int i = 0; i < 1000; ++i) {
-            EXPECT_TRUE(f(critical_section));
+            ASSERT_TRUE(f(critical_section));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     };
 
