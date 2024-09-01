@@ -5,10 +5,10 @@ pull_images() {
 	docker-compose pull
 }
 
-build_app() {
+build_pastebin() {
 	echo "Build image of the app..."
-	docker-compose build --force-rm --no-cache -f ../../docker-compose.yaml
+	docker-compose -f ../../docker-compose.yaml	build --force-rm --no-cache pastebin
 }
 
 pull_images
-build_app
+build_pastebin
