@@ -2,7 +2,7 @@ version: "3.8"
 services:
   pastebin:
     container_name: pastebin
-    build: ./docker_compose/image
+    build: ./docker/image
     command: bash -c "chmod +x scripts/* 
       && tail -f /dev/null"
     ports:
@@ -28,7 +28,7 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ./docker_compose/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+      - ./docker/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
     networks:
       - backend
     profiles:
@@ -53,7 +53,7 @@ services:
     user: root
     volumes:
       - /var/lib/docker:/var/lib/docker:ro
-      - ./docker_compose/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./docker/filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - elk-network

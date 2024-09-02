@@ -61,6 +61,9 @@ TEST_F(TestDB, GetPasteInfoPresent) {
     std::string expected_password = "4444";
     std::string expected_title = "7777";
 
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(expected_login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(expected_login));
+
     txn->exec0("INSERT INTO users (login) VALUES (" 
         + std::to_string(expected_login) + ")");
 
@@ -91,6 +94,9 @@ TEST_F(TestDB, GetPasteInfoEmpty) {
 
 TEST_F(TestDB, AddUserTwice) {
     int64_t login = 1111;
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
+    
     sql_actions::execute_add_user(*txn, login);
 
     pqxx::result res = txn->exec("SELECT id FROM users WHERE login = " 
@@ -106,6 +112,9 @@ TEST_F(TestDB, AddPaste) {
     std::string public_key = "2222";
     std::string private_key = "3333";
     std::string password = "4444";
+
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
     txn->exec0("INSERT INTO users (login) VALUES (" 
         + std::to_string(login) + ")");
@@ -124,6 +133,9 @@ TEST_F(TestDB, AddPaste) {
 TEST_F(TestDB, NewPaste) {
     int64_t login = 11112;
     std::string password = "2222";
+    
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
     txn->exec0("INSERT INTO users (login) VALUES (" 
         + std::to_string(login) + ")");
@@ -145,6 +157,9 @@ TEST_F(TestDB, NewPaste) {
 TEST_F(TestDB, IncreaseAmountPastes) {
     int64_t login = 1111;
     int64_t expected_amount_pastes = 9;
+    
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
     txn->exec0("INSERT INTO users (login, amount_pastes) VALUES (" 
         + std::to_string(login) + ", " 
@@ -163,6 +178,9 @@ TEST_F(TestDB, DecreaseAmountPastes) {
     int64_t login = 1111;
     int64_t expected_amount_pastes = 9;
 
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
+
     txn->exec0("INSERT INTO users (login, amount_pastes) VALUES (" 
         + std::to_string(login) + ", " 
         + std::to_string(expected_amount_pastes) + ")");
@@ -180,6 +198,9 @@ TEST_F(TestDB, ReturnAmountPastesExistUser) {
     int64_t login = 1111;
     int64_t expected_amount_pastes = 9;
 
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
+
     txn->exec0("INSERT INTO users (login, amount_pastes) VALUES (" 
         + std::to_string(login) + ", " 
         + std::to_string(expected_amount_pastes) + ")");
@@ -191,6 +212,9 @@ TEST_F(TestDB, ReturnAmountPastesExistUser) {
 
 TEST_F(TestDB, ReturnAmountPastesNotRegisteredUser) {
     int64_t login = 1111;
+    
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
     int64_t actual = sql_actions::execute_return_amount_pastes(*txn, login);
 
@@ -202,6 +226,9 @@ TEST_F(TestDB, ChangePassword) {
     std::string private_key = "2222";
     int64_t login = 3333;
     std::string password = "4444";
+
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
     txn->exec0("INSERT INTO users (login) VALUES (" 
         + std::to_string(login) + ")");
@@ -234,6 +261,9 @@ TEST_F(TestDB, ChangeTitle) {
     int64_t login = 3333;
     std::string title = "4444";
 
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
+
     txn->exec0("INSERT INTO users (login) VALUES (" 
         + std::to_string(login) + ")");
 
@@ -263,6 +293,9 @@ TEST_F(TestDB, DelPaste) {
         std::string private_key = "2222";
         int64_t login = 3333;
         int64_t expected_amount_pastes = 10;
+
+        txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+        txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
         txn->exec0("INSERT INTO users (login, amount_pastes) VALUES (" 
             + std::to_string(login) + ", " 
@@ -294,6 +327,9 @@ TEST_F(TestDB, GetLastUserPastes) {
     int64_t login = 3333;
     std::string expected_title = "0000";
 
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
+
     txn->exec0("INSERT INTO users (login) VALUES (" 
         + std::to_string(login) + ")");
 
@@ -312,6 +348,9 @@ TEST_F(TestDB, GetLastUserPastes) {
 
 TEST_F(TestDB, CombinationMainFunctions) {
     int64_t login = 1111;
+
+    txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
+    txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
     size_t amount_pastes = sql_actions::execute_return_amount_pastes(*txn, login);
     EXPECT_EQ(amount_pastes, 0) << "Function return_amount_pastes return inccorect value";
