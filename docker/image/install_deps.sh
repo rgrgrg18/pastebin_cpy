@@ -20,8 +20,18 @@ apt-get update && apt-get install -y \
     redis-server \
     openssh-server \
     vim \
+    unzip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Download the AWS CLI v2 installation package
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+# For ARM64 architecture, use this link:
+# curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+
+# Install the AWS CLI
+unzip awscliv2.zip && ./aws/install && rm -rf awscliv2.zip aws
 
 # Install redis-plus-plus
 git clone https://github.com/sewenew/redis-plus-plus.git \
@@ -33,8 +43,6 @@ git clone https://github.com/sewenew/redis-plus-plus.git \
     && make install \
     && cd ../../ \
     && rm -rf redis-plus-plus
-
-git config --global http.postBuffer 524288000
 
 # Install AWS SDK for C++
 git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git \
