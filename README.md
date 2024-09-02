@@ -18,19 +18,30 @@ API for quick interaction with text files
 
 * AWS services are used to store post data, each paste takes up no more than 1MB data
 
-* To quickly get the texts of pastes we use redis, where stored the most popular pastes
-
-* To store paste settings and get them quickly, we use the configuration from PostgreSQL and LFU cache
+* To quickly get the texts and info of pastes we use redis, where stored the most popular pastes
 
 * The files are stored in .bin, we use base64 for translation
 
 ## How to build and run locally
 
-* Install all the necessary libraries: [aws-sdk-cpp](https://github.com/aws/aws-sdk-cpp), [pqxx](https://github.com/jtv/libpqxx), [redis-plus-plus](https://github.com/sewenew/redis-plus-plus), [gRPC](https://grpc.io/docs/languages/cpp/quickstart/) and their dependencies
+* Copy our repository and after that open `config.h` and change the parameters according to the sample.
+
+> You can use any version of the configuration file depending on the availability of individual postgresql and redis services. Be sure to specify the aws parameters.
+
+* Install docker-compose
+
+
+* Go to [`docker/client/`](docker/client/) and run `./create.sh`
+
+
+* Run `./up.sh no-logs` (running without logs) 
+
 
 * To work with aws, go to the directory `~/.aws/` (macOS / Linux) 
 
+
 * make file credentials and fill it:
+
 
 ```bash
 [default]
@@ -51,35 +62,7 @@ Also, if you do not have such a directory, use the command `aws configure` in te
 
 (in our project, we use yandex cloud, so the instructions for changing the make file are relevant for us [yandex_cloud](https://yandex.cloud/ru/docs/storage/tools/aws-sdk-cpp))
 
-
-* Copy our repository and after that open `config.h` and change the parameters according to the sample
-
-* Set a redis size limit to use it as a LRU cache [guide](https://cndoc.github.io/redis-doc-cn/cn/topics/lru-cache.html)
-
-* Change file CMakeLists.txt for yourself
-
-* Generate proto code using and move them to `proto` dir:
-
-```bash
-$ protoc -I ../proto --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ../proto/server.proto
-$ protoc -I ../proto --cpp_out=. ../proto/server.proto
-```
-
-* Create your buid directory and navigate there
-
-* Build the project
-
-```bash
-cd <BUILD_DIR>
-cmake <path-to-root-of-this-source-code> \
--DCMAKE_BUILD_TYPE=Debug \
--DCMAKE_INSTALL_PREFIX=<path-to-install> \
-
-cmake --build . --config=Debug
-cmake --install . --config=Debug
-```
+* Start the local redis server (temporary measure for tests) `redis-server --daemonize yes`
 
 
-
-
-
+* Run `/usr/src/app/scrips/run.sh`, this will assemble the program run the tests and start the server

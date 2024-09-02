@@ -11,11 +11,11 @@ namespace Config {
 
     std::string __attribute__((weak)) Bucket_name = "";
 
-    std::string __attribute__((weak)) Conn = "postgresql://{username}:{password}@{ip}:{port}/{db}";
+    std::string __attribute__((weak)) Conn = "postgresql://root:root@postgres:5432/pastebin";
 
     std::string __attribute__((weak)) Endpoint = "";
 
-    std::string __attribute__((weak)) Redis_conn = "tcp://{ip}:{port}";
+    std::string __attribute__((weak)) Redis_conn = "tcp://redis:6379";
 
 };
 
