@@ -28,6 +28,15 @@ then
 elif [ "$profile" == "release" ] || [ $# -eq 0 ];
 then 
 	docker-compose --profile release up --detach
-else 
-	echo "Error: Write nothing or one of the following services: $PROFILE_NAME1, $PROFILE_NAME2 after script."
+elif [ "$profile" == "postgres" ]
+then
+	docker-compose --profile postgres up --detach
+elif [ "$profile" == "redis" ]
+then
+	docker-compose --profile redis up --detach
+elif [ "$profile" == "app" ]
+then
+	docker-compose --profile app up --detach
+else
+	echo "Error: Write nothing or one of the following services: $PROFILE_NAME1, $PROFILE_NAME2, app, $CONTAINER_NAME2, $CONTAINER_NAME3 after script."
 fi
