@@ -1,0 +1,7 @@
+{
+  "server_adress": "localhost:9999",
+  "total_requests": 100,
+  "max_concurrent_requests": 1,
+  "read_write_ratio": 0.95,
+  "total_iterations": 1
+}
