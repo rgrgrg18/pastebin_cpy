@@ -1,5 +1,4 @@
-#ifndef GENERATOR_HPP
-#define GENERATOR_HPP
+# pragma once
 
 #include <string>
 #include <random>
@@ -12,5 +11,3 @@ namespace generator {
     std::string randomFileName(size_t length);
 
 } // namespace generator
-
-#endif //GENERATOR_HPP

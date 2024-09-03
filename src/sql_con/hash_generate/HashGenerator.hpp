@@ -1,5 +1,4 @@
-#ifndef __HASHGENERATOR_H__
-#define __HASHGENERATOR_H__
+#pragma once
 
 #include <string>
 
@@ -23,5 +22,3 @@ namespace paste_hash {
 		static std::string generate (std::string str, int length_hash);
 	}; 		
 }
-
-#endif

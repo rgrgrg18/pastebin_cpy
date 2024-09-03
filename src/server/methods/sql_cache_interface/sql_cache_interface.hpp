@@ -1,9 +1,8 @@
-#ifndef __SQL_CACHE_INTERFACE__
-#define __SQL_CACHE_INTERFACE__
+#pragma once
 
-#include "../../../config.h"
+#include "../../../config.hpp"
 #include "../../../sql_con/sql_interface.hpp"
-#include "../settings/redis.h"
+#include "../settings/redis.hpp"
 #include "../../../redis/redis_actions.hpp"
 
 class cached_postgres {
@@ -20,7 +19,3 @@ public:
 
     static last_pastes_info get_last_user_pastes(int64_t login, int64_t limit);
 };
-
-
-
-#endif

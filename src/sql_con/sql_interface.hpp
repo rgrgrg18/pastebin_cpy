@@ -1,7 +1,6 @@
-#ifndef __SQL_INTERFACE__
-#define __SQL_INTERFACE__
+#pragma once
 
-#include "sql_actions.h"
+#include "sql_actions.hpp"
 #include "../tools/ConnectionPool.hpp"
 
 class postgres {
@@ -51,5 +50,3 @@ public:
 
     static last_pastes_info get_last_user_pastes(int64_t login, int64_t limit);
 };
-
-#endif

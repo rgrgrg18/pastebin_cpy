@@ -1,4 +1,4 @@
-#include "HashGenerator.h"
+#include "HashGenerator.hpp"
 
 using namespace paste_hash;
 

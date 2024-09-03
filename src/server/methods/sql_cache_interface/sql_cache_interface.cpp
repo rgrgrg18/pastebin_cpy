@@ -1,4 +1,4 @@
-#include "sql_cache_interface.h"
+#include "sql_cache_interface.hpp"
 
 paste_info cached_postgres::get_paste_info(const std::string& public_key) {
 

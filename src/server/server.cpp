@@ -2,7 +2,7 @@
 
 #include "proto/server.grpc.pb.h"
 #include "proto/server.pb.h"
-#include "methods/methods.h"
+#include "methods/methods.hpp"
 
 class ProcessImpl final : public pastebinApi::Service {
 

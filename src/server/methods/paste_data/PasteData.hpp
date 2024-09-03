@@ -1,11 +1,10 @@
-#ifndef PASTE_DATA
-#define PASTE_DATA
+#pragma once
 
 #include "../../../amazon_s3/AwsActions.hpp"
-#include "../../../config.h"
+#include "../../../config.hpp"
 #include "../../../redis/redis_actions.hpp"
 #include "../../../file_interaction/file_commands/file_commands.hpp"
-#include "../settings/redis.h"
+#include "../settings/redis.hpp"
 
 namespace PasteData {
 
@@ -16,6 +15,3 @@ namespace PasteData {
     bool deletePaste(const std::string& key);
     
 } // namespace PasteData
-
-
-#endif // PASTE_DATA

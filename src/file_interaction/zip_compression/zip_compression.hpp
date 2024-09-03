@@ -1,5 +1,4 @@
-#ifndef ZIP_COMPRESSION_HPP
-#define ZIP_COMPRESSION_HPP
+# pragma once
 
 #include <iostream>
 #include <string>
@@ -12,6 +11,4 @@ namespace zipCompression {
     std::string compressString(const std::string& str);
     std::string decompressString(const std::string& str);
 
-}
-
-#endif //ZIP_COMPRESSION_HPP
+} // namespace zipCompression

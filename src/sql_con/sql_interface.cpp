@@ -1,5 +1,5 @@
 #include "sql_interface.hpp"
-#include "../config.h"
+#include "../config.hpp"
 
 void postgres::db_connection::prepare_queries() {
 	sql_actions::prepare_get_sequence_for_public_key(*conn_);

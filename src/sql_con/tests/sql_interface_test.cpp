@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "../sql_interface.hpp"
-#include "../sql_actions.h"
+#include "../sql_actions.hpp"
 
 TEST(SqlInterfaceTest, BasicLogic) {
 	int64_t login = 111;

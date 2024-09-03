@@ -1,4 +1,4 @@
-#include "methods.h"
+#include "methods.hpp"
 
 std::pair<bool, std::string> PastebinMethods::addPaste(int64_t user_id, pasteData data) {
 

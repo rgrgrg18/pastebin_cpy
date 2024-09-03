@@ -1,5 +1,4 @@
-#ifndef _config_h_
-#define _config_h_
+#pragma once
 
 #include <string>
 
@@ -18,5 +17,3 @@ namespace Config {
     std::string __attribute__((weak)) Redis_conn = "tcp://redis:6379";
 
 };
-
-#endif
