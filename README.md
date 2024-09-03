@@ -14,6 +14,8 @@ API for quick interaction with text files
 
 ## Application structure
 
+![project_structure_image](https://github.com/user-attachments/assets/b528cf31-7565-49a7-8b8a-f4ad8da2198f)
+
 * For security, we generate a pair of public and private keys for each paste using sequences in SQL, the private one is used inside the system, the public one is available to users
 
 * AWS services are used to store post data, each paste takes up no more than 1MB data
@@ -22,47 +24,76 @@ API for quick interaction with text files
 
 * The files are stored in .bin, we use base64 for translation
 
-## How to build and run locally
+----
 
-* Copy our repository and after that open `config.h` and change the parameters according to the sample.
+## How to Build and Run
 
-> You can use any version of the configuration file depending on the availability of individual postgresql and redis services. Be sure to specify the aws parameters.
+### Using Docker
 
-* Install docker-compose
+1. **Install Docker Compose**
 
+2. **Navigate to the Docker client directory**  
+   Go to [`docker/client/`](docker/client/) and run the following command:
+   ```bash
+   ./create.sh
+   ```
 
-* Go to [`docker/client/`](docker/client/) and run `./create.sh`
+3. **Run the Docker services**  
+   Start the services without logs:
+   ```bash
+   ./up.sh no-logs
+   ```
 
+   > For detailed instructions on interacting with Docker, refer to the our [Docker Documentation](docs/Docker.md).
 
-* Run `./up.sh no-logs` (running without logs) 
+---
 
+### Configuration
 
-* To work with aws, go to the directory `~/.aws/` (macOS / Linux) 
+4. **Edit the configuration file**  
+   Open the `config.h` file and adjust the parameters as needed, using the sample configuration as a reference.
 
+   > You can choose any version of the configuration file based on the availability of individual PostgreSQL and Redis services.  
+   Ensure AWS parameters are correctly specified.
 
-* make file credentials and fill it:
+5. **Set up AWS credentials**  
+   Navigate to the `~/.aws/` directory (macOS / Linux) and create two files:
 
+    - **Credentials** (`credentials`):
+      ```bash
+      [default]
+      aws_access_key_id = <static_key_id>
+      aws_secret_access_key = <secret_key>
+      ```
 
-```bash
-[default]
-  aws_access_key_id = <static_key_id>
-  aws_secret_access_key = <secret_key>
-```
+    - **Config** (`config`):
+      ```bash
+      [default]
+      region=<your_region>
+      ```
 
-* make file config and fill it:
+   If the directory doesn’t exist, you can use the command:
+   ```bash
+   aws configure
+   ```
 
-```bash
-[default]
-  region=<your_region>
-```
+   > For more details, see the [AWS Documentation](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/setup-linux.html).
 
-Also, if you do not have such a directory, use the command `aws configure` in terminal
+6. **Start a local Redis server (for tests)**  
+   To run a Redis server in the background, execute:
+   ```bash
+   redis-server --daemonize yes
+   ```
 
-(if you want to see more detailed instructions, go to the website [aws](https://docs.aws.amazon.com/sdk-for-cpp/v1/developer-guide/setup-linux.html))
+---
 
-(in our project, we use yandex cloud, so the instructions for changing the make file are relevant for us [yandex_cloud](https://yandex.cloud/ru/docs/storage/tools/aws-sdk-cpp))
+### Running the Program
 
-* Start the local redis server (temporary measure for tests) `redis-server --daemonize yes`
+7. **Use the provided scripts**  
+   To interact with the project, refer to the available [scripts](scripts/) and their descriptions in [docs/Scripts.md](docs/Scripts.md).
 
-
-* Run `/usr/src/app/scrips/run.sh`, this will assemble the program run the tests and start the server
+8. **Assemble and start the server**  
+   Run the following script to build the program, run the tests, and start the server:
+   ```bash
+   /usr/src/app/scripts/run.sh
+   ```
