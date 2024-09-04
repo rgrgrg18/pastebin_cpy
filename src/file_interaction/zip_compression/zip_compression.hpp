@@ -1,10 +1,10 @@
 # pragma once
 
+#include <cstring>
 #include <iostream>
 #include <string>
-#include <zlib.h>
 #include <vector>
-#include <cstring>
+#include <zlib.h>
 
 namespace zipCompression {
 

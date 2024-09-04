@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
 #include <string>
-#include "../zip_compression.hpp"
-#include "../../tests/generator.hpp"
+
+#include <gtest/gtest.h>
+
+#include "generator.hpp"
+
+#include "zip_compression.hpp"
 
 TEST(ZipCompression, equalCodeDecode) {
     for (int i = 0; i < 1000; ++i) {

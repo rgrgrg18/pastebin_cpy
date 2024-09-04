@@ -1,9 +1,10 @@
-#include <gtest/gtest.h>
-#include "../AwsActions.hpp"
-#include <aws/core/Aws.h>
-#include <aws/s3/S3Client.h>
-#include "../config.hpp"
 #include <fstream>
+
+#include <gtest/gtest.h>
+
+#include "config.hpp"
+
+#include "AwsActions.hpp"
 
 class AwsTest : public ::testing::Test {
 protected:

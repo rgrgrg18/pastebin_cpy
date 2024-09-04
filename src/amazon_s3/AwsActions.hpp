@@ -1,13 +1,16 @@
 #pragma once
 
+#include <fstream>
+#include <iostream>
+
 #include <aws/core/Aws.h>
 #include <aws/s3/S3Client.h>
-#include <aws/s3/model/PutObjectRequest.h>
-#include <aws/s3/model/GetObjectRequest.h>
 #include <aws/s3/model/DeleteObjectRequest.h>
-#include <iostream>
-#include <fstream>
-#include "../tools/ConnectionPool.hpp"
+#include <aws/s3/model/GetObjectRequest.h>
+#include <aws/s3/model/PutObjectRequest.h>
+
+#include "config.hpp"
+#include "ConnectionPool.hpp"
 
 /* Singleton class API */
 class AwsAPI {

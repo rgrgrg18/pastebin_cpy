@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
 #include <string>
-#include "../file_commands.hpp"
-#include "../../tests/generator.hpp"
+
+#include <gtest/gtest.h>
+
+#include "generator.hpp"
+
+#include "file_commands.hpp"
 
 TEST(FileCommands, strBinFileCreated) {
     std::string file_data_ = generator::randomString(10);

@@ -1,6 +1,8 @@
-#include <gtest/gtest.h>
 #include <string>
-#include "../paste_data/PasteData.hpp"
+
+#include <gtest/gtest.h>
+
+#include "paste_data/PasteData.hpp"
 
 class PasteDataTest : public ::testing::Test {
 protected:

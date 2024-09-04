@@ -1,3 +1,5 @@
+add_subdirectory(redis_settings)
+
 add_library(server_methods
         methods.cpp
         paste_data/PasteData.cpp
@@ -6,9 +8,11 @@ add_library(server_methods
 
 target_link_libraries(server_methods PUBLIC
     amazon_s3
-    file_interaction
+    file_commands
+    zip_compression
     redis
     sql_con
+    redis_settings
 )
 
 target_include_directories(server_methods PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -17,7 +21,12 @@ target_include_directories(server_methods PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(server_methods_test
             tests/paste_data_tests.cpp
             tests/sql_cache_interface_tests.cpp)
-target_link_libraries(server_methods_test PRIVATE server_methods ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+target_link_libraries(server_methods_test PRIVATE
+        server_methods
+        ${GTEST_LIBRARIES}
+        ${GTEST_MAIN_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT})
 
 set_target_properties(server_methods_test PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test

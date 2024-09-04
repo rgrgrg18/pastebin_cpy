@@ -12,7 +12,4 @@ add_executable(pastebin_server
 target_link_libraries(pastebin_server
         gRPC::grpc++
         server_methods
-        amazon_s3
-        file_interaction
-        redis
         sql_con)
