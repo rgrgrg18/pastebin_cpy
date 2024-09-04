@@ -2,7 +2,7 @@
 #include "../AwsActions.hpp"
 #include <aws/core/Aws.h>
 #include <aws/s3/S3Client.h>
-#include "../config.h"
+#include "../config.hpp"
 #include <fstream>
 
 class AwsTest : public ::testing::Test {

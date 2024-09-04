@@ -1,4 +1,4 @@
-#include "redis.h"
+#include "redis.hpp"
 
 Redis::Error::Error(const std::string& content): content_(content) {}
 

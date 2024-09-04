@@ -1,5 +1,4 @@
-#ifndef _methods_h_
-#define _methods_h_
+#pragma once
 
 #include <iostream>
 #include <tuple>
@@ -9,7 +8,7 @@
 #include <condition_variable>
 
 #include "paste_data/PasteData.hpp"
-#include "sql_cache_interface/sql_cache_interface.h"
+#include "sql_cache_interface/sql_cache_interface.hpp"
 #include "../../file_interaction/file_commands/file_commands.hpp"
 #include "../../tools/KeyManager.hpp"
 #include "../file_interaction/zip_compression/zip_compression.hpp"
@@ -35,5 +34,3 @@ public:
     static bool updatePasteInfo(const std::string& public_key, newPasteInfo data);
 
 };
-
-#endif

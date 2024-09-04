@@ -1,11 +1,10 @@
-#ifndef REDIS_H
-#define REDIS_H
+#pragma once
 
 #include <iostream>
 #include <sw/redis++/redis++.h>
 #include <string>
 #include <vector>
-#include "../config.h"
+#include "../config.hpp"
 
 class Redis {
 public:
@@ -57,5 +56,3 @@ std::string Redis::get<std::string>(const std::string& key);
 // get for string-vector<string>
 template <>
 std::vector<std::string> Redis::get<std::vector<std::string>>(const std::string& key);
-
-#endif // REDIS_H

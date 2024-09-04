@@ -1,5 +1,4 @@
-#ifndef KEYMANAGER_H
-#define KEYMANAGER_H
+#pragma once
 
 #include <string>
 #include <unordered_set>
@@ -50,5 +49,3 @@ private:
 std::unordered_set<std::string> KeyManager::keyLockSet_;
 std::mutex KeyManager::keyLockSetMutex_;
 std::condition_variable KeyManager::keyUnlocked_;
-
-#endif // KEYMANAGER_H

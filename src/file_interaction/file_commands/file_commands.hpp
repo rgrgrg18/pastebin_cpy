@@ -1,5 +1,4 @@
-#ifndef FILE_COMMANDS_HPP
-#define FILE_COMMANDS_HPP
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -16,5 +15,3 @@ namespace FileCommands {
                                                const std::string& directory);
     
 } // namespace FileCommands
-
-#endif //

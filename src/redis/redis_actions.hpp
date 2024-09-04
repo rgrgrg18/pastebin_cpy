@@ -1,9 +1,8 @@
-#ifndef REDIS_ACTIONS_H
-#define REDIS_ACTIONS_H
+#pragma once
 
-#include "redis.h"
+#include "redis.hpp"
 #include "../tools/ConnectionPool.hpp"
-#include "../config.h"
+#include "../config.hpp"
 
 class RedisActions {
 
@@ -39,5 +38,3 @@ std::string RedisActions::get<std::string>(const std::string& key);
 
 template <>
 std::vector<std::string> RedisActions::get<std::vector<std::string>>(const std::string& key);
-
-#endif // REDIS_ACTIONS_H

@@ -1,5 +1,4 @@
-#ifndef CONNECTION_POOL_H
-#define CONNECTION_POOL_H
+#pragma once
 
 #include <condition_variable>
 #include <mutex>
@@ -126,5 +125,3 @@ private:
 
     friend Connection<T>;
 };
-
-#endif // CONNECTION_POOL_H

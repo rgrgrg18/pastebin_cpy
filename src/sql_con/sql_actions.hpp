@@ -1,5 +1,4 @@
-#ifndef __SQL_ACTIONS_H__
-#define __SQL_ACTIONS_H__
+#pragma once
 
 #include <pqxx/pqxx>
 
@@ -49,5 +48,3 @@ public:
 	static void execute_decrease_amount_pastes (pqxx::transaction_base& txn, int64_t login);
 	static last_pastes_info execute_get_last_user_pastes (pqxx::transaction_base& txn, int64_t login, int64_t limit);
 };
-
-#endif
