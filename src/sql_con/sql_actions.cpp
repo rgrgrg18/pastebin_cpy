@@ -30,10 +30,10 @@ void sql_actions::prepare_get_sequence_for_private_key (pqxx::connection_base& c
  * @brief Returns the next value in the sequence public key
  * 
  * @param txn Reference to current transaction.
- * @return unsigned long long Next value in the sequence
+ * @return uint64_t Next value in the sequence
  */
-unsigned long long sql_actions::execute_get_sequence_for_public_key (pqxx::transaction_base& txn) {
-	unsigned long long sequence = 0;
+uint64_t sql_actions::execute_get_sequence_for_public_key (pqxx::transaction_base& txn) {
+	uint64_t sequence = 0;
 	return txn.exec_prepared("get_sequence_for_public_key")[0][0].as(sequence);
 }
 
@@ -41,10 +41,10 @@ unsigned long long sql_actions::execute_get_sequence_for_public_key (pqxx::trans
  * @brief Returns the next value in the sequence private key
  * 
  * @param txn Reference to current transaction.
- * @return unsigned long long Next value in the sequence
+ * @return uint64_t Next value in the sequence
  */
-unsigned long long sql_actions::execute_get_sequence_for_private_key (pqxx::transaction_base& txn) {
-	unsigned long long sequence = 0;
+uint64_t sql_actions::execute_get_sequence_for_private_key (pqxx::transaction_base& txn) {
+	uint64_t sequence = 0;
 	return txn.exec_prepared("get_sequence_for_private_key")[0][0].as(sequence);
 }
 
@@ -106,7 +106,7 @@ void sql_actions::prepare_add_user (pqxx::connection_base& conn) {
  * 
  * If user login already exist in the table, function won't do anything
  */
-void sql_actions::execute_add_user (pqxx::transaction_base& txn, int64_t login) {
+void sql_actions::execute_add_user (pqxx::transaction_base& txn, uint64_t login) {
 	if (txn.exec_prepared("check_login", login).size() == 0)
 		txn.exec_prepared0("add_user", login);
 }
@@ -132,7 +132,7 @@ void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
  * @param private_key Name of file in yandex cloud
  */
 void sql_actions::execute_add_paste (pqxx::transaction_base& txn, 
-									 int64_t login, 
+									 uint64_t login, 
 									 const std::string& public_key, 
 									 const std::string& private_key,
 									 const std::string& password) {
@@ -149,9 +149,9 @@ void sql_actions::execute_add_paste (pqxx::transaction_base& txn,
  * @param login Id telegram chat 
  * @return keys The pair of public key and private key
  */
-keys sql_actions::new_paste (pqxx::dbtransaction& txn, int64_t login, const std::string& password) {
-	unsigned long long seq_pb_key = sql_actions::execute_get_sequence_for_public_key(txn);
-	unsigned long long seq_pr_key = sql_actions::execute_get_sequence_for_private_key(txn);
+keys sql_actions::new_paste (pqxx::dbtransaction& txn, uint64_t login, const std::string& password) {
+	uint64_t seq_pb_key = sql_actions::execute_get_sequence_for_public_key(txn);
+	uint64_t seq_pr_key = sql_actions::execute_get_sequence_for_private_key(txn);
 	paste_hash::Base64 hash_seq_public_key(seq_pb_key);
 	paste_hash::Base64 hash_seq_private_key(seq_pr_key);
 
@@ -187,7 +187,7 @@ void sql_actions::prepare_increase_amount_pastes (pqxx::connection_base& conn) {
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
  */
-void sql_actions::execute_increase_amount_pastes (pqxx::transaction_base& txn, int64_t login) {
+void sql_actions::execute_increase_amount_pastes (pqxx::transaction_base& txn, uint64_t login) {
 	txn.exec_prepared0("increase_amount_pastes", login);
 }
 
@@ -208,7 +208,7 @@ void sql_actions::prepare_decrease_amount_pastes (pqxx::connection_base& conn) {
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
  */
-void sql_actions::execute_decrease_amount_pastes (pqxx::transaction_base& txn, int64_t login) {
+void sql_actions::execute_decrease_amount_pastes (pqxx::transaction_base& txn, uint64_t login) {
 	txn.exec_prepared0("decrease_amount_pastes", login);
 }
 
@@ -228,11 +228,11 @@ void sql_actions::prepare_return_amount_pastes (pqxx::connection_base& conn) {
  * 
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
- * @return size_t Amount pastes of user
+ * @return uint16_t Amount pastes of user
  */
-size_t sql_actions::execute_return_amount_pastes (pqxx::transaction_base& txn, int64_t login) {
+uint16_t sql_actions::execute_return_amount_pastes (pqxx::transaction_base& txn, uint64_t login) {
 	pqxx::result amount_pastes = txn.exec_prepared("return_amount_pastes", login);
-	size_t example = 0;
+	uint16_t example = 0;
 	return amount_pastes.empty() ? 0 : amount_pastes[0][0].as(example);
 }
 
@@ -304,7 +304,7 @@ void sql_actions::prepare_delete_paste (pqxx::connection_base& conn) {
  */
 void sql_actions::execute_delete_paste (pqxx::transaction_base& txn, 
 									    const std::string& public_key,
-										int64_t login) {
+										uint64_t login) {
 	txn.exec_prepared0("delete_paste", public_key);
 	execute_decrease_amount_pastes(txn, login);
 }
@@ -330,14 +330,14 @@ void sql_actions::prepare_get_last_user_pastes (pqxx::connection_base& conn) {
  * @param limit Maximum number of output pastes
  * @return std::vector<std::vector<std::string>> Public key, title and created at of last pastes
  */
-last_pastes_info sql_actions::execute_get_last_user_pastes (pqxx::transaction_base& txn, int64_t login, int64_t limit) {
+last_pastes_info sql_actions::execute_get_last_user_pastes (pqxx::transaction_base& txn, uint64_t login, uint16_t limit) {
 	pqxx::result res = txn.exec_prepared("get_user_pastes", login, limit);
-	size_t amount_columns = res.columns();
-	size_t amount_lines = res.size();
+	uint8_t amount_columns = res.columns();
+	uint16_t amount_lines = res.size();
 	last_pastes_info user_pastes(amount_lines, std::vector<std::string>(amount_columns, ""));
 	if (!res.empty()) {
-		for (size_t line = 0; line < amount_lines; ++line) {
-			for (int column = 0; column < amount_columns; ++column) {
+		for (uint16_t line = 0; line < amount_lines; ++line) {
+			for (uint8_t column = 0; column < amount_columns; ++column) {
 				user_pastes[line][column] = std::move(res[line][column].c_str());
 			}
 		}

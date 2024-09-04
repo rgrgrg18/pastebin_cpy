@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cstdint>
+
 namespace redisSettins {
 
-    int __attribute__((weak)) lifeTime = 600; // lifeTime in seconds
+    int32_t __attribute__((weak)) lifeTime = 600; // lifeTime in seconds
 
 };

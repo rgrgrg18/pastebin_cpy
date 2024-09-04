@@ -23,7 +23,7 @@ using pasteData = std::tuple<std::string, std::string, std::string, std::string,
 class PastebinMethods {
 public:
 
-    static std::pair<bool, std::string> addPaste(int64_t user_id,
+    static std::pair<bool, std::string> addPaste(uint64_t user_id,
                                                  pasteData data);
 
     static std::pair<bool, pasteData> getPaste(const std::string& public_key,

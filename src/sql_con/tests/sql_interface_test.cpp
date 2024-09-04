@@ -3,7 +3,7 @@
 #include "../sql_actions.hpp"
 
 TEST(SqlInterfaceTest, BasicLogic) {
-	int64_t login = 111;
+	uint64_t login = 111;
 		
     keys key = postgres::create_new_paste(login);
 	paste_info data = postgres::get_paste_info(key.first);
@@ -35,7 +35,7 @@ TEST(SqlInterfaceTest, BasicLogic) {
 }
 
 TEST(SqlInterfaceTest, LastUserPastes) {
-	int64_t login = 2222;
+	uint64_t login = 2222;
 
 	keys key_1 = postgres::create_new_paste(login);
 	keys key_2 = postgres::create_new_paste(login);

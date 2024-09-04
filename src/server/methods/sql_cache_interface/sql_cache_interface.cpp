@@ -43,11 +43,11 @@ void cached_postgres::change_title(const std::string& public_key, const std::str
     }
 }
 
-keys cached_postgres::create_new_paste(int64_t login) {
+keys cached_postgres::create_new_paste(uint64_t login) {
     return postgres::create_new_paste(login);
 }
 
-void cached_postgres::del_paste(const std::string& public_key, int64_t login) {
+void cached_postgres::del_paste(const std::string& public_key, uint64_t login) {
     
     postgres::del_paste(public_key, login);
     
@@ -58,7 +58,7 @@ void cached_postgres::del_paste(const std::string& public_key, int64_t login) {
     }
 }
 
-last_pastes_info cached_postgres::get_last_user_pastes(int64_t login, int64_t limit) {
+last_pastes_info cached_postgres::get_last_user_pastes(uint64_t login, uint64_t limit) {
     return postgres::get_last_user_pastes(login, limit);
 }
 
