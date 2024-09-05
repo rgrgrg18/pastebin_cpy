@@ -1,3 +1,6 @@
+# Using WEAK_ATTR in config files
+add_compile_definitions(USE_WEAK)
+
 # Adding dirs with methods
 add_subdirectory(amazon_s3)
 add_subdirectory(file_interaction)
