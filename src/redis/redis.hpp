@@ -1,10 +1,12 @@
 #pragma once
 
 #include <iostream>
-#include <sw/redis++/redis++.h>
 #include <string>
 #include <vector>
-#include "../config.hpp"
+
+#include <sw/redis++/redis++.h>
+
+#include "config.hpp"
 
 class Redis {
 public:

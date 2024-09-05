@@ -1,7 +1,10 @@
-#include <gtest/gtest.h>
 #include <string>
-#include "../base64.hpp"
-#include "../../tests/generator.hpp"
+
+#include <gtest/gtest.h>
+
+#include "generator.hpp"
+
+#include "base64.hpp"
 
 TEST(Base64, notEmptyResponce) {
     EXPECT_EQ(Base64_code::base64_encode(""), "");

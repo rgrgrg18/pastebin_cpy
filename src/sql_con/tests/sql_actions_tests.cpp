@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
-#include "../sql_actions.hpp"
-#include "../../config.hpp"
+
+#include "config.hpp"
+
+#include "sql_actions.hpp"
 
 class TestDB: public ::testing::Test {
 protected:

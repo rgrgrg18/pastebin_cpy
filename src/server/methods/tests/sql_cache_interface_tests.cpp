@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#include "../sql_cache_interface/sql_cache_interface.hpp"
+
+#include "sql_cache_interface/sql_cache_interface.hpp"
 
 TEST(SqlCacheInterfaceTest, GetPasteInfoExist) {
     uint64_t login = 1111;

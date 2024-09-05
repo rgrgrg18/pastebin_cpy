@@ -1,7 +1,7 @@
 # pragma once
 
-#include <string>
 #include <random>
+#include <string>
 
 namespace generator {
 
