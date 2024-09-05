@@ -1,5 +1,4 @@
 #include "AwsActions.hpp"
-#include "../config.hpp"
 
 /* Initialize the API once */
 AwsAPI::AwsAPI() {

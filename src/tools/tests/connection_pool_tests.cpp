@@ -1,10 +1,12 @@
-#include <gtest/gtest.h>
 #include <thread>
 #include <mutex>
 #include <chrono>
 #include <future>
 #include <cstdlib>
-#include "../ConnectionPool.hpp"
+
+#include <gtest/gtest.h>
+
+#include "ConnectionPool.hpp"
 
 class MyType {
     int x;

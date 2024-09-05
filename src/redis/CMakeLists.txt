@@ -1,4 +1,3 @@
-# Add the redis library
 add_library(redis STATIC redis.cpp redis_actions.cpp)
 
 # Set the include directory for Redis++
@@ -19,26 +18,28 @@ target_link_libraries(redis PUBLIC ${HIREDIS_LIB})
 find_library(REDIS_PLUS_PLUS_LIB redis++)
 target_link_libraries(redis PUBLIC ${REDIS_PLUS_PLUS_LIB})
 
-# GoogleTest setup for redis_test
-find_package(GTest REQUIRED)
-find_package(Threads REQUIRED)
+# Link dependencies including config and tools
+target_link_libraries(redis PRIVATE
+        config
+        tools)
 
-# Add the test executable
+
+# Redis tests
 add_executable(redis_test
         redis.cpp
         tests/redis_test.cpp
         tests/redis_actions_test.cpp
 )
 
-# Link the redis library and GoogleTest libraries to the test executable
 target_link_libraries(redis_test PRIVATE
         redis
+        config
+        tools
         ${GTEST_LIBRARIES}
         ${GTEST_MAIN_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
 )
 
-# Set the output directory for the test executable
 set_target_properties(redis_test PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test
 )

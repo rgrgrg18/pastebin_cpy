@@ -1,8 +1,11 @@
-#include <gtest/gtest.h>
 #include <string>
-#include "../zip_compression/zip_compression.hpp"
-#include "../file_commands/base64.hpp"
+
+#include <gtest/gtest.h>
+
 #include "generator.hpp"
+
+#include "base64.hpp"
+#include "zip_compression.hpp"
 
 TEST(ZipBase64Tests, equalCodeDecode) {
      for (int i = 0; i < 1000; ++i) {

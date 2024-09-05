@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../../amazon_s3/AwsActions.hpp"
-#include "../../../config.hpp"
-#include "../../../redis/redis_actions.hpp"
-#include "../../../file_interaction/file_commands/file_commands.hpp"
-#include "../settings/redis.hpp"
+#include "AwsActions.hpp"
+#include "config.hpp"
+#include "redis_actions.hpp"
+#include "file_commands.hpp"
+#include "RedisSettings.hpp"
 
 namespace PasteData {
 
