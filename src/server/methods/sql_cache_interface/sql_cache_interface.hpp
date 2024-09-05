@@ -1,9 +1,9 @@
 #pragma once
 
 #include "config.hpp"
-#include "sql_interface.hpp"
 #include "RedisSettings.hpp"
 #include "redis_actions.hpp"
+#include "sql_interface.hpp"
 
 class cached_postgres {
 public:
