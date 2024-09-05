@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_set>
 #include <mutex>
+#include <condition_variable>
 
 class KeyManager {
 private:
