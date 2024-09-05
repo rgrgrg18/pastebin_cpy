@@ -1,10 +1,12 @@
-#include <gtest/gtest.h>
 #include <thread>
 #include <mutex>
 #include <chrono>
 #include <future>
 #include <cstdlib>
-#include "../KeyManager.hpp"
+
+#include <gtest/gtest.h>
+
+#include "KeyManager.hpp"
 
 class MyKeyValueStorage {
 public:

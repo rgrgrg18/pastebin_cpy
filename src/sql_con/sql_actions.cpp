@@ -1,7 +1,10 @@
 #include "sql_actions.hpp"
+
 #include <iostream>
 #include <iomanip>
+
 #include "hash_generate/HashGenerator.hpp"
+
 
 // Work with sequences public and private keys
 /**

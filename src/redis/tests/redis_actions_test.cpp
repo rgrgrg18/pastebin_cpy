@@ -1,7 +1,9 @@
-#include <gtest/gtest.h>
 #include <vector>
 #include <string>
-#include "../redis_actions.hpp"
+
+#include <gtest/gtest.h>
+
+#include "redis_actions.hpp"
 
 
 /* Tests for redis_actions.h */

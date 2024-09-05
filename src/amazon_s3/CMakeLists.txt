@@ -4,14 +4,25 @@ add_library(amazon_s3 STATIC
 
 find_package(AWSSDK REQUIRED COMPONENTS s3 sts)
 
-target_link_libraries(amazon_s3 PRIVATE ${AWSSDK_LINK_LIBRARIES}
+target_link_libraries(amazon_s3 PUBLIC
+        config
+        tools
+        ${AWSSDK_LINK_LIBRARIES}
         ${AWSSDK_PLATFORM_DEPS})
 
 target_include_directories(amazon_s3 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 
+# Aws tests
 add_executable(aws_test tests/aws_actions_tests.cpp)
-target_link_libraries(aws_test PRIVATE amazon_s3 ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+target_link_libraries(aws_test PRIVATE
+        amazon_s3
+        config
+        tools
+        ${GTEST_LIBRARIES}
+        ${GTEST_MAIN_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT})
 
 set_target_properties(aws_test PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test

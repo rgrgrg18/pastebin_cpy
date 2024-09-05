@@ -1,4 +1,5 @@
 #include "file_commands.hpp"
+#include "base64.hpp"
 
 // converting a string to a bin file with the specified directory
 bool FileCommands::string_to_bin(const std::string& fileName, const std::string& str, const std::string& directory){

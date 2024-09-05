@@ -7,3 +7,10 @@ add_subdirectory(tools)
 
 # Add executable directory
 add_subdirectory(server)
+
+
+# Create an INTERFACE library to expose the config.hpp
+add_library(config INTERFACE)
+
+# Specify include directories for config
+target_include_directories(config INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

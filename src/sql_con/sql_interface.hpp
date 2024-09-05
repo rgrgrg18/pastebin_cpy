@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sql_actions.hpp"
-#include "../tools/ConnectionPool.hpp"
+#include "ConnectionPool.hpp"
 
 class postgres {
 private:
