@@ -1,6 +1,6 @@
 #include "methods.hpp"
 
-std::pair<bool, std::string> PastebinMethods::addPaste(int64_t user_id, pasteData data) {
+std::pair<bool, std::string> PastebinMethods::addPaste(uint64_t user_id, pasteData data) {
 
     auto& [author, password, title, created_at, text] = data;
     

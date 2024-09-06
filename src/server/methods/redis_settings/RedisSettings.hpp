@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 // Define a macro to hide the weak attribute
 // Use this if more than one file depends on it to avoid linker errors
 #ifdef USE_WEAK
@@ -10,6 +12,6 @@
 
 namespace redisSettins {
 
-    int WEAK_ATTR lifeTime = 600; // lifeTime in seconds
+    int32_t __attribute__((weak)) lifeTime = 600; // lifeTime in seconds
 
 };

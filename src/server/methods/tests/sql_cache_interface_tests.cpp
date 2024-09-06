@@ -3,7 +3,7 @@
 #include "sql_cache_interface/sql_cache_interface.hpp"
 
 TEST(SqlCacheInterfaceTest, GetPasteInfoExist) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     keys key = postgres::create_new_paste(login);
     paste_info expected = postgres::get_paste_info(key.first);
     std::vector<std::string> value = {std::get<0>(expected), std::get<1>(expected)
@@ -28,7 +28,7 @@ TEST(SqlCacheInterfaceTest, GetPasteInfoExist) {
 
 
 TEST(SqlCacheInterfaceTest, GetPasteInfoDidNotExist) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     keys key = postgres::create_new_paste(login);
     paste_info expected = postgres::get_paste_info(key.first);
     RedisActions::del(key.first);
@@ -50,7 +50,7 @@ TEST(SqlCacheInterfaceTest, GetPasteInfoDidNotExist) {
 }
 
 TEST(SqlCacheInterfaceTest, ChangePasswordExist) { 
-    int64_t login = 1111;
+    uint64_t login = 1111;
     keys key = postgres::create_new_paste(login);
     std::vector<std::string> value = {key.second, std::to_string(login), "", "Untilted"};
     RedisActions::insert(key.first, value);
@@ -69,7 +69,7 @@ TEST(SqlCacheInterfaceTest, ChangePasswordExist) {
 }
 
 TEST(SqlCacheInterfaceTest, ChangePasswordDidNotExist) { 
-    int64_t login = 1111;
+    uint64_t login = 1111;
     keys key = postgres::create_new_paste(login);
     RedisActions::del(key.first);
 
@@ -87,7 +87,7 @@ TEST(SqlCacheInterfaceTest, ChangePasswordDidNotExist) {
 }
 
 TEST(SqlCacheInterfaceTest, ChangeTitleExist) { 
-    int64_t login = 1111;
+    uint64_t login = 1111;
     keys key = postgres::create_new_paste(login);
     std::vector<std::string> value = {key.second, std::to_string(login), "", "Untilted"};
     RedisActions::insert(key.first, value);
@@ -106,7 +106,7 @@ TEST(SqlCacheInterfaceTest, ChangeTitleExist) {
 }
 
 TEST(SqlCacheInterfaceTest, ChangeTitleDidNotExist) { 
-    int64_t login = 1111;
+    uint64_t login = 1111;
     keys key = postgres::create_new_paste(login);
     RedisActions::del(key.first);
 
@@ -123,7 +123,7 @@ TEST(SqlCacheInterfaceTest, ChangeTitleDidNotExist) {
 }
 
 TEST(SqlCacheInterfaceTest, DelPasteExist) { 
-    int64_t login = 1111;
+    uint64_t login = 1111;
     keys key = postgres::create_new_paste(login);
     std::vector<std::string> value = {key.second, std::to_string(login), "", "Untilted"};
     RedisActions::insert(key.first, value);
@@ -144,7 +144,7 @@ TEST(SqlCacheInterfaceTest, DelPasteExist) {
 }
 
 TEST(SqlCacheInterfaceTest, DelPasteDidNotExist) { 
-    int64_t login = 1111;
+    uint64_t login = 1111;
     keys key = postgres::create_new_paste(login);
     RedisActions::del(key.first);
 
@@ -164,7 +164,7 @@ TEST(SqlCacheInterfaceTest, DelPasteDidNotExist) {
 }
 
 TEST(SqlCacheInterfaceTest, CreatePaste) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     
     keys key = cached_postgres::create_new_paste(login);
 

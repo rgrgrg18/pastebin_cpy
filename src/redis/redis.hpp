@@ -25,18 +25,18 @@ public:
     // insert string-string
     void insert(const std::string& key,
         const std::string& value,
-        int lifeTime = -1);
+        int32_t lifeTime = -1);
 
     // insert string-vector<string>
     void insert(const std::string& key,
         const std::vector<std::string>& value,
-        int lifeTime = -1);
+        int32_t lifeTime = -1);
 
 
     // update string-vector<string>
     void update(const std::string& key,
         const std::vector<std::string>& value,
-        int lifeTime = -1);
+        int32_t lifeTime = -1);
 
 
     // delete by key
