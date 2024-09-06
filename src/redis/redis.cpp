@@ -19,7 +19,7 @@ Redis::Redis(const std::string& redisUrl): redis(redisUrl) {
 // insert string-string
 void Redis::insert(const std::string& key,
         const std::string& value,
-        int lifeTime) {
+        int32_t lifeTime) {
 
     try {
         if (redis.exists(key)) {
@@ -41,7 +41,7 @@ void Redis::insert(const std::string& key,
 // insert string-vector<string>
 void Redis::insert(const std::string& key,
         const std::vector<std::string>& value,
-        int lifeTime) {
+        int32_t lifeTime) {
 
     try {
         if (redis.exists(key)) {
@@ -64,7 +64,7 @@ void Redis::insert(const std::string& key,
 // update string-vector<string>
 void Redis::update(const std::string& key,
         const std::vector<std::string>& value,
-        int lifeTime) {
+        int32_t lifeTime) {
     del(key);
     insert(key, value, lifeTime);
 }

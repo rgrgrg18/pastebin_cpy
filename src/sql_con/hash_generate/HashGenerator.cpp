@@ -4,7 +4,7 @@ namespace paste_hash {
 
 	const std::string Base64::code_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
-	std::string Base64::generate_4 (std::string str) {
+  std::string Base64::generate_4 (std::string str) {
 		std::string hash_4(4, '\0');
 
 		while (str.size() % 3 != 0) {
@@ -33,22 +33,22 @@ namespace paste_hash {
 		hash_4[3] = code_string[encoded_4];
 
 		return hash_4;
-	}
+  }
 
-	std::string Base64::generate (std::string str, int length_hash) {
-		if (length_hash % 4 != 0) 
-			length_hash += 4 - length_hash % 4;
-		std::string result_hash;
+  std::string Base64::generate (std::string str, uint64_t length_hash) {
+    if (length_hash % 4 != 0) 
+      length_hash += 4 - length_hash % 4;
+    std::string result_hash;
 
-		for (size_t amount_strings = 0 
-				; amount_strings < (str.size() / 3) 
-				&& amount_strings < (length_hash / 4)
-				; ++amount_strings) {
-			result_hash += generate_4(str.substr(amount_strings * 3, 3));
-		}
-		if (str.size() % 3 != 0 && result_hash.size() != length_hash) {
-			result_hash += generate_4(str.substr(str.size() - (str.size() % 3), str.size() % 3));
-		}
+    for (uint64_t amount_strings = 0 
+        ; amount_strings < (str.size() / 3) 
+        && amount_strings < (length_hash / 4)
+        ; ++amount_strings) {
+      result_hash += generate_4(str.substr(amount_strings * 3, 3));
+    }
+    if (str.size() % 3 != 0 && result_hash.size() != length_hash) {
+      result_hash += generate_4(str.substr(str.size() - (str.size() % 3), str.size() % 3));
+    }
 		while (result_hash.size() != length_hash) {
 			result_hash += '=';
 		}

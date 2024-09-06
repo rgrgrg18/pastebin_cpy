@@ -95,7 +95,7 @@ TEST_F(TestDB, GetPasteInfoEmpty) {
 }
 
 TEST_F(TestDB, AddUserTwice) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
     txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
     
@@ -110,7 +110,7 @@ TEST_F(TestDB, AddUserTwice) {
 }
 
 TEST_F(TestDB, AddPaste) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     std::string public_key = "2222";
     std::string private_key = "3333";
     std::string password = "4444";
@@ -133,7 +133,7 @@ TEST_F(TestDB, AddPaste) {
 }
 
 TEST_F(TestDB, NewPaste) {
-    int64_t login = 11112;
+    uint64_t login = 11112;
     std::string password = "2222";
     
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
@@ -157,7 +157,7 @@ TEST_F(TestDB, NewPaste) {
 }
 
 TEST_F(TestDB, IncreaseAmountPastes) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     int64_t expected_amount_pastes = 9;
     
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
@@ -177,7 +177,7 @@ TEST_F(TestDB, IncreaseAmountPastes) {
 }
 
 TEST_F(TestDB, DecreaseAmountPastes) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     int64_t expected_amount_pastes = 9;
 
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
@@ -197,7 +197,7 @@ TEST_F(TestDB, DecreaseAmountPastes) {
 }
 
 TEST_F(TestDB, ReturnAmountPastesExistUser) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     int64_t expected_amount_pastes = 9;
 
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
@@ -213,7 +213,7 @@ TEST_F(TestDB, ReturnAmountPastesExistUser) {
 }
 
 TEST_F(TestDB, ReturnAmountPastesNotRegisteredUser) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
     
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
     txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
@@ -226,7 +226,7 @@ TEST_F(TestDB, ReturnAmountPastesNotRegisteredUser) {
 TEST_F(TestDB, ChangePassword) {
     std::string public_key = "1111";
     std::string private_key = "2222";
-    int64_t login = 3333;
+    uint64_t login = 3333;
     std::string password = "4444";
 
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
@@ -260,7 +260,7 @@ TEST_F(TestDB, ChangePassword) {
 TEST_F(TestDB, ChangeTitle) {
     std::string public_key = "1111";
     std::string private_key = "2222";
-    int64_t login = 3333;
+    uint64_t login = 3333;
     std::string title = "4444";
 
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
@@ -293,7 +293,7 @@ TEST_F(TestDB, ChangeTitle) {
 TEST_F(TestDB, DelPaste) {
         std::string public_key = "1111";
         std::string private_key = "2222";
-        int64_t login = 3333;
+        uint64_t login = 3333;
         int64_t expected_amount_pastes = 10;
 
         txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
@@ -326,7 +326,7 @@ TEST_F(TestDB, DelPaste) {
 TEST_F(TestDB, GetLastUserPastes) {
     std::string expected_public_key = "9999";
     std::string private_key = "2222";
-    int64_t login = 3333;
+    uint64_t login = 3333;
     std::string expected_title = "0000";
 
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
@@ -349,7 +349,7 @@ TEST_F(TestDB, GetLastUserPastes) {
 }
 
 TEST_F(TestDB, CombinationMainFunctions) {
-    int64_t login = 1111;
+    uint64_t login = 1111;
 
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
     txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
