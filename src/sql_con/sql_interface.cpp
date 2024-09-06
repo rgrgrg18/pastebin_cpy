@@ -49,7 +49,7 @@ void postgres::change_title(const std::string& public_key, const std::string& ne
 	txn.commit();
 }
 
-keys postgres::create_new_paste(int64_t login) {
+keys postgres::create_new_paste(uint64_t login) {
 	postgres_conn conn = postgres::getConnection();
 	pqxx::work txn(conn->get());
 	keys res = sql_actions::new_paste(txn, login);
@@ -57,14 +57,14 @@ keys postgres::create_new_paste(int64_t login) {
 	return res;
 }
 
-void postgres::del_paste(const std::string& public_key, int64_t login) {
+void postgres::del_paste(const std::string& public_key, uint64_t login) {
 	postgres_conn conn = postgres::getConnection();
 	pqxx::work txn(conn->get());
 	sql_actions::execute_delete_paste(txn, public_key, login);
 	txn.commit();
 }
 
-last_pastes_info postgres::get_last_user_pastes(int64_t login, int64_t limit) {
+last_pastes_info postgres::get_last_user_pastes(uint64_t login, uint16_t limit) {
 	postgres_conn conn = postgres::getConnection();
 	pqxx::work txn(conn->get());
 	last_pastes_info res = sql_actions::execute_get_last_user_pastes(txn, login, limit);

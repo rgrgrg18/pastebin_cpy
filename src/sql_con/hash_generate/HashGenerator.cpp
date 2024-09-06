@@ -35,12 +35,12 @@ std::string Base64::generate_4 (std::string str) {
 	return hash_4;
 }
 
-std::string Base64::generate (std::string str, int length_hash) {
+std::string Base64::generate (std::string str, uint64_t length_hash) {
 	if (length_hash % 4 != 0) 
 		length_hash += 4 - length_hash % 4;
 	std::string result_hash;
 
-	for (size_t amount_strings = 0 
+	for (uint64_t amount_strings = 0 
 			; amount_strings < (str.size() / 3) 
 			&& amount_strings < (length_hash / 4)
 			; ++amount_strings) {
