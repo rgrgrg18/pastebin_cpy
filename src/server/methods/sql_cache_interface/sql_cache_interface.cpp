@@ -4,18 +4,18 @@ paste_info cached_postgres::get_paste_info(const std::string& public_key) {
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
-    if (info.empty()) {
+    if (!info.has_value()) {
         info = [&public_key]() { 
             paste_info info = postgres::get_paste_info(public_key);
             return std::vector<std::string>{std::get<0>(info), std::get<1>(info)
                 , std::get<2>(info), std::get<3>(info), std::get<4>(info)};
         }();
-        RedisActions::insert(public_key, info, redisSettins::lifeTime);
+        RedisActions::insert(public_key, info.value(), redisSettins::lifeTime);
     }
 
     return [&info]() {
-        return std::forward_as_tuple(std::move(info[0]), std::move(info[1])
-            , std::move(info[2]), std::move(info[3]), std::move(info[4]));
+        return std::forward_as_tuple(std::move(info.value()[0]), std::move(info.value()[1])
+            , std::move(info.value()[2]), std::move(info.value()[3]), std::move(info.value()[4]));
     }();
 };
 
@@ -25,9 +25,9 @@ void cached_postgres::change_password(const std::string& public_key, const std::
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
-    if (!info.empty()) {
-        info[2] = new_password;
-        RedisActions::update(public_key, info, redisSettins::lifeTime);
+    if (info.has_value()) {
+        info.value()[2] = new_password;
+        RedisActions::update(public_key, info.value(), redisSettins::lifeTime);
     }
 }
 
@@ -37,9 +37,9 @@ void cached_postgres::change_title(const std::string& public_key, const std::str
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
-    if (!info.empty()) {
-        info[3] = new_name;
-        RedisActions::update(public_key, info, redisSettins::lifeTime);
+    if (info.has_value()) {
+        info.value()[3] = new_name;
+        RedisActions::update(public_key, info.value(), redisSettins::lifeTime);
     }
 }
 
@@ -53,7 +53,7 @@ void cached_postgres::del_paste(const std::string& public_key, uint64_t login) {
     
     auto info = RedisActions::get<std::vector<std::string>>(public_key);  
 
-    if (!info.empty()) {
+    if (info.has_value()) {
         RedisActions::update(public_key, {"", "", "", "", ""}, redisSettins::lifeTime);
     }
 }

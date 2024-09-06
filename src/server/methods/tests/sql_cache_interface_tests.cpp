@@ -15,12 +15,12 @@ TEST(SqlCacheInterfaceTest, GetPasteInfoExist) {
     EXPECT_EQ(expected, actual_postgres_info);
 
     auto actual_redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    ASSERT_FALSE(actual_redis_info.empty()) << "Function get_paste_info didn't insert into redis paste info";
-    EXPECT_EQ(actual_redis_info[0], std::get<0>(expected));
-    EXPECT_EQ(actual_redis_info[1], std::get<1>(expected));
-    EXPECT_EQ(actual_redis_info[2], std::get<2>(expected));
-    EXPECT_EQ(actual_redis_info[3], std::get<3>(expected));
-    EXPECT_EQ(actual_redis_info[4], std::get<4>(expected));
+    ASSERT_TRUE(actual_redis_info.has_value()) << "Function get_paste_info didn't insert into redis paste info";
+    EXPECT_EQ(actual_redis_info.value()[0], std::get<0>(expected));
+    EXPECT_EQ(actual_redis_info.value()[1], std::get<1>(expected));
+    EXPECT_EQ(actual_redis_info.value()[2], std::get<2>(expected));
+    EXPECT_EQ(actual_redis_info.value()[3], std::get<3>(expected));
+    EXPECT_EQ(actual_redis_info.value()[4], std::get<4>(expected));
     
     postgres::del_paste(key.first, login);
     RedisActions::del(key.first);
@@ -38,16 +38,16 @@ TEST(SqlCacheInterfaceTest, GetPasteInfoDidNotExist) {
     EXPECT_EQ(expected, actual_postgres_info);
 
     auto actual_redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    ASSERT_FALSE(actual_redis_info.empty()) << "Function get_paste_info didn't insert into redis paste info";
-    EXPECT_EQ(actual_redis_info[0], std::get<0>(expected));
-    EXPECT_EQ(actual_redis_info[1], std::get<1>(expected));
-    EXPECT_EQ(actual_redis_info[2], std::get<2>(expected));
-    EXPECT_EQ(actual_redis_info[3], std::get<3>(expected));
-    EXPECT_EQ(actual_redis_info[4], std::get<4>(expected));
+    ASSERT_TRUE(actual_redis_info.has_value()) << "Function get_paste_info didn't insert into redis paste info";
+    EXPECT_EQ(actual_redis_info.value()[0], std::get<0>(expected));
+    EXPECT_EQ(actual_redis_info.value()[1], std::get<1>(expected));
+    EXPECT_EQ(actual_redis_info.value()[2], std::get<2>(expected));
+    EXPECT_EQ(actual_redis_info.value()[3], std::get<3>(expected));
+    EXPECT_EQ(actual_redis_info.value()[4], std::get<4>(expected));
     
     postgres::del_paste(key.first, login);
     RedisActions::del(key.first);
-}
+} 
 
 TEST(SqlCacheInterfaceTest, ChangePasswordExist) { 
     uint64_t login = 1111;
@@ -62,7 +62,7 @@ TEST(SqlCacheInterfaceTest, ChangePasswordExist) {
     EXPECT_EQ(password, std::get<2>(postgres_info)) << "Function change_password doesn't change password in postgressql table";
 
     auto redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    EXPECT_EQ(redis_info[2], password) << "Function change_password doesn't change paste password in redis";
+    EXPECT_EQ(redis_info.value()[2], password) << "Function change_password doesn't change paste password in redis";
 
     postgres::del_paste(key.first, login);
     RedisActions::del(key.first);
@@ -80,7 +80,7 @@ TEST(SqlCacheInterfaceTest, ChangePasswordDidNotExist) {
     EXPECT_EQ(password, std::get<2>(postgres_info)) << "Function change_password doesn't change password in postgressql table";
 
     auto redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    EXPECT_TRUE(redis_info.empty()) << "Function change_password insert into redis paste info";
+    EXPECT_FALSE(redis_info.has_value()) << "Function change_password insert into redis paste info";
 
     postgres::del_paste(key.first, login);
     RedisActions::del(key.first);
@@ -99,7 +99,7 @@ TEST(SqlCacheInterfaceTest, ChangeTitleExist) {
     EXPECT_EQ(title, std::get<3>(postgres_info)) << "Function change_title doesn't change title in postgressql table";
 
     auto redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    EXPECT_EQ(redis_info[3], title) << "Function change_title doesn't change paste title in redis";
+    EXPECT_EQ(redis_info.value()[3], title) << "Function change_title doesn't change paste title in redis";
 
     postgres::del_paste(key.first, login);
     RedisActions::del(key.first);
@@ -117,7 +117,7 @@ TEST(SqlCacheInterfaceTest, ChangeTitleDidNotExist) {
     EXPECT_EQ(title, std::get<3>(postgres_info)) << "Function change_title doesn't change title in postgressql table";
 
     auto redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    EXPECT_TRUE(redis_info.empty()) << "Function change_title insert into redis paste info";
+    EXPECT_FALSE(redis_info.has_value()) << "Function change_title insert into redis paste info";
 
     postgres::del_paste(key.first, login);
 }
@@ -137,9 +137,9 @@ TEST(SqlCacheInterfaceTest, DelPasteExist) {
     }
 
     auto redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    ASSERT_TRUE(!redis_info.empty()) << "Function del_paste delete paste info in redis";
+    ASSERT_TRUE(redis_info.has_value()) << "Function del_paste delete paste info in redis";
     std::vector<std::string> expected = {"","","","",""};
-    EXPECT_EQ(redis_info, expected) << "Function del_paste didn't change paste info in redis";
+    EXPECT_EQ(redis_info.value(), expected) << "Function del_paste didn't change paste info in redis";
     RedisActions::del(key.first);
 }
 
@@ -157,8 +157,8 @@ TEST(SqlCacheInterfaceTest, DelPasteDidNotExist) {
     }
 
     auto redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    EXPECT_TRUE(redis_info.empty()) << "Function del_paste insert into redis paste info";
-    if (!redis_info.empty()) {
+    EXPECT_FALSE(redis_info.has_value()) << "Function del_paste insert into redis paste info";
+    if (redis_info.has_value()) {
         RedisActions::del(key.first);
     }
 }
@@ -174,8 +174,8 @@ TEST(SqlCacheInterfaceTest, CreatePaste) {
     EXPECT_EQ(std::get<1>(postgres_info), std::to_string(login));
 
     auto redis_info = RedisActions::get<std::vector<std::string>>(key.first);
-    EXPECT_TRUE(redis_info.empty()) << "Function create paste insert into redis paste info";
-    if (!redis_info.empty()) {
+    EXPECT_FALSE(redis_info.has_value()) << "Function create paste insert into redis paste info";
+    if (redis_info.has_value()) {
         RedisActions::del(key.first);
     }
 
