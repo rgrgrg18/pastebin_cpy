@@ -5,10 +5,12 @@
 #include "sql_interface.hpp"
 
 TEST(SqlInterfaceTest, BasicLogic) {
+	postgres db;
+	
 	uint64_t login = 111;
 		
-    keys key = postgres::create_new_paste(login);
-	paste_info data = postgres::get_paste_info(key.first);
+    keys key = db.create_new_paste(login);
+	paste_info data = db.get_paste_info(key.first);
 
 	ASSERT_NE(std::get<1>(data), "") << "New paste doesn't exist after creation by new_paste function";
 
@@ -16,12 +18,12 @@ TEST(SqlInterfaceTest, BasicLogic) {
     EXPECT_EQ(std::get<0>(data), key.second) << "Function new_paste or get_paste_info returns incorrect private key";
 
 	std::string expected_password = "0000";
-    postgres::change_password(key.first, expected_password);
+    db.change_password(key.first, expected_password);
 
     std::string expected_title = "9999";
-    postgres::change_title(key.first, expected_title);
+    db.change_title(key.first, expected_title);
 
-    data = postgres::get_paste_info(key.first);
+    data = db.get_paste_info(key.first);
 
     EXPECT_NE(std::get<2>(data), "") << "Password wasn't change after calling function change_password";
     if (std::get<2>(data) != "")
@@ -30,25 +32,27 @@ TEST(SqlInterfaceTest, BasicLogic) {
     if (std::get<3>(data) != "Untilted")
         EXPECT_EQ(std::get<3>(data), expected_title) << "Title that returns from function get_paste_info doesn't equal to title that was passed to the function change_title";
 
-    postgres::del_paste(key.first, login);
-    data = postgres::get_paste_info(key.first);
+    db.del_paste(key.first, login);
+    data = db.get_paste_info(key.first);
 
     EXPECT_EQ(std::get<1>(data), "") << "Function delete_paste didn't delete paste";	
 }
 
 TEST(SqlInterfaceTest, LastUserPastes) {
+	postgres db;
+
 	uint64_t login = 2222;
 
-	keys key_1 = postgres::create_new_paste(login);
-	keys key_2 = postgres::create_new_paste(login);
-	keys key_3 = postgres::create_new_paste(login);
+	keys key_1 = db.create_new_paste(login);
+	keys key_2 = db.create_new_paste(login);
+	keys key_3 = db.create_new_paste(login);
 
 	std::string expected_title_2 = "4444";
-	postgres::change_title(key_2.first, expected_title_2);
+	db.change_title(key_2.first, expected_title_2);
 	std::string expected_title_3 = "5555";
-	postgres::change_title(key_3.first, expected_title_3);
+	db.change_title(key_3.first, expected_title_3);
 
-	last_pastes_info actual = postgres::get_last_user_pastes(login, 2);
+	last_pastes_info actual = db.get_last_user_pastes(login, 2);
 	
 	ASSERT_FALSE(actual.empty());
     EXPECT_EQ(actual[0][0], expected_title_3);
@@ -57,10 +61,10 @@ TEST(SqlInterfaceTest, LastUserPastes) {
 	EXPECT_EQ(actual[1][0], expected_title_2);
     EXPECT_EQ(actual[1][1], key_2.first);
 
-	postgres::del_paste(key_1.first, login);
-	postgres::del_paste(key_2.first, login);
-	postgres::del_paste(key_3.first, login);
+	db.del_paste(key_1.first, login);
+	db.del_paste(key_2.first, login);
+	db.del_paste(key_3.first, login);
 
-	actual = postgres::get_last_user_pastes(login, 2);
+	actual = db.get_last_user_pastes(login, 2);
 	EXPECT_TRUE(actual.empty());
 }

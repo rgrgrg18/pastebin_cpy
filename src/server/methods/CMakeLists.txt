@@ -13,6 +13,7 @@ target_link_libraries(server_methods PUBLIC
     redis
     sql_con
     redis_settings
+    interface
 )
 
 target_include_directories(server_methods PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

@@ -1,4 +1,5 @@
 add_subdirectory(methods)
+add_subdirectory(interfaces)
 
 find_package(Protobuf CONFIG REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
