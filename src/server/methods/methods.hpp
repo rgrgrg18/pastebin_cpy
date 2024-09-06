@@ -1,11 +1,11 @@
 #pragma once
 
 #include <iostream>
-#include <tuple>
 #include <string>
+#include <tuple>
 
-#include "KeyManager.hpp"
 #include "file_commands.hpp"
+#include "KeyManager.hpp"
 #include "paste_data/PasteData.hpp"
 #include "sql_cache_interface/sql_cache_interface.hpp"
 #include "zip_compression.hpp"
@@ -20,7 +20,7 @@ using pasteData = std::tuple<std::string, std::string, std::string, std::string,
 class PastebinMethods {
 public:
 
-    static std::pair<bool, std::string> addPaste(int64_t user_id,
+    static std::pair<bool, std::string> addPaste(uint64_t user_id,
                                                  pasteData data);
 
     static std::pair<bool, pasteData> getPaste(const std::string& public_key,

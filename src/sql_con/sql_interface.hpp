@@ -1,7 +1,7 @@
 #pragma once
 
-#include "sql_actions.hpp"
 #include "ConnectionPool.hpp"
+#include "sql_actions.hpp"
 
 class postgres {
 private:
@@ -44,9 +44,9 @@ public:
 
     static void change_title(const std::string& public_key, const std::string& new_name);
 
-    static keys create_new_paste(int64_t login);
+    static keys create_new_paste(uint64_t login);
 
-    static void del_paste(const std::string& public_key, int64_t login);
+    static void del_paste(const std::string& public_key, uint64_t login);
 
-    static last_pastes_info get_last_user_pastes(int64_t login, int64_t limit);
+    static last_pastes_info get_last_user_pastes(uint64_t login, uint16_t limit);
 };

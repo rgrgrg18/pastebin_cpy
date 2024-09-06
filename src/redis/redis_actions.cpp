@@ -7,7 +7,7 @@ RedisActions::RedisConnection RedisActions::getConnection() {
 
 bool RedisActions::insert(const std::string& key,
         const std::string& value,
-        int lifeTime) {
+        int32_t lifeTime) {
 
     try {
          getConnection()->insert(key, value, lifeTime);
@@ -19,7 +19,7 @@ bool RedisActions::insert(const std::string& key,
 
 bool RedisActions::insert(const std::string& key,
         const std::vector<std::string>& value,
-        int lifeTime) {
+        int32_t lifeTime) {
     try {
         getConnection()->insert(key, value, lifeTime);
         return true;
@@ -30,7 +30,7 @@ bool RedisActions::insert(const std::string& key,
 
 bool RedisActions::update(const std::string& key,
         const std::vector<std::string>& value,
-        int lifeTime) {
+        int32_t lifeTime) {
     try {
         getConnection()->update(key, value, lifeTime);
         return true;

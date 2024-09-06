@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ConnectionPool.hpp"
 #include "config.hpp"
+#include "ConnectionPool.hpp"
 #include "redis.hpp"
 
 class RedisActions {
@@ -13,15 +13,15 @@ public:
 
     static bool insert(const std::string& key,
             const std::string& value,
-            int lifeTime = -1);
+            int32_t lifeTime = -1);
 
     static bool insert(const std::string& key,
         const std::vector<std::string>& value,
-        int lifeTime = -1);
+        int32_t lifeTime = -1);
 
     static bool update(const std::string& key,
         const std::vector<std::string>& value,
-        int lifeTime = -1);
+        int32_t lifeTime = -1);
 
     static bool del(const std::string& key);
 
