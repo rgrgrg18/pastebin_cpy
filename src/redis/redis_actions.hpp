@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ConnectionPool.hpp"
 #include "config.hpp"
+#include "ConnectionPool.hpp"
 #include "redis.hpp"
 
 class RedisActions {
