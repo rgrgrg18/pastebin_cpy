@@ -3,6 +3,7 @@
 #include <type_traits>
 
 #include "config.hpp"
+#include "DefaultServices.hpp"
 #include "RedisSettings.hpp"
 #include "redis_actions.hpp"
 #include "storage_interface.hpp"

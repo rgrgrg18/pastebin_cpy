@@ -39,15 +39,15 @@ private:
 	static postgres_conn getConnection();
 
 public:
-    paste_info get_paste_info(const std::string& public_key) override;
+    paste_info get_paste_info(const std::string& public_key) final;
 
-    void change_password(const std::string& public_key, const std::string& new_password) override;
+    void change_password(const std::string& public_key, const std::string& new_password) final;
 
-	void change_title(const std::string& public_key, const std::string& new_name) override;
+	void change_title(const std::string& public_key, const std::string& new_name) final;
 
-    keys create_new_paste(uint64_t login) override;
+    keys create_new_paste(uint64_t login) final;
 
-    void del_paste(const std::string& public_key, uint64_t login) override;
+    void del_paste(const std::string& public_key, uint64_t login) final;
 
-    last_pastes_info get_last_user_pastes(uint64_t login, uint16_t limit) override;
+    last_pastes_info get_last_user_pastes(uint64_t login, uint16_t limit) final;
 };

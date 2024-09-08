@@ -1,6 +1,6 @@
 #include "sql_cache_interface.hpp"
 
-std::unique_ptr<Storage> CachedStorage::storage_ = std::make_unique<Config::DefaultStorage>();
+std::unique_ptr<Storage> CachedStorage::storage_ = std::make_unique<DefaultServices::Storage>();
 
 paste_info CachedStorage::get_paste_info(const std::string& public_key) {
 
