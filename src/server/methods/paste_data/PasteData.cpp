@@ -30,7 +30,7 @@ std::string PasteData::getCachedPaste(const std::string& key) {
         auto [value, correct] = FileCommands::bin_to_string(key, Config::Files_directory);
         if (!correct) return "";
 
-        RedisActions::insert(key, value, redisSettins::lifeTime);
+        RedisActions::insert(key, value, redisSettins::lifeTimeInSeconds);
         return value;
     }
 

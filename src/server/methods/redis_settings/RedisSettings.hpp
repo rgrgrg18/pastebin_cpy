@@ -4,6 +4,6 @@
 
 namespace redisSettins {
 
-    int32_t __attribute__((weak)) lifeTime = 600; // lifeTime in seconds
+    int32_t __attribute__((weak)) lifeTimeInSeconds = 600;
 
 };
