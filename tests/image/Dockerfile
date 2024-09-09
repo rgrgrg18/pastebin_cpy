@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy necessary files
 COPY tests/load_testing/ ./load_testing
+COPY tests/acceptance_testing/ ./acceptance_testing
 COPY src/server/proto/server.proto ./load_testing
 COPY src/server/proto/server.proto ./acceptance_testing
 COPY tests/scripts/run.sh .
@@ -35,15 +36,10 @@ ENV PATH="${GOPATH}/bin:${PATH}"
 RUN go install github.com/bojand/ghz/cmd/ghz@latest
 
 # Install Python packages
-RUN pip install --no-cache-dir grpcio grpcio-tools protobuf
-
-# Configure SSH
-RUN echo "StrictHostKeyChecking=no" >> /etc/ssh/ssh_config \
-    && mkdir /var/run/sshd \
-    && echo "root:password" | chpasswd
+RUN pip install --no-cache-dir grpcio grpcio-tools protobuf==5.27.2
 
 EXPOSE 9999
 EXPOSE 22
-
-# Run SSH server
+RUN echo "StrictHostKeyChecking=no" >> /etc/ssh/ssh_config
+RUN mkdir /var/run/sshd
 CMD ["/usr/sbin/sshd", "-D"]
