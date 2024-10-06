@@ -13,20 +13,20 @@ public:
 
     static bool insert(const std::string& key,
             const std::string& value,
-            int32_t lifeTime = -1);
+            std::optional<uint32_t> lifeTime = std::nullopt);
 
     static bool insert(const std::string& key,
         const std::vector<std::string>& value,
-        int32_t lifeTime = -1);
+        std::optional<uint32_t> lifeTime = std::nullopt);
 
     static bool update(const std::string& key,
         const std::vector<std::string>& value,
-        int32_t lifeTime = -1);
+        std::optional<uint32_t> lifeTime = std::nullopt);
 
     static bool del(const std::string& key);
 
     template <typename T>
-    static T get(const std::string& key) = delete;
+    static std::optional<T> get(const std::string& key) = delete;
 
 private:
     static RedisConnection getConnection();
@@ -34,7 +34,7 @@ private:
 }; // class RedisActions
 
 template <>
-std::string RedisActions::get<std::string>(const std::string& key);
+std::optional<std::string> RedisActions::get<std::string>(const std::string& key);
 
 template <>
-std::vector<std::string> RedisActions::get<std::vector<std::string>>(const std::string& key);
+std::optional<std::vector<std::string>> RedisActions::get<std::vector<std::string>>(const std::string& key);

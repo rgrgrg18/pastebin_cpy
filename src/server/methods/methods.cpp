@@ -1,6 +1,6 @@
 #include "methods.hpp"
 
-std::pair<bool, std::string> PastebinMethods::addPaste(uint64_t user_id, pasteData data) {
+std::optional<std::string> PastebinMethods::addPaste(uint64_t user_id, pasteData data) {
 
     auto& [author, password, title, created_at, text] = data;
     
@@ -11,13 +11,13 @@ std::pair<bool, std::string> PastebinMethods::addPaste(uint64_t user_id, pasteDa
 
     if (PasteData::addNewPaste(private_key, zipCompression::compressString(text))) {
         updatePasteInfo(public_key, std::tuple(password, title));
-        return {true, public_key};
+        return public_key;
     }
 
-    return {false, ""};
+    return std::nullopt;
 }
 
-std::pair<bool, pasteData> PastebinMethods::getPaste(const std::string& public_key,
+std::optional<pasteData> PastebinMethods::getPaste(const std::string& public_key,
                                                      const std::string& user_password) {
 
     auto lock = KeyManager::lockKey(public_key);
@@ -25,14 +25,14 @@ std::pair<bool, pasteData> PastebinMethods::getPaste(const std::string& public_k
     auto [private_key, author, password, title, created_at] = CachedStorage::get_paste_info(public_key);
 
     if (password != user_password || private_key == "") {
-        return {false, std::tuple("", "", "", "", "")};
+        return std::nullopt;
     }
 
-    return {true, std::tuple(std::move(author),
+    return  std::tuple(std::move(author),
                        std::move(password),
                        std::move(title),
                        std::move(created_at),
-                       std::move(zipCompression::decompressString(PasteData::getCachedPaste(private_key))))};
+                       std::move(zipCompression::decompressString(PasteData::getCachedPaste(private_key))));
 }
 
 bool PastebinMethods::deletePaste(const std::string& public_key) {

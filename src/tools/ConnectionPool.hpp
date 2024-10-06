@@ -12,7 +12,7 @@ class ConnectionPool;
 template <typename T>
 class Connection {
 public:
-    Connection(std::unique_ptr<T> conn, ConnectionPool<T>& pool)
+    Connection(std::unique_ptr<T>&& conn, ConnectionPool<T>& pool)
     : conn_(std::move(conn)), pool_(pool) {}
 
     ~Connection() {
@@ -54,9 +54,9 @@ private:
 template <typename T>
 class ConnectionPool {
 public:
-    template <typename... Args>
-    static ConnectionPool& getInstance(size_t poolSize, const Args&... args) {
-        static ConnectionPool instance(poolSize, args...);
+
+    static ConnectionPool& getInstance(size_t poolSize, auto&&... args) {
+        static ConnectionPool instance(poolSize, std::forward<decltype(args)>(args)...);
         return instance;
     }
 
@@ -86,7 +86,7 @@ public:
 private:
 
     // Release a connection back to the pool
-    void release(std::unique_ptr<T> conn) {
+    void release(std::unique_ptr<T>&& conn) {
         std::lock_guard<std::mutex> lock(QueueMutex_);
         if (!is_shutdown_) {
             Queue_.push(std::move(conn));
@@ -94,11 +94,10 @@ private:
         }
     }
 
-    template <typename... Args>
-    ConnectionPool(size_t poolSize, const Args&... args) {
+    ConnectionPool(size_t poolSize, auto&&... args) {
         try {
             for (size_t i = 0; i < poolSize; ++i) {
-                auto conn = std::make_unique<T>(args...);
+                auto conn = std::make_unique<T>(std::forward<decltype(args)>(args)...);
                 Queue_.push(std::move(conn));
             }
         } catch (...) {
