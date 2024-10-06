@@ -2,8 +2,8 @@
 
 #include <condition_variable>
 #include <mutex>
-#include <queue>
 #include <memory>
+#include <queue>
 #include <stdexcept>
 
 template <typename T>

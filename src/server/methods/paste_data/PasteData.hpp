@@ -2,8 +2,8 @@
 
 #include "AwsActions.hpp"
 #include "config.hpp"
-#include "redis_actions.hpp"
 #include "file_commands.hpp"
+#include "redis_actions.hpp"
 #include "RedisSettings.hpp"
 
 namespace PasteData {
