@@ -19,7 +19,7 @@ Redis::Redis(const std::string& redisUrl): redis(redisUrl) {
 // insert string-string
 void Redis::insert(const std::string& key,
         const std::string& value,
-        int32_t lifeTime) {
+        std::optional<uint32_t> lifeTime) {
 
     try {
         if (redis.exists(key)) {
@@ -27,7 +27,7 @@ void Redis::insert(const std::string& key,
         }
 
         redis.set(key, value);
-        if (lifeTime != -1) redis.expire(key, std::chrono::seconds(lifeTime));
+        if (lifeTime.has_value()) redis.expire(key, std::chrono::seconds(lifeTime.value()));
 
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
@@ -41,7 +41,7 @@ void Redis::insert(const std::string& key,
 // insert string-vector<string>
 void Redis::insert(const std::string& key,
         const std::vector<std::string>& value,
-        int32_t lifeTime) {
+        std::optional<uint32_t> lifeTime) {
 
     try {
         if (redis.exists(key)) {
@@ -49,7 +49,7 @@ void Redis::insert(const std::string& key,
         }
 
         redis.rpush(key, value.begin(), value.end());
-        if (lifeTime != -1) redis.expire(key, std::chrono::seconds(lifeTime));
+        if (lifeTime.has_value()) redis.expire(key, std::chrono::seconds(lifeTime.value()));
 
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
@@ -64,7 +64,7 @@ void Redis::insert(const std::string& key,
 // update string-vector<string>
 void Redis::update(const std::string& key,
         const std::vector<std::string>& value,
-        int32_t lifeTime) {
+        std::optional<uint32_t> lifeTime) {
     del(key);
     insert(key, value, lifeTime);
 }
@@ -82,7 +82,7 @@ void Redis::del(const std::string& key) {
 
 // get string-string
 template <>
-std::string Redis::get<std::string>(const std::string& key) {
+std::optional<std::string> Redis::get<std::string>(const std::string& key) {
 
     try {
         auto val = redis.get(key);
@@ -93,22 +93,23 @@ std::string Redis::get<std::string>(const std::string& key) {
         std::cout << err.what() << std::endl;
         throw;
     }
-    return "";
+    return std::nullopt;
 }
 
 
 // get string-vector<string>
 template <>
-std::vector<std::string> Redis::get<std::vector<std::string>>(const std::string& key) {
+std::optional<std::vector<std::string>> Redis::get<std::vector<std::string>>(const std::string& key) {
 
     std::vector<std::string> vec;
     try {
         if (redis.exists(key)) {
             redis.lrange(key, 0, -1, std::back_inserter(vec));
+            return vec;
         }
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
         throw;
     }
-    return vec;
+    return std::nullopt;
 }

@@ -20,7 +20,7 @@ bool PasteData::addNewPaste(const std::string& key, const std::string& pasteText
 std::string PasteData::getCachedPaste(const std::string& key) {
 
     auto cached_data_ = RedisActions::get<std::string>(key);
-    if (cached_data_ != "") return cached_data_;
+    if (cached_data_.has_value()) return cached_data_.value();
 
     bool download = AwsActions::DownloadObject(Aws::String(key + ".bin"),
                                                 Aws::String(Config::Bucket_name),

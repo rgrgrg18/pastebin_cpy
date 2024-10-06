@@ -13,5 +13,5 @@
 namespace redisSettins {
 
     int32_t WEAK_ATTR lifeTimeInSeconds = 600;
-
+  
 };

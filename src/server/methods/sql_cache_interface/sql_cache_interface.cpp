@@ -4,18 +4,19 @@ paste_info cached_postgres::get_paste_info(const std::string& public_key) {
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
-    if (info.empty()) {
+    if (!info.has_value()) {
         info = [&public_key]() { 
             paste_info info = postgres::get_paste_info(public_key);
             return std::vector<std::string>{std::get<0>(info), std::get<1>(info)
                 , std::get<2>(info), std::get<3>(info), std::get<4>(info)};
         }();
+      
         RedisActions::insert(public_key, info, redisSettins::lifeTimeInSeconds);
     }
 
     return [&info]() {
-        return std::forward_as_tuple(std::move(info[0]), std::move(info[1])
-            , std::move(info[2]), std::move(info[3]), std::move(info[4]));
+        return std::forward_as_tuple(std::move(info.value()[0]), std::move(info.value()[1])
+            , std::move(info.value()[2]), std::move(info.value()[3]), std::move(info.value()[4]));
     }();
 };
 

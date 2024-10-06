@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,18 +26,18 @@ public:
     // insert string-string
     void insert(const std::string& key,
         const std::string& value,
-        int32_t lifeTime = -1);
+        std::optional<uint32_t> lifeTime = std::nullopt);
 
     // insert string-vector<string>
     void insert(const std::string& key,
         const std::vector<std::string>& value,
-        int32_t lifeTime = -1);
+        std::optional<uint32_t> lifeTime = std::nullopt);
 
 
     // update string-vector<string>
     void update(const std::string& key,
         const std::vector<std::string>& value,
-        int32_t lifeTime = -1);
+        std::optional<uint32_t> lifeTime = std::nullopt);
 
 
     // delete by key
@@ -45,7 +46,7 @@ public:
 
     // get T by key
     template <typename T>
-    T get(const std::string& key) = delete;
+    std::optional<T> get(const std::string& key) = delete;
 
 private:
     sw::redis::Redis redis;
@@ -53,8 +54,8 @@ private:
 
 // get for string-string
 template <>
-std::string Redis::get<std::string>(const std::string& key);
+std::optional<std::string> Redis::get<std::string>(const std::string& key);
 
 // get for string-vector<string>
 template <>
-std::vector<std::string> Redis::get<std::vector<std::string>>(const std::string& key);
+std::optional<std::vector<std::string>> Redis::get<std::vector<std::string>>(const std::string& key);
