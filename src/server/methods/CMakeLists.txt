@@ -1,4 +1,4 @@
-add_subdirectory(redis_settings)
+add_subdirectory(settings)
 
 add_library(server_methods
         methods.cpp
@@ -12,7 +12,8 @@ target_link_libraries(server_methods PUBLIC
     zip_compression
     redis
     sql_con
-    redis_settings
+    settings
+    interface
 )
 
 target_include_directories(server_methods PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
