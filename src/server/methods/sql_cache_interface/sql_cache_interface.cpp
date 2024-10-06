@@ -11,7 +11,7 @@ paste_info cached_postgres::get_paste_info(const std::string& public_key) {
                 , std::get<2>(info), std::get<3>(info), std::get<4>(info)};
         }();
       
-        RedisActions::insert(public_key, info, redisSettins::lifeTimeInSeconds);
+        RedisActions::insert(public_key, info.value(), redisSettins::lifeTimeInSeconds);
     }
 
     return [&info]() {
@@ -26,9 +26,9 @@ void cached_postgres::change_password(const std::string& public_key, const std::
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
-    if (!info.empty()) {
-        info[2] = new_password;
-        RedisActions::update(public_key, info, redisSettins::lifeTimeInSeconds);
+    if (info.has_value()) {
+        info.value()[2] = new_password;
+        RedisActions::update(public_key, info.value(), redisSettins::lifeTimeInSeconds);
     }
 }
 
@@ -38,9 +38,9 @@ void cached_postgres::change_title(const std::string& public_key, const std::str
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
-    if (!info.empty()) {
-        info[3] = new_name;
-        RedisActions::update(public_key, info, redisSettins::lifeTimeInSeconds);
+    if (info.has_value()) {
+        info.value()[3] = new_name;
+        RedisActions::update(public_key, info.value(), redisSettins::lifeTimeInSeconds);
     }
 }
 
@@ -54,7 +54,7 @@ void cached_postgres::del_paste(const std::string& public_key, uint64_t login) {
     
     auto info = RedisActions::get<std::vector<std::string>>(public_key);  
 
-    if (!info.empty()) {
+    if (info.has_value()) {
         RedisActions::update(public_key, {"", "", "", "", ""}, redisSettins::lifeTimeInSeconds);
     }
 }
