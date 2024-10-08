@@ -4,6 +4,6 @@
 
 namespace DefaultServices {
 
-using Storage = postgres;
+using Storage = Postgres;
 
 } // namespace DefaultServices

@@ -2,72 +2,87 @@
 
 #include "config.hpp"
 
-void postgres::db_connection::prepare_queries() {
-	sql_actions::prepare_get_sequence_for_public_key(*conn_);
-	sql_actions::prepare_get_sequence_for_private_key(*conn_);
-	sql_actions::prepare_get_info_paste(*conn_);
-	sql_actions::prepare_check_login(*conn_);
-	sql_actions::prepare_add_user(*conn_);
-	sql_actions::prepare_add_paste(*conn_);
-	sql_actions::prepare_return_amount_pastes(*conn_);
-	sql_actions::prepare_increase_amount_pastes(*conn_);
-	sql_actions::prepare_decrease_amount_pastes(*conn_);
-	sql_actions::prepare_change_password_paste(*conn_);
-	sql_actions::prepare_delete_paste(*conn_);
-	sql_actions::prepare_change_title_paste(*conn_);
-	sql_actions::prepare_get_last_user_pastes(*conn_);
+Postgres::DbConnection::DbConnection(const std::string& conn_str)
+		: conn_(std::make_shared<pqxx::connection>(conn_str)) {
+	PrepareQueries();
 }
 
-pqxx::connection& postgres::db_connection::get() const noexcept {
+Postgres::DbConnection::DbConnection(const DbConnection&& other) 
+		: conn_(std::move(other.conn_)) {
+	conn_ = nullptr; 	
+}
+
+Postgres::DbConnection& Postgres::DbConnection::operator=(const Postgres::DbConnection&& other) noexcept {
+	conn_ = std::move(other.conn_);
+	return *this;
+}
+
+void Postgres::DbConnection::PrepareQueries() {
+	SqlActions::PrepareGetSequenceForPublicKey(*conn_);
+	SqlActions::PrepareGetSequenceForPrivateKey(*conn_);
+	SqlActions::PrepareGetInfoPaste(*conn_);
+	SqlActions::PrepareCheckLogin(*conn_);
+	SqlActions::PrepareAddUser(*conn_);
+	SqlActions::PrepareAddPaste(*conn_);
+	SqlActions::PrepareReturnAmountPastes(*conn_);
+	SqlActions::PrepareIncreaseAmountPastes(*conn_);
+	SqlActions::PrepareDecreaseAmountPastes(*conn_);
+	SqlActions::PrepareChangePasswordPaste(*conn_);
+	SqlActions::PrepareDeletePaste(*conn_);
+	SqlActions::PrepareChangeTitlePaste(*conn_);
+	SqlActions::PrepareGetLastUserPastes(*conn_);
+}
+
+pqxx::connection& Postgres::DbConnection::get() const noexcept { 
 	return *conn_;
 }
 
-postgres::postgres_conn postgres::getConnection() {
-    postgres_pool& pool = postgres_pool::getInstance(5, Config::Conn);
+Postgres::PostgresConn Postgres::get_connection() { // NOLINT
+    PostgresPool& pool = PostgresPool::getInstance(5, Config::Conn);
     return pool.getConnection();
 }
 
-paste_info postgres::get_paste_info(const std::string& public_key) {
-	postgres_conn conn = postgres::getConnection();
+PasteInfo Postgres::GetPasteInfo(const std::string& public_key) {
+	PostgresConn conn = Postgres::get_connection();
 	pqxx::work txn(conn->get());
-	paste_info res = sql_actions::execute_get_info_paste(txn, public_key);
+	PasteInfo res = SqlActions::ExecuteGetInfoPaste(txn, public_key);
 	txn.commit();
 	return res;
 }
 
-void postgres::change_password(const std::string& public_key, const std::string& new_password) {
-	postgres_conn conn = postgres::getConnection();
+void Postgres::ChangePassword(const std::string& public_key, const std::string& new_password) {
+	PostgresConn conn = Postgres::get_connection();
 	pqxx::work txn(conn->get());
-	sql_actions::execute_change_password_paste(txn, new_password, public_key);
+	SqlActions::ExecuteChangePasswordPaste(txn, new_password, public_key);
 	txn.commit();
 }
 
-void postgres::change_title(const std::string& public_key, const std::string& new_name) {
-	postgres_conn conn = postgres::getConnection();
+void Postgres::ChangeTitle(const std::string& public_key, const std::string& new_name) {
+	PostgresConn conn = Postgres::get_connection();
 	pqxx::work txn(conn->get());
-	sql_actions::execute_change_title_paste(txn, new_name, public_key);
+	SqlActions::ExecuteChangeTitlePaste(txn, new_name, public_key);
 	txn.commit();
 }
 
-keys postgres::create_new_paste(uint64_t login) {
-	postgres_conn conn = postgres::getConnection();
+Keys Postgres::CreateNewPaste(uint64_t login) {
+	PostgresConn conn = Postgres::get_connection();
 	pqxx::work txn(conn->get());
-	keys res = sql_actions::new_paste(txn, login);
+	Keys res = SqlActions::NewPaste(txn, login);
 	txn.commit();
 	return res;
 }
 
-void postgres::del_paste(const std::string& public_key, uint64_t login) {
-	postgres_conn conn = postgres::getConnection();
+void Postgres::DelPaste(const std::string& public_key, uint64_t login) {
+	PostgresConn conn = Postgres::get_connection();
 	pqxx::work txn(conn->get());
-	sql_actions::execute_delete_paste(txn, public_key, login);
+	SqlActions::ExecuteDeletePaste(txn, public_key, login);
 	txn.commit();
 }
 
-last_pastes_info postgres::get_last_user_pastes(uint64_t login, uint16_t limit) {
-	postgres_conn conn = postgres::getConnection();
+LastPastesInfo Postgres::GetLastUserPastes(uint64_t login, uint16_t limit) {
+	PostgresConn conn = Postgres::get_connection();
 	pqxx::work txn(conn->get());
-	last_pastes_info res = sql_actions::execute_get_last_user_pastes(txn, login, limit);
+	LastPastesInfo res = SqlActions::ExecuteGetLastUserPastes(txn, login, limit);
 	txn.commit();
 	return res;
 }

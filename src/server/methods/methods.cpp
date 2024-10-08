@@ -4,7 +4,7 @@ std::optional<std::string> PastebinMethods::addPaste(uint64_t user_id, pasteData
 
     auto& [author, password, title, created_at, text] = data;
     
-    keys PasteKeys = CachedStorage::create_new_paste(user_id);
+    Keys PasteKeys = CachedStorage::CreateNewPaste(user_id);
 
     std::string public_key(std::move(PasteKeys.first));
     std::string private_key = (std::move(PasteKeys.second));
@@ -20,9 +20,9 @@ std::optional<std::string> PastebinMethods::addPaste(uint64_t user_id, pasteData
 std::optional<pasteData> PastebinMethods::getPaste(const std::string& public_key,
                                                      const std::string& user_password) {
 
-    auto lock = KeyManager::lockKey(public_key);
+    auto lock = KeyManager::LockKey(public_key);
 
-    auto [private_key, author, password, title, created_at] = CachedStorage::get_paste_info(public_key);
+    auto [private_key, author, password, title, created_at] = CachedStorage::GetPasteInfo(public_key);
 
     if (password != user_password || private_key == "") {
         return std::nullopt;
@@ -37,9 +37,9 @@ std::optional<pasteData> PastebinMethods::getPaste(const std::string& public_key
 
 bool PastebinMethods::deletePaste(const std::string& public_key) {
 
-    auto lock = KeyManager::lockKey(public_key);
+    auto lock = KeyManager::LockKey(public_key);
 
-    auto pasteInfo = CachedStorage::get_paste_info(public_key);
+    auto pasteInfo = CachedStorage::GetPasteInfo(public_key);
 
     std::string private_key = std::get<0>(pasteInfo);
     std::string author = std::get<1>(pasteInfo);
@@ -53,7 +53,7 @@ bool PastebinMethods::deletePaste(const std::string& public_key) {
         return false;
     }
 
-    CachedStorage::del_paste(public_key, std::atoll(author.c_str()));
+    CachedStorage::DelPaste(public_key, std::atoll(author.c_str()));
 
     return true;
 
@@ -61,9 +61,9 @@ bool PastebinMethods::deletePaste(const std::string& public_key) {
 
 bool PastebinMethods::updatePasteInfo(const std::string& public_key, newPasteInfo data) {
 
-    auto lock = KeyManager::lockKey(public_key);
+    auto lock = KeyManager::LockKey(public_key);
 
-    auto [private_key, author, old_password, old_title, created_at] = CachedStorage::get_paste_info(public_key);
+    auto [private_key, author, old_password, old_title, created_at] = CachedStorage::GetPasteInfo(public_key);
 
     if (private_key == "") {
         std::cout << "paste to update does't exist\n";
@@ -71,8 +71,8 @@ bool PastebinMethods::updatePasteInfo(const std::string& public_key, newPasteInf
     }
 
     auto [new_password, new_title] = data;
-    if (new_password != "") CachedStorage::change_password(public_key, new_password);
-    if (new_title != "") CachedStorage::change_title(public_key, new_title);
+    if (new_password != "") CachedStorage::ChangePassword(public_key, new_password);
+    if (new_title != "") CachedStorage::ChangeTitle(public_key, new_title);
 
     return true;
 }

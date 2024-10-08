@@ -11,7 +11,7 @@
 class MyKeyValueStorage {
 public:
     void change(const std::string& key, bool increase) {
-        auto lock = KeyManager::lockKey(key);
+        auto lock = KeyManager::LockKey(key);
         if (!data.count(key)) data[key] = 0;
         if (increase) {
             ++data[key];
@@ -21,7 +21,7 @@ public:
     }
 
     int getValue(const std::string& key) {
-        auto lock = KeyManager::lockKey(key);
+        auto lock = KeyManager::LockKey(key);
         return data[key];
     }
 
@@ -83,7 +83,7 @@ TEST(KeyManagerTests, DataRace) {
 }
 
 bool f(int& critical_section) {
-    auto lock = KeyManager::lockKey("key");
+    auto lock = KeyManager::LockKey("key");
 
     // critical section
     ++critical_section;

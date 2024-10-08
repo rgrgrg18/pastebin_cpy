@@ -6,13 +6,13 @@
 #include "hash_generate/HashGenerator.hpp"
 
 
-// Work with sequences public and private keys
+// Work with sequences public and private Keys
 /**
  * @brief Prepares a query that returns the next value in the sequence public key
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_get_sequence_for_public_key (pqxx::connection_base& conn) {
+void SqlActions::PrepareGetSequenceForPublicKey (pqxx::connection_base& conn) {
 	conn.prepare (
 		"get_sequence_for_public_key",
 		"SELECT nextval('public_key_sq');");
@@ -23,7 +23,7 @@ void sql_actions::prepare_get_sequence_for_public_key (pqxx::connection_base& co
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_get_sequence_for_private_key (pqxx::connection_base& conn) {
+void SqlActions::PrepareGetSequenceForPrivateKey (pqxx::connection_base& conn) {
 	conn.prepare (
 		"get_sequence_for_private_key",
 		"SELECT nextval('private_key_sq');");
@@ -35,7 +35,7 @@ void sql_actions::prepare_get_sequence_for_private_key (pqxx::connection_base& c
  * @param txn Reference to current transaction.
  * @return uint64_t Next value in the sequence
  */
-uint64_t sql_actions::execute_get_sequence_for_public_key (pqxx::transaction_base& txn) {
+uint64_t SqlActions::ExecuteGetSequenceForPublicKey (pqxx::transaction_base& txn) {
 	uint64_t sequence = 0;
 	return txn.exec_prepared("get_sequence_for_public_key")[0][0].as(sequence);
 }
@@ -46,7 +46,7 @@ uint64_t sql_actions::execute_get_sequence_for_public_key (pqxx::transaction_bas
  * @param txn Reference to current transaction.
  * @return uint64_t Next value in the sequence
  */
-uint64_t sql_actions::execute_get_sequence_for_private_key (pqxx::transaction_base& txn) {
+uint64_t SqlActions::ExecuteGetSequenceForPrivateKey (pqxx::transaction_base& txn) {
 	uint64_t sequence = 0;
 	return txn.exec_prepared("get_sequence_for_private_key")[0][0].as(sequence);
 }
@@ -56,7 +56,7 @@ uint64_t sql_actions::execute_get_sequence_for_private_key (pqxx::transaction_ba
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_get_info_paste (pqxx::connection_base& conn) {
+void SqlActions::PrepareGetInfoPaste (pqxx::connection_base& conn) {
 	conn.prepare (
 		"get_info_about_paste",
 		"SELECT private_key, login, password, title, created_at FROM pastes WHERE public_key = $1");
@@ -69,12 +69,13 @@ void sql_actions::prepare_get_info_paste (pqxx::connection_base& conn) {
  * 
  * @param txn Reference to current transaction.
  * @param public_key Public key for this paste
- * @return paste_info Private key, login, password, title of the paste
+ * @return PasteInfo Private key, login, password, title of the paste
  */
-paste_info sql_actions::execute_get_info_paste (pqxx::transaction_base& txn, const std::string& public_key) {
+PasteInfo SqlActions::ExecuteGetInfoPaste (pqxx::transaction_base& txn, const std::string& public_key) {
 	pqxx::result pr_key = txn.exec_prepared("get_info_about_paste", public_key);
-	if (pr_key.empty())
+	if (pr_key.empty()) {
 		return {"", "", "", "", ""};
+	}
 	return {pr_key[0][0].c_str(), pr_key[0][1].c_str(), pr_key[0][2].c_str(), pr_key[0][3].c_str(), pr_key[0][4].c_str()};
 } 
 
@@ -84,7 +85,7 @@ paste_info sql_actions::execute_get_info_paste (pqxx::transaction_base& txn, con
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_check_login (pqxx::connection_base& conn) {
+void SqlActions::PrepareCheckLogin (pqxx::connection_base& conn) {
 	conn.prepare(
 		"check_login",
 		"SELECT id FROM users WHERE login = $1");
@@ -95,7 +96,7 @@ void sql_actions::prepare_check_login (pqxx::connection_base& conn) {
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_add_user (pqxx::connection_base& conn) {
+void SqlActions::PrepareAddUser (pqxx::connection_base& conn) {
 	conn.prepare(
 		"add_user",
 		"INSERT INTO users (login) VALUES ($1)");
@@ -109,9 +110,10 @@ void sql_actions::prepare_add_user (pqxx::connection_base& conn) {
  * 
  * If user login already exist in the table, function won't do anything
  */
-void sql_actions::execute_add_user (pqxx::transaction_base& txn, uint64_t login) {
-	if (txn.exec_prepared("check_login", login).size() == 0)
+void SqlActions::ExecuteAddUser (pqxx::transaction_base& txn, uint64_t login) {
+	if (txn.exec_prepared("check_login", login).empty()) {
 		txn.exec_prepared0("add_user", login);
+	}
 }
 
 /**
@@ -119,7 +121,7 @@ void sql_actions::execute_add_user (pqxx::transaction_base& txn, uint64_t login)
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
+void SqlActions::PrepareAddPaste (pqxx::connection_base& conn) {
 	conn.prepare(
 		"add_paste",
 		"INSERT INTO pastes (public_key, private_key, login, password) \
@@ -134,7 +136,7 @@ void sql_actions::prepare_add_paste (pqxx::connection_base& conn) {
  * @param public_key Key with which people receive the file
  * @param private_key Name of file in yandex cloud
  */
-void sql_actions::execute_add_paste (pqxx::transaction_base& txn, 
+void SqlActions::ExecuteAddPaste (pqxx::transaction_base& txn, 
 									 uint64_t login, 
 									 const std::string& public_key, 
 									 const std::string& private_key,
@@ -143,32 +145,32 @@ void sql_actions::execute_add_paste (pqxx::transaction_base& txn,
 }
 
 /**
- * @brief Creates public and private keys for paste and adds all info in tables pastes, users.
+ * @brief Creates public and private Keys for paste and adds all info in tables pastes, users.
  * 
  * @exception Throws exception if connection was broken, transaction aborted or the request failed.
  * If it will throws nothing will be created. (Strong exception guarantee)
  * 
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
- * @return keys The pair of public key and private key
+ * @return Keys The pair of public key and private key
  */
-keys sql_actions::new_paste (pqxx::dbtransaction& txn, uint64_t login, const std::string& password) {
-	uint64_t seq_pb_key = sql_actions::execute_get_sequence_for_public_key(txn);
-	uint64_t seq_pr_key = sql_actions::execute_get_sequence_for_private_key(txn);
+Keys SqlActions::NewPaste (pqxx::dbtransaction& txn, uint64_t login, const std::string& password) {
+	uint64_t seq_pb_key = SqlActions::ExecuteGetSequenceForPublicKey(txn);
+	uint64_t seq_pr_key = SqlActions::ExecuteGetSequenceForPrivateKey(txn);
 	paste_hash::Base64 hash_seq_public_key(seq_pb_key);
 	paste_hash::Base64 hash_seq_private_key(seq_pr_key);
 
 	pqxx::subtransaction txn1(txn, "insert");
 
-	sql_actions::execute_add_user(txn1, login);
+	SqlActions::ExecuteAddUser(txn1, login);
 		
-	sql_actions::execute_add_paste(txn1, login, hash_seq_public_key.hash, hash_seq_private_key.hash, password);
+	SqlActions::ExecuteAddPaste(txn1, login, hash_seq_public_key.hash_, hash_seq_private_key.hash_, password);
 	
-	sql_actions::execute_increase_amount_pastes(txn1, login);
+	SqlActions::ExecuteIncreaseAmountPastes(txn1, login);
 	
 	txn1.commit();
 
-	return {hash_seq_public_key.hash, hash_seq_private_key.hash};
+	return {hash_seq_public_key.hash_, hash_seq_private_key.hash_};
 }
 
 // Functions for features
@@ -178,7 +180,7 @@ keys sql_actions::new_paste (pqxx::dbtransaction& txn, uint64_t login, const std
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_increase_amount_pastes (pqxx::connection_base& conn) {
+void SqlActions::PrepareIncreaseAmountPastes (pqxx::connection_base& conn) {
 	conn.prepare (
 		"increase_amount_pastes",
 		"UPDATE users SET amount_pastes = amount_pastes + 1 WHERE login = $1");
@@ -190,7 +192,7 @@ void sql_actions::prepare_increase_amount_pastes (pqxx::connection_base& conn) {
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
  */
-void sql_actions::execute_increase_amount_pastes (pqxx::transaction_base& txn, uint64_t login) {
+void SqlActions::ExecuteIncreaseAmountPastes (pqxx::transaction_base& txn, uint64_t login) {
 	txn.exec_prepared0("increase_amount_pastes", login);
 }
 
@@ -199,7 +201,7 @@ void sql_actions::execute_increase_amount_pastes (pqxx::transaction_base& txn, u
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_decrease_amount_pastes (pqxx::connection_base& conn) {
+void SqlActions::PrepareDecreaseAmountPastes (pqxx::connection_base& conn) {
 	conn.prepare (
 		"decrease_amount_pastes",
 		"UPDATE users SET amount_pastes = amount_pastes - 1 WHERE login = $1");
@@ -211,7 +213,7 @@ void sql_actions::prepare_decrease_amount_pastes (pqxx::connection_base& conn) {
  * @param txn Reference to current transaction.
  * @param login Id telegram chat 
  */
-void sql_actions::execute_decrease_amount_pastes (pqxx::transaction_base& txn, uint64_t login) {
+void SqlActions::ExecuteDecreaseAmountPastes (pqxx::transaction_base& txn, uint64_t login) {
 	txn.exec_prepared0("decrease_amount_pastes", login);
 }
 
@@ -220,7 +222,7 @@ void sql_actions::execute_decrease_amount_pastes (pqxx::transaction_base& txn, u
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_return_amount_pastes (pqxx::connection_base& conn) {
+void SqlActions::PrepareReturnAmountPastes (pqxx::connection_base& conn) {
 	conn.prepare (
 		"return_amount_pastes",
 		"SELECT amount_pastes FROM users WHERE login = $1");
@@ -233,7 +235,7 @@ void sql_actions::prepare_return_amount_pastes (pqxx::connection_base& conn) {
  * @param login Id telegram chat 
  * @return uint16_t Amount pastes of user
  */
-uint16_t sql_actions::execute_return_amount_pastes (pqxx::transaction_base& txn, uint64_t login) {
+uint16_t SqlActions::ExecuteReturnAmountPastes (pqxx::transaction_base& txn, uint64_t login) {
 	pqxx::result amount_pastes = txn.exec_prepared("return_amount_pastes", login);
 	uint16_t example = 0;
 	return amount_pastes.empty() ? 0 : amount_pastes[0][0].as(example);
@@ -244,9 +246,9 @@ uint16_t sql_actions::execute_return_amount_pastes (pqxx::transaction_base& txn,
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_change_password_paste (pqxx::connection_base& conn) {
+void SqlActions::PrepareChangePasswordPaste (pqxx::connection_base& conn) {
 	conn.prepare (
-		"change_password",
+		"ChangePassword",
 		"UPDATE pastes SET password = $1 WHERE public_key = $2");
 }
 
@@ -257,10 +259,10 @@ void sql_actions::prepare_change_password_paste (pqxx::connection_base& conn) {
  * @param password New password
  * @param public_key Key with which people receive the file
  */
-void sql_actions::execute_change_password_paste (pqxx::transaction_base& txn, 
+void SqlActions::ExecuteChangePasswordPaste (pqxx::transaction_base& txn, 
 												 const std::string& password, 
 												 const std::string& public_key) {
-	txn.exec_prepared0("change_password", password, public_key);
+	txn.exec_prepared0("ChangePassword", password, public_key);
 }
 
 /**
@@ -268,9 +270,9 @@ void sql_actions::execute_change_password_paste (pqxx::transaction_base& txn,
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_change_title_paste (pqxx::connection_base& conn) {
+void SqlActions::PrepareChangeTitlePaste (pqxx::connection_base& conn) {
 	conn.prepare (
-		"change_title",
+		"ChangeTitle",
 		"UPDATE pastes SET title = $1 WHERE public_key = $2");
 }
 
@@ -281,10 +283,10 @@ void sql_actions::prepare_change_title_paste (pqxx::connection_base& conn) {
  * @param title New title
  * @param public_key Key with which people receive the file
  */
-void sql_actions::execute_change_title_paste (pqxx::transaction_base& txn, 
+void SqlActions::ExecuteChangeTitlePaste (pqxx::transaction_base& txn, 
 												 const std::string& title, 
 												 const std::string& public_key) {
-	txn.exec_prepared0("change_title", title, public_key);
+	txn.exec_prepared0("ChangeTitle", title, public_key);
 }
 
 /**
@@ -292,7 +294,7 @@ void sql_actions::execute_change_title_paste (pqxx::transaction_base& txn,
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_delete_paste (pqxx::connection_base& conn) {
+void SqlActions::PrepareDeletePaste (pqxx::connection_base& conn) {
 	conn.prepare (
 		"delete_paste",
 		"DELETE from pastes WHERE public_key = $1");
@@ -305,11 +307,11 @@ void sql_actions::prepare_delete_paste (pqxx::connection_base& conn) {
  * @param public_key Key with which people receive the file
  * @param login Id telegram chat 
  */
-void sql_actions::execute_delete_paste (pqxx::transaction_base& txn, 
+void SqlActions::ExecuteDeletePaste (pqxx::transaction_base& txn, 
 									    const std::string& public_key,
 										uint64_t login) {
 	txn.exec_prepared0("delete_paste", public_key);
-	execute_decrease_amount_pastes(txn, login);
+	ExecuteDecreaseAmountPastes(txn, login);
 }
 
 /**
@@ -317,7 +319,7 @@ void sql_actions::execute_delete_paste (pqxx::transaction_base& txn,
  * 
  * @param conn Reference to current connection
  */
-void sql_actions::prepare_get_last_user_pastes (pqxx::connection_base& conn) {
+void SqlActions::PrepareGetLastUserPastes (pqxx::connection_base& conn) {
 	conn.prepare(
 		"get_user_pastes",
 		"SELECT title, public_key, created_at FROM pastes WHERE login = $1 \
@@ -333,11 +335,11 @@ void sql_actions::prepare_get_last_user_pastes (pqxx::connection_base& conn) {
  * @param limit Maximum number of output pastes
  * @return std::vector<std::vector<std::string>> Public key, title and created at of last pastes
  */
-last_pastes_info sql_actions::execute_get_last_user_pastes (pqxx::transaction_base& txn, uint64_t login, uint16_t limit) {
+LastPastesInfo SqlActions::ExecuteGetLastUserPastes (pqxx::transaction_base& txn, uint64_t login, uint16_t limit) {
 	pqxx::result res = txn.exec_prepared("get_user_pastes", login, limit);
 	uint8_t amount_columns = res.columns();
 	uint16_t amount_lines = res.size();
-	last_pastes_info user_pastes(amount_lines, std::vector<std::string>(amount_columns, ""));
+	LastPastesInfo user_pastes(amount_lines, std::vector<std::string>(amount_columns, ""));
 	if (!res.empty()) {
 		for (uint16_t line = 0; line < amount_lines; ++line) {
 			for (uint8_t column = 0; column < amount_columns; ++column) {

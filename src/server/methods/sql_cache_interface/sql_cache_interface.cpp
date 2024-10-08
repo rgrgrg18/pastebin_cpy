@@ -2,13 +2,13 @@
 
 std::unique_ptr<Storage> CachedStorage::storage_ = std::make_unique<DefaultServices::Storage>();
 
-paste_info CachedStorage::get_paste_info(const std::string& public_key) {
+PasteInfo CachedStorage::GetPasteInfo(const std::string& public_key) {
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
     if (!info.has_value()) {
         info = [&public_key]() { 
-            paste_info info = storage_->get_paste_info(public_key);
+            PasteInfo info = storage_->GetPasteInfo(public_key);
             return std::vector<std::string>{std::get<0>(info), std::get<1>(info)
                 , std::get<2>(info), std::get<3>(info), std::get<4>(info)};
         }();
@@ -22,9 +22,9 @@ paste_info CachedStorage::get_paste_info(const std::string& public_key) {
     }();
 };
 
-void CachedStorage::change_password(const std::string& public_key, const std::string& new_password) {
+void CachedStorage::ChangePassword(const std::string& public_key, const std::string& new_password) {
 
-    storage_->change_password(public_key, new_password);
+    storage_->ChangePassword(public_key, new_password);
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
@@ -34,9 +34,9 @@ void CachedStorage::change_password(const std::string& public_key, const std::st
     }
 }
 
-void CachedStorage::change_title(const std::string& public_key, const std::string& new_name) {
+void CachedStorage::ChangeTitle(const std::string& public_key, const std::string& new_name) {
     
-    storage_->change_title(public_key, new_name);
+    storage_->ChangeTitle(public_key, new_name);
 
     auto info = RedisActions::get<std::vector<std::string>>(public_key);
 
@@ -46,13 +46,13 @@ void CachedStorage::change_title(const std::string& public_key, const std::strin
     }
 }
 
-keys CachedStorage::create_new_paste(uint64_t login) {
-    return storage_->create_new_paste(login);
+Keys CachedStorage::CreateNewPaste(uint64_t login) {
+    return storage_->CreateNewPaste(login);
 }
 
-void CachedStorage::del_paste(const std::string& public_key, uint64_t login) {
+void CachedStorage::DelPaste(const std::string& public_key, uint64_t login) {
     
-    storage_->del_paste(public_key, login);
+    storage_->DelPaste(public_key, login);
     
     auto info = RedisActions::get<std::vector<std::string>>(public_key);  
 
@@ -61,7 +61,7 @@ void CachedStorage::del_paste(const std::string& public_key, uint64_t login) {
     }
 }
 
-last_pastes_info CachedStorage::get_last_user_pastes(uint64_t login, uint64_t limit) {
-    return storage_->get_last_user_pastes(login, limit);
+LastPastesInfo CachedStorage:: GetLastUserPastes(uint64_t login, uint64_t limit) {
+    return storage_-> GetLastUserPastes(login, limit);
 }
 
