@@ -10,8 +10,8 @@
     #define WEAK_ATTR
 #endif
 
-namespace redisSettins {
+namespace redis_settings {
 
-    int32_t WEAK_ATTR lifeTimeInSeconds = 600;
-  
+int32_t WEAK_ATTR life_time_in_seconds = 600;
+
 };

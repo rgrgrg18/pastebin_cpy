@@ -2,8 +2,8 @@
 
 #include "sql_interface.hpp"
 
-namespace DefaultServices {
+namespace default_services {
 
 using Storage = Postgres;
 
-} // namespace DefaultServices
+} // namespace default_services

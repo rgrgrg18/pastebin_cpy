@@ -38,7 +38,7 @@ pqxx::connection& Postgres::DbConnection::get() const noexcept {
 }
 
 Postgres::PostgresConn Postgres::get_connection() { // NOLINT
-    PostgresPool& pool = PostgresPool::get_instance(5, Config::Conn);
+    PostgresPool& pool = PostgresPool::get_instance(5, config::conn);
     return pool.get_connection();
 }
 

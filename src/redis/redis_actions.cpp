@@ -1,7 +1,7 @@
 #include "redis_actions.hpp"
 
 RedisActions::RedisConnection RedisActions::get_connection() {
-    RedisPool& pool = RedisPool::get_instance(10, Config::Redis_conn);
+    RedisPool& pool = RedisPool::get_instance(10, config::redis_conn);
     return pool.get_connection();
 }
 

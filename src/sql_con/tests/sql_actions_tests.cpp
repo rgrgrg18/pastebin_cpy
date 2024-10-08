@@ -38,7 +38,7 @@ protected:
     static pqxx::connection conn;
 }; 
 
-pqxx::connection TestDB::conn = pqxx::connection(Config::Conn);
+pqxx::connection TestDB::conn = pqxx::connection(config::conn);
 
 TEST_F(TestDB, GetSeqPubKey) {
     auto actual = SqlActions::ExecuteGetSequenceForPublicKey(*txn);

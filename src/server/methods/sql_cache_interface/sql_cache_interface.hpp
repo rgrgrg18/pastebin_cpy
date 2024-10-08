@@ -23,10 +23,10 @@ public:
 
     template <typename T, 
               typename = std::enable_if_t<std::is_base_of_v<Storage, T>>>
-    static void setStorage() {
-        storage_ = std::make_unique<T>();
+    static void set_storage() {
+        storage = std::make_unique<T>();
     }
 
 private:
-    static std::unique_ptr<Storage> storage_;
+    static std::unique_ptr<Storage> storage;
 };

@@ -20,7 +20,7 @@ void AwsAPI::InitAPI() {
 // AwsClient constructor
 AwsClient::AwsClient() {
     client_config_ = Aws::Client::ClientConfiguration();
-    client_config_.endpointOverride = Aws::String(Config::Endpoint);
+    client_config_.endpointOverride = Aws::String(config::endpoint);
 
     s3_client_ = Aws::S3::S3Client(client_config_);
 }

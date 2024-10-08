@@ -10,18 +10,18 @@
     #define WEAK_ATTR
 #endif
 
-namespace Config {
+namespace config {
 
-    std::string WEAK_ATTR ListenPort = "0.0.0.0:9999";
+std::string WEAK_ATTR listen_port = "0.0.0.0:9999";
 
-    std::string WEAK_ATTR Files_directory = "/usr/src/app/build/";
+std::string WEAK_ATTR files_directory = "/usr/src/app/build/";
 
-    std::string WEAK_ATTR Bucket_name = "";
+std::string WEAK_ATTR bucket_name = "";
 
-    std::string WEAK_ATTR Conn = "postgresql://root:root@postgres:5432/pastebin";
+std::string WEAK_ATTR conn = "postgresql://root:root@postgres:5432/pastebin";
 
-    std::string WEAK_ATTR Endpoint = "";
+std::string WEAK_ATTR endpoint = "";
 
-    std::string WEAK_ATTR Redis_conn = "tcp://redis:6379";
+std::string WEAK_ATTR redis_conn = "tcp://redis:6379";
 
 };
