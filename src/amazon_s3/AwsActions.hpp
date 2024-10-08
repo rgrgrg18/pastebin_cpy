@@ -36,11 +36,11 @@ public:
     AwsClient();
     ~AwsClient() = default;
 
-    Aws::S3::S3Client& getClient();
+    Aws::S3::S3Client& get_client();
 
 private:
-    Aws::Client::ClientConfiguration clientConfig;
-    Aws::S3::S3Client s3_client;
+    Aws::Client::ClientConfiguration client_config_;
+    Aws::S3::S3Client s3_client_;
 
 }; // class AwsClient
 
@@ -52,15 +52,15 @@ using AwsConnection = Connection<AwsClient>;
 
 public:
 
-    static bool PutObject(const Aws::String &bucketName,
-                           const Aws::String &filePath,
-                           const Aws::String &fileKey);
+    static bool PutObject(const Aws::String &bucket_name,
+                           const Aws::String &file_path,
+                           const Aws::String &file_key);
 
-    static bool DownloadObject(const Aws::String &objectKey,
-                           const Aws::String &fromBucket,
-                           const Aws::String &saveFilePath);
+    static bool DownloadObject(const Aws::String &object_key,
+                           const Aws::String &from_bucket,
+                           const Aws::String &save_file_path);
 
-    static bool DeleteObject(const Aws::String &objectKey,
-                           const Aws::String &fromBucket);
+    static bool DeleteObject(const Aws::String &object_key,
+                           const Aws::String &from_bucket);
 
 }; // class AwsActions

@@ -19,6 +19,8 @@ CheckOptions:
     value: CamelCase
   - key: readability-identifier-naming.FunctionCase
     value: CamelCase
+  - key: readability-identifier-naming.FunctionIgnoredRegexp
+    value: 'get_.*'
   - key: readability-identifier-naming.ParameterCase
     value: lower_case
   - key: readability-identifier-naming.VariableCase

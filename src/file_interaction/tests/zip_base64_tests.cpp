@@ -9,8 +9,8 @@
 
 TEST(ZipBase64Tests, equalCodeDecode) {
      for (int i = 0; i < 1000; ++i) {
-         std::string curr_str_ = generator::randomString(100'000);
-         std::string code_str_ = Base64_code::base64_encode(zipCompression::compressString(curr_str_));
-         EXPECT_EQ(curr_str_, zipCompression::decompressString(Base64_code::base64_decode(code_str_)));
+         std::string curr_str = generator::RandomString(100'000);
+         std::string code_str = base64_code::Base64Encode(zip_compression::CompressString(curr_str));
+         EXPECT_EQ(curr_str, zip_compression::DecompressString(base64_code::Base64Decode(code_str)));
      }
 }

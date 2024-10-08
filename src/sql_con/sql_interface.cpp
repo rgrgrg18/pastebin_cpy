@@ -38,8 +38,8 @@ pqxx::connection& Postgres::DbConnection::get() const noexcept {
 }
 
 Postgres::PostgresConn Postgres::get_connection() { // NOLINT
-    PostgresPool& pool = PostgresPool::getInstance(5, Config::Conn);
-    return pool.getConnection();
+    PostgresPool& pool = PostgresPool::get_instance(5, Config::Conn);
+    return pool.get_connection();
 }
 
 PasteInfo Postgres::GetPasteInfo(const std::string& public_key) {

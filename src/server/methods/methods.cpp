@@ -9,7 +9,7 @@ std::optional<std::string> PastebinMethods::addPaste(uint64_t user_id, pasteData
     std::string public_key(std::move(PasteKeys.first));
     std::string private_key = (std::move(PasteKeys.second));
 
-    if (PasteData::addNewPaste(private_key, zipCompression::compressString(text))) {
+    if (PasteData::addNewPaste(private_key, zip_compression::CompressString(text))) {
         updatePasteInfo(public_key, std::tuple(password, title));
         return public_key;
     }
@@ -32,7 +32,7 @@ std::optional<pasteData> PastebinMethods::getPaste(const std::string& public_key
                        std::move(password),
                        std::move(title),
                        std::move(created_at),
-                       std::move(zipCompression::decompressString(PasteData::getCachedPaste(private_key))));
+                       std::move(zip_compression::DecompressString(PasteData::getCachedPaste(private_key))));
 }
 
 bool PastebinMethods::deletePaste(const std::string& public_key) {

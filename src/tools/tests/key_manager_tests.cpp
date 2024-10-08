@@ -10,23 +10,26 @@
 
 class MyKeyValueStorage {
 public:
-    void change(const std::string& key, bool increase) {
+    void Change(const std::string& key, bool increase) {
         auto lock = KeyManager::LockKey(key);
-        if (!data.count(key)) data[key] = 0;
+        if (!data_.count(key)) {
+          data_[key] = 0;
+        }
+
         if (increase) {
-            ++data[key];
+            ++data_[key];
         } else {
-            --data[key];
+            --data_[key];
         }
     }
 
-    int getValue(const std::string& key) {
+    int get_value(const std::string& key) {
         auto lock = KeyManager::LockKey(key);
-        return data[key];
+        return data_[key];
     }
 
 private:
-    std::unordered_map<std::string, int> data;
+    std::unordered_map<std::string, int> data_;
 };
 
 void NoDeadlock() {
@@ -34,7 +37,7 @@ void NoDeadlock() {
 
     auto worker = [&](bool increase) {
         for (int i = 0; i < 100; ++i) {
-            storage.change("key", increase);
+            storage.Change("key", increase);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     };
@@ -62,7 +65,7 @@ bool NoDataRace() {
 
     auto worker = [&](bool increase) {
         for (int i = 0; i < 1000; ++i) {
-            storage.change("key", increase);
+            storage.Change("key", increase);
         }
     };
 
@@ -72,7 +75,7 @@ bool NoDataRace() {
     t1.join();
     t2.join();
 
-    return storage.getValue("key") == 0;
+    return storage.get_value("key") == 0;
 }
 
 
@@ -82,7 +85,7 @@ TEST(KeyManagerTests, DataRace) {
     }
 }
 
-bool f(int& critical_section) {
+bool F(int& critical_section) {
     auto lock = KeyManager::LockKey("key");
 
     // critical section
@@ -98,7 +101,7 @@ TEST(KeyManagerTests, RaceCondition) {
 
     auto worker = [&]() {
         for (int i = 0; i < 1000; ++i) {
-            ASSERT_TRUE(f(critical_section));
+            ASSERT_TRUE(F(critical_section));
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     };
