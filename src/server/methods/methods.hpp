@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -20,10 +21,10 @@ using pasteData = std::tuple<std::string, std::string, std::string, std::string,
 class PastebinMethods {
 public:
 
-    static std::pair<bool, std::string> addPaste(uint64_t user_id,
+    static std::optional<std::string> addPaste(uint64_t user_id,
                                                  pasteData data);
 
-    static std::pair<bool, pasteData> getPaste(const std::string& public_key,
+    static std::optional<pasteData> getPaste(const std::string& public_key,
                                                const std::string& user_password);
     
     static bool deletePaste(const std::string& public_key);

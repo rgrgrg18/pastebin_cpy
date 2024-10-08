@@ -4,10 +4,11 @@ add_library(sql_con STATIC
         hash_generate/HashGenerator.cpp
 )
 
-target_link_libraries(sql_con PRIVATE
+target_link_libraries(sql_con PUBLIC
         config
         tools
-        pqxx)
+        pqxx
+        interface)
 
 target_include_directories(sql_con PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -22,6 +23,7 @@ target_link_libraries(sql_test PRIVATE
         config
         tools
         sql_con
+        interface
         ${GTEST_LIBRARIES}
         ${GTEST_MAIN_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT})

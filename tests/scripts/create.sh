@@ -13,8 +13,8 @@ build_image() {
 
 # Run the Docker container
 run_container() {
-    echo "Starting Docker container $CONTAINER from image $IMAGE_NAME..."
-    docker run --network="host" -p 2225:22 --name $CONTAINER $IMAGE_NAME
+    echo "Starting Docker container $CONTAINER from image $IMAGE_NAME.s.."
+    docker run --network=pastebin_cpy_backend -p 2225:22 -d --name $CONTAINER $IMAGE_NAME
 }
 
 build_image

@@ -1,11 +1,14 @@
 #pragma once
 
+#include <type_traits>
+
 #include "config.hpp"
+#include "DefaultServices.hpp"
 #include "RedisSettings.hpp"
 #include "redis_actions.hpp"
-#include "sql_interface.hpp"
+#include "storage_interface.hpp"
 
-class cached_postgres {
+class CachedStorage {
 public:
     static paste_info get_paste_info(const std::string& public_key);
 
@@ -18,4 +21,13 @@ public:
     static void del_paste(const std::string& public_key, uint64_t login);
 
     static last_pastes_info get_last_user_pastes(uint64_t login, uint64_t limit);
+
+    template <typename T, 
+              typename = std::enable_if_t<std::is_base_of_v<Storage, T>>>
+    static void setStorage() {
+        storage_ = std::make_unique<T>();
+    }
+
+private:
+    static std::unique_ptr<Storage> storage_;
 };

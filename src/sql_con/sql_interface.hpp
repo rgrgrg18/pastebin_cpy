@@ -2,8 +2,9 @@
 
 #include "ConnectionPool.hpp"
 #include "sql_actions.hpp"
+#include "storage_interface.hpp"
 
-class postgres {
+class postgres : public Storage {
 private:
 	class db_connection {
 	private:
@@ -38,15 +39,15 @@ private:
 	static postgres_conn getConnection();
 
 public:
-    static paste_info get_paste_info(const std::string& public_key);
+    paste_info get_paste_info(const std::string& public_key) final;
 
-    static void change_password(const std::string& public_key, const std::string& new_password);
+    void change_password(const std::string& public_key, const std::string& new_password) final;
 
-    static void change_title(const std::string& public_key, const std::string& new_name);
+	void change_title(const std::string& public_key, const std::string& new_name) final;
 
-    static keys create_new_paste(uint64_t login);
+    keys create_new_paste(uint64_t login) final;
 
-    static void del_paste(const std::string& public_key, uint64_t login);
+    void del_paste(const std::string& public_key, uint64_t login) final;
 
-    static last_pastes_info get_last_user_pastes(uint64_t login, uint16_t limit);
+    last_pastes_info get_last_user_pastes(uint64_t login, uint16_t limit) final;
 };

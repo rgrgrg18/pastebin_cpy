@@ -20,11 +20,11 @@ class ProcessImpl final : public pastebinApi::Service {
             std::tuple(std::to_string(request->user_id()), request->password(), request->title(), "", request->text()));
 
         // test act result
-        if (!result.first) {
+        if (!result.has_value()) {
             return grpc::Status(grpc::StatusCode::UNAVAILABLE, "Service is currently unavailable");
         }
 
-        response->set_public_key(std::move(result.second));
+        response->set_public_key(std::move(result.value()));
         return grpc::Status::OK;
     }
 
@@ -43,16 +43,16 @@ class ProcessImpl final : public pastebinApi::Service {
                                                 request->password());
 
         // test result data
-        if (!result.first) {
+        if (!result.has_value()) {
             return grpc::Status::CANCELLED;
         }
 
 
-        response->set_author(std::move(std::get<0>(result.second)));
-        response->set_password(std::move(std::get<1>(result.second)));
-        response->set_title(std::move(std::get<2>(result.second)));
-        response->set_created_at(std::get<3>(result.second).substr(0, 19));
-        response->set_paste_text(std::move(std::get<4>(result.second)));
+        response->set_author(std::move(std::get<0>(result.value())));
+        response->set_password(std::move(std::get<1>(result.value())));
+        response->set_title(std::move(std::get<2>(result.value())));
+        response->set_created_at(std::get<3>(result.value()).substr(0, 19));
+        response->set_paste_text(std::move(std::get<4>(result.value())));
         return grpc::Status::OK;
     }
 
