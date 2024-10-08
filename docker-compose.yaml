@@ -11,8 +11,11 @@ services:
       - ./CMakeLists.txt:/usr/src/app/CMakeLists.txt
       - ./src:/usr/src/app/src
       - ./scripts:/usr/src/app/scripts
+      - ./codestyle_checker:/usr/src/app/codestyle_checker
     networks:
       - backend
+    environment:
+      - CODESTYLE_CONFIG_DIR_PATH:/usr/src/app/codestyle_checker
     profiles:
       - no-logs
       - release
