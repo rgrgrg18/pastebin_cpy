@@ -8,7 +8,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     protoc -I ../proto --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ../proto/server.proto
     protoc -I ../proto --cpp_out=. ../proto/server.proto
     cd ../../../
-    cmake . -B build
+    cmake . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     cd build
     make
 else

@@ -13,8 +13,9 @@ def load_config():
 
     clang_tidy_config_path = config_dir_path + '/.clang-tidy'
     extensions = config.get('extensions', [])
+    build_dir = config.get('build_dir')
 
-    return clang_tidy_config_path, extensions
+    return clang_tidy_config_path, extensions, build_dir
 
 
 def run():
@@ -25,7 +26,7 @@ def run():
                         help='Specify the filenames to analyze (space-separated).')
     args = parser.parse_args()
 
-    clang_tidy_config_path, extensions = load_config()
+    clang_tidy_config_path, extensions, build_dir = load_config()
 
     if args.files:
         files = args.files
@@ -36,7 +37,7 @@ def run():
 
     if files:
         print(f"Found {len(files)} files to analyze.")
-        linters.run_clang_tidy_on_files(files, clang_tidy_config_path)
+        linters.run_clang_tidy_on_files(files, clang_tidy_config_path, build_dir)
     else:
         print("No files found for analysis.")
 

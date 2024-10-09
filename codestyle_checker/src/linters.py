@@ -23,14 +23,24 @@ def find_files_in_current_directory(extensions):
         files.extend(glob.glob(f'*.{ext}'))
     return files
 
-def run_clang_tidy_on_files(files, clang_tidy_config_path):
+def run_clang_tidy_on_files(files, clang_tidy_config_path, build_dir):
     for file in files:
-        print(f"Analyzing file: {file}")
+        print(f"\033[95mAnalyzing file:\033[0m {file}")
 
-        command = ['clang-tidy', file, '--config-file=' + clang_tidy_config_path, '--quiet', '--', '-std=c++17']
+        command = [
+            'clang-tidy',
+            '--config-file=' + clang_tidy_config_path,
+            '--quiet',
+        ]
+
+        if len(build_dir) != 0:
+            command.append('-p=' + build_dir)
+
+        command.append(file)
 
         try:
             result = subprocess.run(command, check=True, text=True)
-            print(result.stdout)
         except subprocess.CalledProcessError as e:
-            print(f"Error while analyzing {file}:\n{e.stderr}")
+            continue
+
+        print("\033[92mSuccess\033[0m")
