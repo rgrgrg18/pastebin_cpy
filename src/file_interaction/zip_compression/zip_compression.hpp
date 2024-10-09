@@ -6,9 +6,9 @@
 #include <vector>
 #include <zlib.h>
 
-namespace zipCompression {
+namespace zip_compression {
 
-    std::string compressString(const std::string& str);
-    std::string decompressString(const std::string& str);
+std::string CompressString(const std::string& str);
+std::string DecompressString(const std::string& str);
 
 } // namespace zipCompression

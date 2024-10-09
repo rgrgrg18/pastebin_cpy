@@ -2,17 +2,17 @@
 #include "base64.hpp"
 
 // converting a string to a bin file with the specified directory
-bool FileCommands::string_to_bin(const std::string& fileName, const std::string& str, const std::string& directory){
+bool file_commands::StringToBin(const std::string& file_name, const std::string& str, const std::string& directory){
 
-    std::string openDir = directory +
-                        fileName +
+    std::string open_dir = directory +
+                        file_name +
                         ".bin";
 
-    std::ofstream file(openDir,
+    std::ofstream file(open_dir,
                         std::ios_base::out);
 
     if (file.is_open()) {
-        file << Base64_code::base64_encode(str);
+        file << base64_code::Base64Encode(str);
         file.close();
         return true;
     } else {
@@ -21,23 +21,23 @@ bool FileCommands::string_to_bin(const std::string& fileName, const std::string&
 }
 
 // converting a bin file to string with file deleting
-std::pair<std::string, bool> FileCommands::bin_to_string(const std::string& fileName, const std::string& directory) {
+std::pair<std::string, bool> file_commands::BinToString(const std::string& file_name, const std::string& directory) {
 
-    std::string openDir = directory +
-                        fileName +
+    std::string open_dir = directory +
+                        file_name +
                         ".bin";
-    std::ifstream file(openDir);
+    std::ifstream file(open_dir);
 
     if (file.is_open()) {
-        std::string fileContent = "";
+        std::string file_content = "";
         unsigned char symbol;
         while (file >> symbol) {
-            fileContent.push_back(symbol);
+            file_content.push_back(symbol);
         }
 
-        remove(openDir.c_str());
+        remove(open_dir.c_str());
 
-        return {Base64_code::base64_decode(fileContent), true};
+        return {base64_code::Base64Decode(file_content), true};
 
     } else {
         return {"", false};

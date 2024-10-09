@@ -7,19 +7,19 @@
 class TestDB: public ::testing::Test {
 protected:
     static void SetUpTestSuite() {        
-        sql_actions::prepare_get_sequence_for_public_key(conn);
-        sql_actions::prepare_get_sequence_for_private_key(conn);
-        sql_actions::prepare_get_info_paste(conn);
-        sql_actions::prepare_check_login(conn);
-        sql_actions::prepare_add_user(conn);
-        sql_actions::prepare_add_paste(conn);
-        sql_actions::prepare_return_amount_pastes(conn);
-        sql_actions::prepare_increase_amount_pastes(conn);
-        sql_actions::prepare_decrease_amount_pastes(conn);
-        sql_actions::prepare_change_password_paste(conn);
-        sql_actions::prepare_delete_paste(conn);
-        sql_actions::prepare_change_title_paste(conn);
-        sql_actions::prepare_get_last_user_pastes(conn);
+        SqlActions::PrepareGetSequenceForPublicKey(conn);
+        SqlActions::PrepareGetSequenceForPrivateKey(conn);
+        SqlActions::PrepareGetInfoPaste(conn);
+        SqlActions::PrepareCheckLogin(conn);
+        SqlActions::PrepareAddUser(conn);
+        SqlActions::PrepareAddPaste(conn);
+        SqlActions::PrepareReturnAmountPastes(conn);
+        SqlActions::PrepareIncreaseAmountPastes(conn);
+        SqlActions::PrepareDecreaseAmountPastes(conn);
+        SqlActions::PrepareChangePasswordPaste(conn);
+        SqlActions::PrepareDeletePaste(conn);
+        SqlActions::PrepareChangeTitlePaste(conn);
+        SqlActions::PrepareGetLastUserPastes(conn);
     }
 
     static void TearDownTestSuite() {
@@ -38,10 +38,10 @@ protected:
     static pqxx::connection conn;
 }; 
 
-pqxx::connection TestDB::conn = pqxx::connection(Config::Conn);
+pqxx::connection TestDB::conn = pqxx::connection(config::conn);
 
 TEST_F(TestDB, GetSeqPubKey) {
-    auto actual = sql_actions::execute_get_sequence_for_public_key(*txn);
+    auto actual = SqlActions::ExecuteGetSequenceForPublicKey(*txn);
 
     pqxx::result expected = txn->exec("SELECT currval('public_key_sq')");
 
@@ -49,7 +49,7 @@ TEST_F(TestDB, GetSeqPubKey) {
 }
 
 TEST_F(TestDB, GetSeqPrivKey) {
-    auto actual = sql_actions::execute_get_sequence_for_private_key(*txn);
+    auto actual = SqlActions::ExecuteGetSequenceForPrivateKey(*txn);
 
     pqxx::result expected = txn->exec("SELECT currval('private_key_sq')");
 
@@ -76,7 +76,7 @@ TEST_F(TestDB, GetPasteInfoPresent) {
         ",'" + expected_password + 
         "','" + expected_title + "')");
 
-    paste_info actual = sql_actions::execute_get_info_paste(*txn, public_key);
+    PasteInfo actual = SqlActions::ExecuteGetInfoPaste(*txn, public_key);
 
     EXPECT_EQ(std::get<0>(actual), expected_private_key);
     EXPECT_EQ(std::get<1>(actual), std::to_string(expected_login));
@@ -85,7 +85,7 @@ TEST_F(TestDB, GetPasteInfoPresent) {
 }
 
 TEST_F(TestDB, GetPasteInfoEmpty) {
-    paste_info actual = sql_actions::execute_get_info_paste(*txn, "111");
+    PasteInfo actual = SqlActions::ExecuteGetInfoPaste(*txn, "111");
 
     EXPECT_EQ(std::get<0>(actual), "");
     EXPECT_EQ(std::get<1>(actual), "");
@@ -99,12 +99,12 @@ TEST_F(TestDB, AddUserTwice) {
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
     txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
     
-    sql_actions::execute_add_user(*txn, login);
+    SqlActions::ExecuteAddUser(*txn, login);
 
     pqxx::result res = txn->exec("SELECT id FROM users WHERE login = " 
         + std::to_string(login));
 
-    sql_actions::execute_add_user(*txn, login);
+    SqlActions::ExecuteAddUser(*txn, login);
 
     EXPECT_FALSE(res.empty());
 }
@@ -121,7 +121,7 @@ TEST_F(TestDB, AddPaste) {
     txn->exec0("INSERT INTO users (login) VALUES (" 
         + std::to_string(login) + ")");
 
-    sql_actions::execute_add_paste(*txn, login, public_key, private_key, password);
+    SqlActions::ExecuteAddPaste(*txn, login, public_key, private_key, password);
 
     pqxx::result res = txn->exec("SELECT login FROM pastes \
         WHERE login =  " + std::to_string(login) + 
@@ -142,7 +142,7 @@ TEST_F(TestDB, NewPaste) {
     txn->exec0("INSERT INTO users (login) VALUES (" 
         + std::to_string(login) + ")");
 
-    keys actual = sql_actions::new_paste(*txn, login, password);
+    Keys actual = SqlActions::NewPaste(*txn, login, password);
 
     pqxx::result expected = txn->exec("SELECT public_key, private_key FROM pastes \
         WHERE login =  " + std::to_string(login) + 
@@ -167,7 +167,7 @@ TEST_F(TestDB, IncreaseAmountPastes) {
         + std::to_string(login) + ", " 
         + std::to_string(expected_amount_pastes) + ")");
 
-    sql_actions::execute_increase_amount_pastes(*txn, login);
+    SqlActions::ExecuteIncreaseAmountPastes(*txn, login);
 
     pqxx::result actual = txn->exec("SELECT amount_pastes FROM users WHERE login = " 
         + std::to_string(login));
@@ -187,7 +187,7 @@ TEST_F(TestDB, DecreaseAmountPastes) {
         + std::to_string(login) + ", " 
         + std::to_string(expected_amount_pastes) + ")");
 
-    sql_actions::execute_decrease_amount_pastes(*txn, login);
+    SqlActions::ExecuteDecreaseAmountPastes(*txn, login);
 
     pqxx::result actual = txn->exec("SELECT amount_pastes FROM users WHERE login = " 
         + std::to_string(login));
@@ -207,7 +207,7 @@ TEST_F(TestDB, ReturnAmountPastesExistUser) {
         + std::to_string(login) + ", " 
         + std::to_string(expected_amount_pastes) + ")");
 
-    int64_t actual = sql_actions::execute_return_amount_pastes(*txn, login);
+    int64_t actual = SqlActions::ExecuteReturnAmountPastes(*txn, login);
 
     EXPECT_EQ(actual, expected_amount_pastes);
 }
@@ -218,7 +218,7 @@ TEST_F(TestDB, ReturnAmountPastesNotRegisteredUser) {
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
     txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
-    int64_t actual = sql_actions::execute_return_amount_pastes(*txn, login);
+    int64_t actual = SqlActions::ExecuteReturnAmountPastes(*txn, login);
 
     EXPECT_EQ(actual, 0);
 }
@@ -243,7 +243,7 @@ TEST_F(TestDB, ChangePassword) {
 
     std::string expected_password = "6666";
 
-    sql_actions::execute_change_password_paste(*txn, expected_password, public_key);
+    SqlActions::ExecuteChangePasswordPaste(*txn, expected_password, public_key);
 
     pqxx::result res = txn->exec("SELECT password FROM pastes \
         WHERE login =  " + std::to_string(login) + 
@@ -277,7 +277,7 @@ TEST_F(TestDB, ChangeTitle) {
 
     std::string expected_title = "6666";
 
-    sql_actions::execute_change_title_paste(*txn, expected_title, public_key);
+    SqlActions::ExecuteChangeTitlePaste(*txn, expected_title, public_key);
 
     pqxx::result res = txn->exec("SELECT password FROM pastes \
         WHERE login =  " + std::to_string(login) + 
@@ -308,7 +308,7 @@ TEST_F(TestDB, DelPaste) {
             "','" + private_key  + "','"  
             + std::to_string(login) + "')");
 
-        sql_actions::execute_delete_paste(*txn, public_key, login);
+        SqlActions::ExecuteDeletePaste(*txn, public_key, login);
         
         pqxx::result res = txn->exec("SELECT password FROM pastes \
             WHERE login =  " + std::to_string(login) + 
@@ -341,7 +341,7 @@ TEST_F(TestDB, GetLastUserPastes) {
         + std::to_string(login) + 
         "','" + expected_title + "')");
 
-    last_pastes_info actual = sql_actions::execute_get_last_user_pastes(*txn, login, 1);        
+    LastPastesInfo actual = SqlActions::ExecuteGetLastUserPastes(*txn, login, 1);        
 
     EXPECT_FALSE(actual.empty());
     EXPECT_EQ(actual[0][0], expected_title);
@@ -354,40 +354,40 @@ TEST_F(TestDB, CombinationMainFunctions) {
     txn->exec("DELETE FROM pastes WHERE login = " + std::to_string(login));
     txn->exec("DELETE FROM users WHERE login = " + std::to_string(login));
 
-    size_t amount_pastes = sql_actions::execute_return_amount_pastes(*txn, login);
+    size_t amount_pastes = SqlActions::ExecuteReturnAmountPastes(*txn, login);
     EXPECT_EQ(amount_pastes, 0) << "Function return_amount_pastes return inccorect value";
     
-    keys key = sql_actions::new_paste(*txn, login);
-    paste_info data = sql_actions::execute_get_info_paste(*txn, key.first);
+    Keys key = SqlActions::NewPaste(*txn, login);
+    PasteInfo data = SqlActions::ExecuteGetInfoPaste(*txn, key.first);
 
-    ASSERT_NE(std::get<1>(data), "") << "New paste doesn't exist after creation by new_paste function";
+    ASSERT_NE(std::get<1>(data), "") << "New paste doesn't exist after creation by NewPaste function";
 
-    EXPECT_EQ(std::get<1>(data), std::to_string(login)) << "Login that returns from function get_info_paste doesn't equal to login that was passed to the function new_paste";
-    EXPECT_EQ(std::get<0>(data), key.second) << "Function new_paste or get_info_paste returns incorrect private key";
+    EXPECT_EQ(std::get<1>(data), std::to_string(login)) << "Login that returns from function get_info_paste doesn't equal to login that was passed to the function NewPaste";
+    EXPECT_EQ(std::get<0>(data), key.second) << "Function NewPaste or get_info_paste returns incorrect private key";
 
-    amount_pastes = sql_actions::execute_return_amount_pastes(*txn, login);
+    amount_pastes = SqlActions::ExecuteReturnAmountPastes(*txn, login);
     EXPECT_EQ(amount_pastes, 1) << "Function return_amount_pastes return inccorect value";
 
     std::string expected_password = "0000";
-    sql_actions::execute_change_password_paste(*txn, expected_password, key.first);
+    SqlActions::ExecuteChangePasswordPaste(*txn, expected_password, key.first);
 
     std::string expected_title = "9999";
-    sql_actions::execute_change_title_paste(*txn, expected_title, key.first);
+    SqlActions::ExecuteChangeTitlePaste(*txn, expected_title, key.first);
 
-    data = sql_actions::execute_get_info_paste(*txn, key.first);
+    data = SqlActions::ExecuteGetInfoPaste(*txn, key.first);
 
-    EXPECT_NE(std::get<2>(data), "") << "Password wasn't change after calling function change_password";
+    EXPECT_NE(std::get<2>(data), "") << "Password wasn't change after calling function ChangePassword";
     if (std::get<2>(data) != "")
-        EXPECT_EQ(std::get<2>(data), expected_password) << "Password that returns from function get_info_paste doesn't equal to password that was passed to the function change_password";
+        EXPECT_EQ(std::get<2>(data), expected_password) << "Password that returns from function get_info_paste doesn't equal to password that was passed to the function ChangePassword";
     EXPECT_NE(std::get<3>(data), "Untilted  ") << "Title wasn't change after calling function change_title_paste";
     if (std::get<3>(data) != "Untilted")
-        EXPECT_EQ(std::get<3>(data), expected_title) << "Title that returns from function get_info_paste doesn't equal to title that was passed to the function change_title";
+        EXPECT_EQ(std::get<3>(data), expected_title) << "Title that returns from function get_info_paste doesn't equal to title that was passed to the function ChangeTitle";
 
-    sql_actions::execute_delete_paste(*txn, key.first, login);
-    data = sql_actions::execute_get_info_paste(*txn, key.first);
+    SqlActions::ExecuteDeletePaste(*txn, key.first, login);
+    data = SqlActions::ExecuteGetInfoPaste(*txn, key.first);
 
     EXPECT_EQ(std::get<1>(data), "") << "Function delete_paste didn't delete paste";
 
-    amount_pastes = sql_actions::execute_return_amount_pastes(*txn, login);
+    amount_pastes = SqlActions::ExecuteReturnAmountPastes(*txn, login);
     EXPECT_EQ(amount_pastes, 0) << "Function return_amount_pastes return inccorect value";
 }

@@ -1,7 +1,7 @@
 #include "zip_compression.hpp"
 
 // Function to compress a string
-std::string zipCompression::compressString(const std::string& str) {
+std::string zip_compression::CompressString(const std::string& str) {
     z_stream zs; // zlib stream structure
     memset(&zs, 0, sizeof(zs));
 
@@ -39,7 +39,7 @@ std::string zipCompression::compressString(const std::string& str) {
 }
 
 // Function to decompress a string
-std::string zipCompression::decompressString(const std::string& str) {
+std::string zip_compression::DecompressString(const std::string& str) {
     z_stream zs; // zlib stream structure
     memset(&zs, 0, sizeof(zs));
 

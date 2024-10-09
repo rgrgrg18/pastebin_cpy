@@ -2,49 +2,52 @@
 
 #include <pqxx/pqxx>
 
-using keys = std::pair<std::string, std::string>; // pair of public and private keys
-using paste_info = std::tuple<std::string, std::string, std::string, std::string, std::string>; // Private key, login, password, title, created at
-using last_pastes_info = std::vector<std::vector<std::string>>; // Last pastes with title, public key, created time
+using Keys = std::pair<std::string, std::string>; // pair of public and private Keys
+using PasteInfo = std::tuple<std::string, std::string, std::string, std::string, std::string>; // Private key, login, password, title, created at
+using LastPastesInfo = std::vector<std::vector<std::string>>; // Last pastes with title, public key, created time
 
-class sql_actions {
+class SqlActions {
 public:
-	static void prepare_get_sequence_for_public_key (pqxx::connection_base& conn);
-	static void prepare_get_sequence_for_private_key (pqxx::connection_base& conn);
-	static void prepare_get_info_paste (pqxx::connection_base& conn);
+	static void PrepareGetSequenceForPublicKey(	pqxx::connection_base& conn);
+	static void PrepareGetSequenceForPrivateKey(pqxx::connection_base& conn);
+	static void PrepareGetInfoPaste(pqxx::connection_base& conn);
 
-	static void prepare_check_login (pqxx::connection_base& conn);
-	static void prepare_add_user (pqxx::connection_base& conn);
-	static void prepare_add_paste (pqxx::connection_base& conn);
+	static void PrepareCheckLogin(pqxx::connection_base& conn);
+	static void PrepareAddUser(pqxx::connection_base& conn);
+	static void PrepareAddPaste(pqxx::connection_base& conn);
 
-	static void prepare_return_amount_pastes (pqxx::connection_base& conn);
-	static void prepare_increase_amount_pastes (pqxx::connection_base& conn);
-	static void prepare_decrease_amount_pastes (pqxx::connection_base& conn);
-	static void prepare_change_password_paste (pqxx::connection_base& conn);
-	static void prepare_change_title_paste (pqxx::connection_base& conn);
-	static void prepare_delete_paste (pqxx::connection_base& conn);
-	static void prepare_get_last_user_pastes (pqxx::connection_base& conn);
+	static void PrepareReturnAmountPastes(pqxx::connection_base& conn);
+	static void PrepareIncreaseAmountPastes(pqxx::connection_base& conn);
+	static void PrepareDecreaseAmountPastes(pqxx::connection_base& conn);
+	static void PrepareChangePasswordPaste(pqxx::connection_base& conn);
+	static void PrepareChangeTitlePaste(pqxx::connection_base& conn);
+	static void PrepareDeletePaste(pqxx::connection_base& conn);
+	static void PrepareGetLastUserPastes(pqxx::connection_base& conn);
 public:
-	static uint64_t execute_get_sequence_for_public_key (pqxx::transaction_base& txn);
-	static uint64_t execute_get_sequence_for_private_key (pqxx::transaction_base& txn);
-	static paste_info execute_get_info_paste (pqxx::transaction_base& txn, const std::string& public_key);
-
-	static void execute_add_user (pqxx::transaction_base& txn, uint64_t login);
-	static void execute_add_paste (pqxx::transaction_base& txn, uint64_t login, 
-								   const std::string& public_key, const std::string& private_key, 
-								   const std::string& password);
-	static keys new_paste (pqxx::dbtransaction& txn, uint64_t login, const std::string& password = "");
-
-	static uint16_t execute_return_amount_pastes (pqxx::transaction_base& txn, uint64_t login);
-	static void execute_increase_amount_pastes (pqxx::transaction_base& txn, uint64_t login);
-	static void execute_change_password_paste (pqxx::transaction_base& txn, 
-											   const std::string& password, 
-											   const std::string& public_key);
-	static void execute_change_title_paste (pqxx::transaction_base& txn, 
-											   const std::string& title, 
-											   const std::string& public_key);
-	static void execute_delete_paste (pqxx::transaction_base& txn, 
-									    const std::string& public_key,
-										uint64_t login);
-	static void execute_decrease_amount_pastes (pqxx::transaction_base& txn, uint64_t login);
-	static last_pastes_info execute_get_last_user_pastes (pqxx::transaction_base& txn, uint64_t login, uint16_t limit);
+	static uint64_t ExecuteGetSequenceForPublicKey(pqxx::transaction_base& txn);
+	static uint64_t ExecuteGetSequenceForPrivateKey(pqxx::transaction_base& txn);
+	static PasteInfo ExecuteGetInfoPaste(pqxx::transaction_base& txn, const std::string& public_key);
+	
+	static void ExecuteAddUser(pqxx::transaction_base& txn, uint64_t login);
+	static void ExecuteAddPaste(pqxx::transaction_base& txn, uint64_t login, 
+                                const std::string& public_key, const std::string& private_key, 
+								const std::string& password);
+	
+	static Keys NewPaste(pqxx::dbtransaction& txn, uint64_t login, const std::string& password = "");
+	
+	static uint16_t ExecuteReturnAmountPastes(pqxx::transaction_base& txn, uint64_t login);
+	static void ExecuteIncreaseAmountPastes(pqxx::transaction_base& txn, uint64_t login);
+	static void ExecuteChangePasswordPaste(pqxx::transaction_base& txn, 
+                                           const std::string& password, 
+										   const std::string& public_key);
+	static void ExecuteChangeTitlePaste(pqxx::transaction_base& txn, 
+										const std::string& title, 
+										const std::string& public_key);
+	static void ExecuteDeletePaste(pqxx::transaction_base& txn, 
+								   const std::string& public_key,
+								   uint64_t login);
+	static void ExecuteDecreaseAmountPastes(pqxx::transaction_base& txn, uint64_t login);
+	static LastPastesInfo ExecuteGetLastUserPastes(pqxx::transaction_base& txn, 
+	                                               uint64_t login, 
+												   uint16_t limit);
 };

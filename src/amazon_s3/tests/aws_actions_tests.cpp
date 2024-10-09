@@ -9,7 +9,7 @@
 class AwsTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        bucketName = Config::Bucket_name;
+        bucketName = config::bucket_name;
         testFilePath = "test-file.bin";
         testFileKey = "test-file.bin";
 
@@ -21,7 +21,7 @@ protected:
     void TearDown() override {
         // Clean up AWS resources
         Aws::Client::ClientConfiguration clientConfig;
-        clientConfig.endpointOverride = Aws::String(Config::Endpoint);
+        clientConfig.endpointOverride = Aws::String(config::endpoint);
         Aws::S3::S3Client s3_client(clientConfig);
         Aws::S3::Model::DeleteObjectRequest request;
 
@@ -44,7 +44,7 @@ TEST_F(AwsTest, PutObject_Success) {
     EXPECT_TRUE(result);
 
     Aws::Client::ClientConfiguration clientConfig;
-    clientConfig.endpointOverride = Aws::String(Config::Endpoint);
+    clientConfig.endpointOverride = Aws::String(config::endpoint);
 
     Aws::S3::S3Client s3_client(clientConfig);
     Aws::S3::Model::GetObjectRequest getObjectRequest;
@@ -60,7 +60,7 @@ TEST_F(AwsTest, DownloadObject_Unsuccess) {
     // unused configuration
     Aws::String downloadFilePath = "downloaded-unused-file.txt";
     testFileKey = "unused_key.txt";
-    bucketName = Config::Bucket_name;
+    bucketName = config::bucket_name;
 
     bool result = AwsActions::DownloadObject(testFileKey, bucketName, downloadFilePath);
 
@@ -97,7 +97,7 @@ TEST_F(AwsTest, DeleteObject_Success) {
 
     // Verify by checking if the object no longer exists in the bucket
     Aws::Client::ClientConfiguration clientConfig;
-    clientConfig.endpointOverride = Aws::String(Config::Endpoint);
+    clientConfig.endpointOverride = Aws::String(config::endpoint);
     Aws::S3::S3Client s3_client(clientConfig);
 
     Aws::S3::Model::GetObjectRequest getObjectRequest;

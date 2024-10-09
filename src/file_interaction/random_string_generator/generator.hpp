@@ -5,9 +5,9 @@
 
 namespace generator {
 
-    static std::string fileNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static std::string file_name_characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-    std::string randomString(size_t length);
-    std::string randomFileName(size_t length);
+std::string RandomString(size_t length);
+std::string RandomFileName(size_t length);
 
 } // namespace generator

@@ -4,13 +4,13 @@
 #include <iostream>
 #include <string>
 
-namespace FileCommands {
+namespace file_commands {
 
-    bool string_to_bin(const std::string& fileName,
-                       const std::string& str,
-                       const std::string& directory);
+bool StringToBin(const std::string& file_name,
+                   const std::string& str,
+                   const std::string& directory);
 
-    std::pair<std::string, bool> bin_to_string(const std::string& fileName,
-                                               const std::string& directory);
+std::pair<std::string, bool> BinToString(const std::string& file_name,
+                                           const std::string& directory);
     
 } // namespace FileCommands

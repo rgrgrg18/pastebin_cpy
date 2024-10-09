@@ -6,12 +6,12 @@
 #include "redis_actions.hpp"
 #include "RedisSettings.hpp"
 
-namespace PasteData {
+namespace paste_data {
 
-    bool addNewPaste(const std::string& key, const std::string& pasteText);
+bool AddNewPaste(const std::string& key, const std::string& paste_text);
 
-    std::string getCachedPaste(const std::string& key);
+std::string GetCachedPaste(const std::string& key);
 
-    bool deletePaste(const std::string& key);
+bool DeletePaste(const std::string& key);
     
-} // namespace PasteData
+} // namespace paste_data

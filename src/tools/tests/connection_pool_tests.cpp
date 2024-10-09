@@ -9,22 +9,21 @@
 #include "ConnectionPool.hpp"
 
 class MyType {
-    int x;
-    std::mutex m_1;
-    std::mutex m_2;
-
 public:
-    void change(bool increase) {
+    void Change(bool increase) {
         if (increase) {
-            ++x;
+            ++x_;
         } else {
-            --x;
+            --x_;
         }
     }
 
-    int getValue() {
-        return x;
+    int get_value() {
+        return x_;
     }
+
+private:
+    int x_;
 };
 
 using MyPool = ConnectionPool<MyType>;
@@ -32,10 +31,10 @@ using MyConnection = Connection<MyType>;
 
 void DeadlockDetection() {
     auto worker = [&](bool swap) {
-        MyPool& pool_ = MyPool::getInstance(1);
+        MyPool& pool = MyPool::get_instance(1);
         for (int i = 0; i < 100; ++i) {
-            MyConnection conn_ = pool_.getConnection();
-            conn_->change(swap);
+            MyConnection conn = pool.get_connection();
+            conn->Change(swap);
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     };
@@ -60,35 +59,41 @@ TEST(ConnectionPool, Deadlock) {
 
 namespace aviable {
 
-    class newType {
-        int x = 0;
+    class NewType {
     public:
-        void increase() { ++x; }
-        int getValue() { return x; }
+        void Increase() {
+          ++x_;
+        }
+        int get_value() {
+          return x_;
+        }
+
+    private:
+        int x_{0};
     };
 
-    using MyPool = ConnectionPool<newType>;
-    using MyConnection = Connection<newType>;
+    using MyPool = ConnectionPool<NewType>;
+    using MyConnection = Connection<NewType>;
 
-    void aviable_check() {
-        MyPool& pool_ = MyPool::getInstance(3);
+    void AviableCheck() {
+        MyPool& pool = MyPool::get_instance(3);
         {
-            MyConnection conn1_ = pool_.getConnection();
-            MyConnection conn2_ = pool_.getConnection();
-            MyConnection conn3_ = pool_.getConnection();
-            conn3_->increase();
+            MyConnection conn1 = pool.get_connection();
+            MyConnection conn2 = pool.get_connection();
+            MyConnection conn3 = pool.get_connection();
+            conn3->Increase();
         }
-        MyConnection conn3_ = pool_.getConnection();
-        EXPECT_EQ(conn3_->getValue(), 1);
-        MyConnection conn2_ = pool_.getConnection();
-        MyConnection conn1_ = pool_.getConnection();
+        MyConnection conn3 = pool.get_connection();
+        EXPECT_EQ(conn3->get_value(), 1);
+        MyConnection conn2 = pool.get_connection();
+        MyConnection conn1 = pool.get_connection();
     }
 
 }
 
 // Сhecking for correct issuance and reuse
 TEST(ConnectionPool, Reusable) {
-    auto future = std::async(std::launch::async, aviable::aviable_check);
+    auto future = std::async(std::launch::async, aviable::AviableCheck);
     const auto timeout = std::chrono::seconds(5);
 
     if (future.wait_for(timeout) == std::future_status::timeout) {
@@ -100,12 +105,12 @@ TEST(ConnectionPool, Reusable) {
 // Checking for DataRace
 TEST(ConnectionPool, DataRace) {
     for (int i = 0; i < 1000; ++i) {
-        MyPool& pool_ = MyPool::getInstance(1);
+        MyPool& pool = MyPool::get_instance(1);
 
         auto worker = [&](bool increase) {
             for (int i = 0; i < 1000; ++i) {
-                MyConnection conn_ = pool_.getConnection();
-                conn_->change(increase);
+                MyConnection conn = pool.get_connection();
+                conn->Change(increase);
             }
         };
 
@@ -115,12 +120,12 @@ TEST(ConnectionPool, DataRace) {
         th1.join();
         th2.join();
 
-        EXPECT_EQ(pool_.getConnection()->getValue(), 0);
+        EXPECT_EQ(pool.get_connection()->get_value(), 0);
     }
 }
 
 struct CriticalSectionStruct {
-    bool f() {
+    bool F() {
         ++cnt;
         bool res = cnt == 1;
         --cnt;
@@ -136,9 +141,9 @@ TEST(ConnectionPool, RaceCondition) {
     using MyConnection = Connection<CriticalSectionStruct>;
 
     auto worker = [&]() {
-        MyPool& pool_ = MyPool::getInstance(1);
+        MyPool& pool = MyPool::get_instance(1);
         for (int i = 0; i < 1000; ++i) {
-            ASSERT_TRUE(pool_.getConnection()->f());
+            ASSERT_TRUE(pool.get_connection()->F());
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
     };
