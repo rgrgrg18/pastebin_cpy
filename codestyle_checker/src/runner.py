@@ -3,6 +3,8 @@
 import os
 import json
 import argparse
+import time
+
 import linters
 
 def load_config():
@@ -35,11 +37,17 @@ def run():
     else:
         files = linters.find_files_in_current_directory(extensions)
 
+    start_time = time.time()
+
     if files:
         print(f"Found {len(files)} files to analyze.")
         linters.run_clang_tidy_on_files(files, clang_tidy_config_path, build_dir)
     else:
         print("No files found for analysis.")
+
+    end_time = time.time()
+    execution_time = end_time - start_time
+    print(f"Execution time: {execution_time:.2f} seconds")
 
 if __name__ == "__main__":
     run()

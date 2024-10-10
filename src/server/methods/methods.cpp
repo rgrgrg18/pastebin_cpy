@@ -71,8 +71,12 @@ bool PastebinMethods::UpdatePasteInfo(const std::string& public_key, NewPasteInf
     }
 
     auto [new_password, new_title] = data;
-    if (!new_password.empty()) CachedStorage::ChangePassword(public_key, new_password);
-    if (!new_title.empty()) CachedStorage::ChangeTitle(public_key, new_title);
+    if (!new_password.empty()) {
+      CachedStorage::ChangePassword(public_key, new_password);
+    }
+    if (!new_title.empty()) {
+      CachedStorage::ChangeTitle(public_key, new_title);
+    }
 
     return true;
 }

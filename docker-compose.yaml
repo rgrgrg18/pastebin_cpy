@@ -15,7 +15,7 @@ services:
     networks:
       - backend
     environment:
-      - CODESTYLE_CONFIG_DIR_PATH:/usr/src/app/codestyle_checker
+      - CODESTYLE_CONFIG_DIR_PATH=/usr/src/app/codestyle_checker
     profiles:
       - no-logs
       - release

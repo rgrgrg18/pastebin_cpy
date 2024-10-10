@@ -94,7 +94,7 @@ private:
         }
     }
 
-    ConnectionPool(size_t pool_size, auto&&... args) {
+    explicit ConnectionPool(size_t pool_size, auto&&... args) {
         try {
             for (size_t i = 0; i < pool_size; ++i) {
                 auto conn = std::make_unique<T>(std::forward<decltype(args)>(args)...);

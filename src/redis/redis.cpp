@@ -27,7 +27,9 @@ void Redis::Insert(const std::string& key,
         }
 
         redis_.set(key, value);
-        if (life_time.has_value()) redis_.expire(key, std::chrono::seconds(life_time.value()));
+        if (life_time.has_value()) {
+          redis_.expire(key, std::chrono::seconds(life_time.value()));
+        }
 
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;
@@ -49,7 +51,9 @@ void Redis::Insert(const std::string& key,
         }
 
         redis_.rpush(key, value.begin(), value.end());
-        if (life_time.has_value()) redis_.expire(key, std::chrono::seconds(life_time.value()));
+        if (life_time.has_value()) {
+          redis_.expire(key, std::chrono::seconds(life_time.value()));
+        }
 
     } catch (const sw::redis::Error &err) {
         std::cout << err.what() << std::endl;

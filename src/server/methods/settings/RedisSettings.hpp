@@ -12,6 +12,6 @@
 
 namespace redis_settings {
 
-int32_t WEAK_ATTR life_time_in_seconds = 600;
+uint32_t WEAK_ATTR life_time_in_seconds = 600;
 
 };
