@@ -19,15 +19,15 @@ void AwsAPI::InitAPI() {
 
 // AwsClient constructor
 AwsClient::AwsClient() {
-    clientConfig = Aws::Client::ClientConfiguration();
-    clientConfig.endpointOverride = Aws::String(Config::Endpoint);
+    client_config_ = Aws::Client::ClientConfiguration();
+    client_config_.endpointOverride = Aws::String(config::endpoint);
 
-    s3_client = Aws::S3::S3Client(clientConfig);
+    s3_client_ = Aws::S3::S3Client(client_config_);
 }
 
 // Function to get s3_client from AwsClient
-Aws::S3::S3Client& AwsClient::getClient() {
-    return s3_client;
+Aws::S3::S3Client& AwsClient::get_client() {
+    return s3_client_;
 }
 
 
@@ -35,29 +35,29 @@ Aws::S3::S3Client& AwsClient::getClient() {
 /* Aws Actions */
 
 // adds an object to the specified bucket
-bool AwsActions::PutObject(const Aws::String &bucketName,
-                           const Aws::String &filePath,
-                           const Aws::String &fileKey) {
+bool AwsActions::PutObject(const Aws::String &bucket_name,
+                           const Aws::String &file_path,
+                           const Aws::String &file_key) {
     try {
         AwsAPI::InitAPI();
 
-        auto s3_client = AwsPool::getInstance(10).getConnection()->getClient();
+        auto s3_client = AwsPool::get_instance(10).get_connection()->get_client();
 
         Aws::S3::Model::PutObjectRequest request;
-        request.SetBucket(bucketName);
-        request.SetKey(fileKey);
+        request.SetBucket(bucket_name);
+        request.SetKey(file_key);
 
-        std::shared_ptr<Aws::IOStream> inputData =
+        std::shared_ptr<Aws::IOStream> input_data =
                 Aws::MakeShared<Aws::FStream>("SampleAllocationTag",
-                                              filePath.c_str(),
+                                              file_path.c_str(),
                                               std::ios_base::in | std::ios_base::binary);
 
-        if (!*inputData) {
-            std::cerr << "Error unable to read file " << filePath << std::endl;
+        if (!*input_data) {
+            std::cerr << "Error unable to read file " << file_path << std::endl;
             return false;
         }
 
-        request.SetBody(inputData);
+        request.SetBody(input_data);
 
         Aws::S3::Model::PutObjectOutcome outcome =
                 s3_client.PutObject(request);
@@ -78,17 +78,17 @@ bool AwsActions::PutObject(const Aws::String &bucketName,
 }
 
 // get an object from the specified bucket
-bool AwsActions::DownloadObject(const Aws::String &objectKey,
-                           const Aws::String &fromBucket,
-                           const Aws::String &saveFilePath) {
+bool AwsActions::DownloadObject(const Aws::String &object_key,
+                           const Aws::String &from_bucket,
+                           const Aws::String &save_file_path) {
     try {
         AwsAPI::InitAPI();
 
-        auto s3_client = AwsPool::getInstance(10).getConnection()->getClient();
+        auto s3_client = AwsPool::get_instance(10).get_connection()->get_client();
 
         Aws::S3::Model::GetObjectRequest request;
-        request.SetBucket(fromBucket);
-        request.SetKey(objectKey);
+        request.SetBucket(from_bucket);
+        request.SetKey(object_key);
 
         Aws::S3::Model::GetObjectOutcome outcome =
                 s3_client.GetObject(request);
@@ -99,14 +99,14 @@ bool AwsActions::DownloadObject(const Aws::String &objectKey,
                       err.GetExceptionName() << ": " << err.GetMessage() << std::endl;
         }
         else {
-            Aws::IOStream &ioStream = outcome.GetResultWithOwnership().
+            Aws::IOStream &io_stream = outcome.GetResultWithOwnership().
                     GetBody();
-            Aws::OFStream outStream(saveFilePath, std::ios_base::out | std::ios_base::binary);
-            if (!outStream.is_open()) {
-                std::cout << "Error: unable to open file, '" << saveFilePath << "'." << std::endl;
+            Aws::OFStream out_stream(save_file_path, std::ios_base::out | std::ios_base::binary);
+            if (!out_stream.is_open()) {
+                std::cout << "Error: unable to open file, '" << save_file_path << "'." << std::endl;
             }
             else {
-                outStream << ioStream.rdbuf();
+                out_stream << io_stream.rdbuf();
             }
         }
 
@@ -120,17 +120,17 @@ bool AwsActions::DownloadObject(const Aws::String &objectKey,
     return false;
 }
 
-bool AwsActions::DeleteObject(const Aws::String &objectKey,
-                              const Aws::String &fromBucket) {
+bool AwsActions::DeleteObject(const Aws::String &object_key,
+                              const Aws::String &from_bucket) {
 
     try {
         AwsAPI::InitAPI();
 
-        auto s3_client = AwsPool::getInstance(10).getConnection()->getClient();
+        auto s3_client = AwsPool::get_instance(10).get_connection()->get_client();
 
         Aws::S3::Model::DeleteObjectRequest request;
-        request.WithKey(objectKey)
-               .WithBucket(fromBucket);
+        request.WithKey(object_key)
+               .WithBucket(from_bucket);
 
         Aws::S3::Model::DeleteObjectOutcome outcome = s3_client.DeleteObject(request);
 

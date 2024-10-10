@@ -21,6 +21,7 @@ apt-get update && apt-get install -y \
     openssh-server \
     vim \
     unzip \
+    clang-tidy \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -77,3 +78,6 @@ git clone https://github.com/google/googletest.git \
     && make install \
     && cd ../../ \
     && rm -rf googletest
+
+ln -s /usr/src/app/codestyle_checker/src/runner.py /usr/local/bin/style
+

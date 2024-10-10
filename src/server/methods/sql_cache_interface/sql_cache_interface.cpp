@@ -1,19 +1,19 @@
 #include "sql_cache_interface.hpp"
 
-std::unique_ptr<Storage> CachedStorage::storage_ = std::make_unique<DefaultServices::Storage>();
+std::unique_ptr<Storage> CachedStorage::storage = std::make_unique<default_services::Storage>();
 
-paste_info CachedStorage::get_paste_info(const std::string& public_key) {
+PasteInfo CachedStorage::GetPasteInfo(const std::string& public_key) {
 
-    auto info = RedisActions::get<std::vector<std::string>>(public_key);
+    auto info = RedisActions::Get<std::vector<std::string>>(public_key);
 
     if (!info.has_value()) {
         info = [&public_key]() { 
-            paste_info info = storage_->get_paste_info(public_key);
+            PasteInfo info = storage->GetPasteInfo(public_key);
             return std::vector<std::string>{std::get<0>(info), std::get<1>(info)
                 , std::get<2>(info), std::get<3>(info), std::get<4>(info)};
         }();
       
-        RedisActions::insert(public_key, info.value(), redisSettins::lifeTimeInSeconds);
+        RedisActions::Insert(public_key, info.value(), redis_settings::life_time_in_seconds);
     }
 
     return [&info]() {
@@ -22,46 +22,46 @@ paste_info CachedStorage::get_paste_info(const std::string& public_key) {
     }();
 };
 
-void CachedStorage::change_password(const std::string& public_key, const std::string& new_password) {
+void CachedStorage::ChangePassword(const std::string& public_key, const std::string& new_password) {
 
-    storage_->change_password(public_key, new_password);
+    storage->ChangePassword(public_key, new_password);
 
-    auto info = RedisActions::get<std::vector<std::string>>(public_key);
+    auto info = RedisActions::Get<std::vector<std::string>>(public_key);
 
     if (info.has_value()) {
         info.value()[2] = new_password;
-        RedisActions::update(public_key, info.value(), redisSettins::lifeTimeInSeconds);
+        RedisActions::Update(public_key, info.value(), redis_settings::life_time_in_seconds);
     }
 }
 
-void CachedStorage::change_title(const std::string& public_key, const std::string& new_name) {
+void CachedStorage::ChangeTitle(const std::string& public_key, const std::string& new_name) {
     
-    storage_->change_title(public_key, new_name);
+    storage->ChangeTitle(public_key, new_name);
 
-    auto info = RedisActions::get<std::vector<std::string>>(public_key);
+    auto info = RedisActions::Get<std::vector<std::string>>(public_key);
 
     if (info.has_value()) {
         info.value()[3] = new_name;
-        RedisActions::update(public_key, info.value(), redisSettins::lifeTimeInSeconds);
+        RedisActions::Update(public_key, info.value(), redis_settings::life_time_in_seconds);
     }
 }
 
-keys CachedStorage::create_new_paste(uint64_t login) {
-    return storage_->create_new_paste(login);
+Keys CachedStorage::CreateNewPaste(uint64_t login) {
+    return storage->CreateNewPaste(login);
 }
 
-void CachedStorage::del_paste(const std::string& public_key, uint64_t login) {
+void CachedStorage::DelPaste(const std::string& public_key, uint64_t login) {
     
-    storage_->del_paste(public_key, login);
+    storage->DelPaste(public_key, login);
     
-    auto info = RedisActions::get<std::vector<std::string>>(public_key);  
+    auto info = RedisActions::Get<std::vector<std::string>>(public_key);
 
     if (info.has_value()) {
-        RedisActions::update(public_key, {"", "", "", "", ""}, redisSettins::lifeTimeInSeconds);
+        RedisActions::Update(public_key, {"", "", "", "", ""}, redis_settings::life_time_in_seconds);
     }
 }
 
-last_pastes_info CachedStorage::get_last_user_pastes(uint64_t login, uint64_t limit) {
-    return storage_->get_last_user_pastes(login, limit);
+LastPastesInfo CachedStorage:: GetLastUserPastes(uint64_t login, uint64_t limit) {
+    return storage->GetLastUserPastes(login, limit);
 }
 

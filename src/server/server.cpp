@@ -11,12 +11,12 @@ class ProcessImpl final : public pastebinApi::Service {
                     const ::newPasteArgs* request, ::newPasteResponce* response) {
 
         // test request data
-        if (request->text().size() == 0) {
+        if (request->text().empty()) {
             return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Text should not be empty");
         }
 
         // act
-        auto result = PastebinMethods::addPaste(request->user_id(),
+        auto result = PastebinMethods::AddPaste(request->user_id(),
             std::tuple(std::to_string(request->user_id()), request->password(), request->title(), "", request->text()));
 
         // test act result
@@ -34,12 +34,12 @@ class ProcessImpl final : public pastebinApi::Service {
                     const ::getPasteArgs* request, ::getPasteResponce* response) {
 
         // test request data
-        if (request->public_key().size() == 0) {
+        if (request->public_key().empty()) {
             return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should not be empty");
         }
 
         //  act
-        auto result = PastebinMethods::getPaste(request->public_key(),
+        auto result = PastebinMethods::GetPaste(request->public_key(),
                                                 request->password());
 
         // test result data
@@ -62,12 +62,12 @@ class ProcessImpl final : public pastebinApi::Service {
                     const ::delPasteArgs* request, ::delPasteResponce* response) {
 
         // test request data
-        if (request->public_key().size() == 0) {
+        if (request->public_key().empty()) {
             return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should not be empty");
         }
 
 
-        response->set_is_success(PastebinMethods::deletePaste(request->public_key()));
+        response->set_is_success(PastebinMethods::DeletePaste(request->public_key()));
         return grpc::Status::OK;
     }
 
@@ -75,22 +75,22 @@ class ProcessImpl final : public pastebinApi::Service {
                     const ::updatePasteArgs* request, ::updatePasteResponce* response) {
 
         // test request data
-        if (request->public_key().size() == 0) {
+        if (request->public_key().empty()) {
             return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should not be empty");
         }
 
-        response->set_is_success(PastebinMethods::updatePasteInfo(request->public_key(),
+        response->set_is_success(PastebinMethods::UpdatePasteInfo(request->public_key(),
                                  std::tuple(request->new_password(), request->new_title())));
         return grpc::Status::OK;
     }
 
 };
 
-void runServer() {
+void RunServer() {
     ProcessImpl service;
     
     grpc::ServerBuilder builder;
-    builder.AddListeningPort(Config::ListenPort, grpc::InsecureServerCredentials());
+    builder.AddListeningPort(config::listen_port, grpc::InsecureServerCredentials());
     builder.RegisterService(&service);
 
     std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
@@ -99,6 +99,6 @@ void runServer() {
 }
 
 int main() {
-    runServer();
+    RunServer();
     return 0;
 }

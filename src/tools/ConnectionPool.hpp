@@ -16,7 +16,7 @@ public:
     : conn_(std::move(conn)), pool_(pool) {}
 
     ~Connection() {
-        pool_.release(std::move(conn_));
+        pool_.Release(std::move(conn_));
     }
 
     // Non-copyable
@@ -55,8 +55,8 @@ template <typename T>
 class ConnectionPool {
 public:
 
-    static ConnectionPool& getInstance(size_t poolSize, auto&&... args) {
-        static ConnectionPool instance(poolSize, std::forward<decltype(args)>(args)...);
+    static ConnectionPool& get_instance(size_t pool_size, auto&&... args) {
+        static ConnectionPool instance(pool_size, std::forward<decltype(args)>(args)...);
         return instance;
     }
 
@@ -69,16 +69,16 @@ public:
     ConnectionPool& operator=(ConnectionPool&& other) = delete;
 
     // Acquire a connection from the pool
-    Connection<T> getConnection() {
-        std::unique_lock<std::mutex> lock(QueueMutex_);
-        queue_not_empty_.wait(lock, [this] { return !Queue_.empty() || is_shutdown_; });
+    Connection<T> get_connection() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        queue_not_empty_.wait(lock, [this] { return !queue_.empty() || is_shutdown_; });
 
         if (is_shutdown_) {
             throw std::runtime_error("ConnectionPool is shutting down.");
         }
 
-        auto conn = std::move(Queue_.front());
-        Queue_.pop();
+        auto conn = std::move(queue_.front());
+        queue_.pop();
 
         return Connection<T>(std::move(conn), *this);
     }
@@ -86,39 +86,39 @@ public:
 private:
 
     // Release a connection back to the pool
-    void release(std::unique_ptr<T>&& conn) {
-        std::lock_guard<std::mutex> lock(QueueMutex_);
+    void Release(std::unique_ptr<T>&& conn) {
+        std::lock_guard<std::mutex> lock(mutex_);
         if (!is_shutdown_) {
-            Queue_.push(std::move(conn));
+            queue_.push(std::move(conn));
             queue_not_empty_.notify_one();
         }
     }
 
-    ConnectionPool(size_t poolSize, auto&&... args) {
+    explicit ConnectionPool(size_t pool_size, auto&&... args) {
         try {
-            for (size_t i = 0; i < poolSize; ++i) {
+            for (size_t i = 0; i < pool_size; ++i) {
                 auto conn = std::make_unique<T>(std::forward<decltype(args)>(args)...);
-                Queue_.push(std::move(conn));
+                queue_.push(std::move(conn));
             }
         } catch (...) {
-            while (!Queue_.empty()) {
-                Queue_.pop();
+            while (!queue_.empty()) {
+                queue_.pop();
             }
             throw;
         }
     }
 
     ~ConnectionPool() {
-        std::lock_guard<std::mutex> lock(QueueMutex_);
+        std::lock_guard<std::mutex> lock(mutex_);
         is_shutdown_ = true;
         queue_not_empty_.notify_all();  // Wake up all waiting threads
-        while (!Queue_.empty()) {
-            Queue_.pop();
+        while (!queue_.empty()) {
+            queue_.pop();
         }
     }
 
-    std::queue<std::unique_ptr<T>> Queue_; // Guarded by QueueMutex_
-    std::mutex QueueMutex_;
+    std::queue<std::unique_ptr<T>> queue_; // Guarded by mutex_
+    std::mutex mutex_;
     std::condition_variable queue_not_empty_;
     bool is_shutdown_ = false;
 

@@ -5,54 +5,54 @@
 #include "sql_interface.hpp"
 
 TEST(SqlInterfaceTest, BasicLogic) {
-	postgres db;
+	Postgres db;
 	
 	uint64_t login = 111;
 		
-    keys key = db.create_new_paste(login);
-	paste_info data = db.get_paste_info(key.first);
+    Keys key = db.CreateNewPaste(login);
+	PasteInfo data = db.GetPasteInfo(key.first);
 
 	ASSERT_NE(std::get<1>(data), "") << "New paste doesn't exist after creation by new_paste function";
 
-    EXPECT_EQ(std::get<1>(data), std::to_string(login)) << "Login that returns from function get_paste_info doesn't equal to login that was passed to the function new_paste";
-    EXPECT_EQ(std::get<0>(data), key.second) << "Function new_paste or get_paste_info returns incorrect private key";
+    EXPECT_EQ(std::get<1>(data), std::to_string(login)) << "Login that returns from function GetPasteInfo doesn't equal to login that was passed to the function new_paste";
+    EXPECT_EQ(std::get<0>(data), key.second) << "Function new_paste or GetPasteInfo returns incorrect private key";
 
 	std::string expected_password = "0000";
-    db.change_password(key.first, expected_password);
+    db.ChangePassword(key.first, expected_password);
 
     std::string expected_title = "9999";
-    db.change_title(key.first, expected_title);
+    db.ChangeTitle(key.first, expected_title);
 
-    data = db.get_paste_info(key.first);
+    data = db.GetPasteInfo(key.first);
 
-    EXPECT_NE(std::get<2>(data), "") << "Password wasn't change after calling function change_password";
+    EXPECT_NE(std::get<2>(data), "") << "Password wasn't change after calling function ChangePassword";
     if (std::get<2>(data) != "")
-        EXPECT_EQ(std::get<2>(data), expected_password) << "Password that returns from function get_paste_info doesn't equal to password that was passed to the function change_password";
-    EXPECT_NE(std::get<3>(data), "Untilted") << "Title wasn't change after calling function change_title";
+        EXPECT_EQ(std::get<2>(data), expected_password) << "Password that returns from function GetPasteInfo doesn't equal to password that was passed to the function ChangePassword";
+    EXPECT_NE(std::get<3>(data), "Untilted") << "Title wasn't change after calling function ChangeTitle";
     if (std::get<3>(data) != "Untilted")
-        EXPECT_EQ(std::get<3>(data), expected_title) << "Title that returns from function get_paste_info doesn't equal to title that was passed to the function change_title";
+        EXPECT_EQ(std::get<3>(data), expected_title) << "Title that returns from function GetPasteInfo doesn't equal to title that was passed to the function ChangeTitle";
 
-    db.del_paste(key.first, login);
-    data = db.get_paste_info(key.first);
+    db.DelPaste(key.first, login);
+    data = db.GetPasteInfo(key.first);
 
     EXPECT_EQ(std::get<1>(data), "") << "Function delete_paste didn't delete paste";	
 }
 
 TEST(SqlInterfaceTest, LastUserPastes) {
-	postgres db;
+	Postgres db;
 
 	uint64_t login = 2222;
 
-	keys key_1 = db.create_new_paste(login);
-	keys key_2 = db.create_new_paste(login);
-	keys key_3 = db.create_new_paste(login);
+	Keys key_1 = db.CreateNewPaste(login);
+	Keys key_2 = db.CreateNewPaste(login);
+	Keys key_3 = db.CreateNewPaste(login);
 
 	std::string expected_title_2 = "4444";
-	db.change_title(key_2.first, expected_title_2);
+	db.ChangeTitle(key_2.first, expected_title_2);
 	std::string expected_title_3 = "5555";
-	db.change_title(key_3.first, expected_title_3);
+	db.ChangeTitle(key_3.first, expected_title_3);
 
-	last_pastes_info actual = db.get_last_user_pastes(login, 2);
+	LastPastesInfo actual = db. GetLastUserPastes(login, 2);
 	
 	ASSERT_FALSE(actual.empty());
     EXPECT_EQ(actual[0][0], expected_title_3);
@@ -61,10 +61,10 @@ TEST(SqlInterfaceTest, LastUserPastes) {
 	EXPECT_EQ(actual[1][0], expected_title_2);
     EXPECT_EQ(actual[1][1], key_2.first);
 
-	db.del_paste(key_1.first, login);
-	db.del_paste(key_2.first, login);
-	db.del_paste(key_3.first, login);
+	db.DelPaste(key_1.first, login);
+	db.DelPaste(key_2.first, login);
+	db.DelPaste(key_3.first, login);
 
-	actual = db.get_last_user_pastes(login, 2);
+	actual = db. GetLastUserPastes(login, 2);
 	EXPECT_TRUE(actual.empty());
 }

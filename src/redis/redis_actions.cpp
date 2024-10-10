@@ -1,47 +1,47 @@
 #include "redis_actions.hpp"
 
-RedisActions::RedisConnection RedisActions::getConnection() {
-    RedisPool& pool = RedisPool::getInstance(10, Config::Redis_conn);
-    return pool.getConnection();
+RedisActions::RedisConnection RedisActions::get_connection() {
+    RedisPool& pool = RedisPool::get_instance(10, config::redis_conn);
+    return pool.get_connection();
 }
 
-bool RedisActions::insert(const std::string& key,
+bool RedisActions::Insert(const std::string& key,
         const std::string& value,
-        std::optional<uint32_t> lifeTime) {
+        std::optional<uint32_t> life_time) {
 
     try {
-         getConnection()->insert(key, value, lifeTime);
+         get_connection()->Insert(key, value, life_time);
          return true;
     } catch (...) {
         return false;
     }
 }
 
-bool RedisActions::insert(const std::string& key,
+bool RedisActions::Insert(const std::string& key,
         const std::vector<std::string>& value,
-        std::optional<uint32_t> lifeTime) {
+        std::optional<uint32_t> life_time) {
     try {
-        getConnection()->insert(key, value, lifeTime);
+        get_connection()->Insert(key, value, life_time);
         return true;
     } catch (...) {
         return false;
     }
 }
 
-bool RedisActions::update(const std::string& key,
+bool RedisActions::Update(const std::string& key,
         const std::vector<std::string>& value,
-        std::optional<uint32_t> lifeTime) {
+        std::optional<uint32_t> life_time) {
     try {
-        getConnection()->update(key, value, lifeTime);
+        get_connection()->Update(key, value, life_time);
         return true;
     } catch (...) {
         return false;
     }
 }
 
-bool RedisActions::del(const std::string& key) {
+bool RedisActions::Del(const std::string& key) {
     try {
-        getConnection()->del(key);
+        get_connection()->Del(key);
         return true;
     } catch (...) {
         return false;
@@ -49,10 +49,10 @@ bool RedisActions::del(const std::string& key) {
 }
 
 template <>
-std::optional<std::string> RedisActions::get<std::string>(const std::string& key) {
+std::optional<std::string> RedisActions::Get<std::string>(const std::string& key) {
     std::optional<std::string> result;
     try {
-        result = getConnection()->get<std::string>(key);
+        result = get_connection()->Get<std::string>(key);
     } catch (...) {
         //
     }
@@ -60,11 +60,11 @@ std::optional<std::string> RedisActions::get<std::string>(const std::string& key
 }
 
 template <>
-std::optional<std::vector<std::string>> RedisActions::get<std::vector<std::string>>(const std::string& key) {
+std::optional<std::vector<std::string>> RedisActions::Get<std::vector<std::string>>(const std::string& key) {
 
     std::optional<std::vector<std::string>> result;
     try {
-        result = getConnection()->get<std::vector<std::string>>(key);
+        result = get_connection()->Get<std::vector<std::string>>(key);
     } catch (...) {
         //
     }

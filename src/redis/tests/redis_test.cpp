@@ -20,15 +20,15 @@ TEST(RedisTest, setConnection) {
 TEST(RedisTest, writeRead) {
     try {
         Redis redis("tcp://127.0.0.1:6379");
-        EXPECT_FALSE(redis.get<std::string>("key").has_value());
-        redis.insert("key", "value");
-        EXPECT_EQ(redis.get<std::string>("key").value(), "value");
+        EXPECT_FALSE(redis.Get<std::string>("key").has_value());
+        redis.Insert("key", "value");
+        EXPECT_EQ(redis.Get<std::string>("key").value(), "value");
 
 
-        EXPECT_FALSE(redis.get<std::vector<std::string>>("vector").has_value());
+        EXPECT_FALSE(redis.Get<std::vector<std::string>>("vector").has_value());
         std::vector<std::string> value = {"1", "2", "3", "4", "5"};
-        redis.insert("vector", value);
-        EXPECT_EQ(redis.get<std::vector<std::string>>("vector").value(), value);
+        redis.Insert("vector", value);
+        EXPECT_EQ(redis.Get<std::vector<std::string>>("vector").value(), value);
 
     } catch (...) {
         FAIL();
@@ -40,8 +40,8 @@ TEST(RedisTest, update) {
         Redis redis("tcp://127.0.0.1:6379");
         std::vector<std::string> new_value = {"1", "2", "3", "4", "5"};
 
-        redis.update("vector", new_value);
-        EXPECT_EQ(redis.get<std::vector<std::string>>("vector").value(), new_value);
+        redis.Update("vector", new_value);
+        EXPECT_EQ(redis.Get<std::vector<std::string>>("vector").value(), new_value);
 
     } catch (...) {
         FAIL();
@@ -51,11 +51,11 @@ TEST(RedisTest, update) {
 TEST(RedisTest, del) {
     try {
         Redis redis("tcp://127.0.0.1:6379");
-        redis.del("vector");
-        EXPECT_FALSE(redis.get<std::vector<std::string>>("vector").has_value());
+        redis.Del("vector");
+        EXPECT_FALSE(redis.Get<std::vector<std::string>>("vector").has_value());
 
-        redis.del("key");
-        EXPECT_FALSE(redis.get<std::string>("key").has_value());
+        redis.Del("key");
+        EXPECT_FALSE(redis.Get<std::string>("key").has_value());
     } catch (...) {
         FAIL();
     }
@@ -64,8 +64,8 @@ TEST(RedisTest, del) {
 TEST(RedisTest, insertExceptions) {
     Redis redis("tcp://127.0.0.1:6379");
     try {
-        redis.insert("123", "1");
-        redis.insert("123", "2");
+        redis.Insert("123", "1");
+        redis.Insert("123", "2");
 
         FAIL();
     } catch (...) {
@@ -74,12 +74,12 @@ TEST(RedisTest, insertExceptions) {
 
     try {
         Redis redis("tcp://127.0.0.1:6379");
-        redis.insert("123", {1, 2, 3});
+        redis.Insert("123", {1, 2, 3});
 
         FAIL();
     } catch (...) {
         // Success
     }
 
-    redis.del("123"); // <-- clean up redis resourses
+    redis.Del("123"); // <-- clean up redis resourses
 }

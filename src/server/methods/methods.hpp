@@ -12,23 +12,21 @@
 #include "zip_compression.hpp"
 
 // password, title
-using newPasteInfo = std::tuple<std::string, std::string>;
+using NewPasteInfo = std::tuple<std::string, std::string>;
 
 // author, password, title, created_at, text
-using pasteData = std::tuple<std::string, std::string, std::string, std::string, std::string>;
-
+using PasteData = std::tuple<std::string, std::string, std::string, std::string, std::string>;
 
 class PastebinMethods {
 public:
+    static std::optional<std::string> AddPaste(uint64_t user_id,
+                                               PasteData data);
 
-    static std::optional<std::string> addPaste(uint64_t user_id,
-                                                 pasteData data);
-
-    static std::optional<pasteData> getPaste(const std::string& public_key,
-                                               const std::string& user_password);
+    static std::optional<PasteData> GetPaste(const std::string& public_key,
+                                             const std::string& user_password);
     
-    static bool deletePaste(const std::string& public_key);
+    static bool DeletePaste(const std::string& public_key);
 
-    static bool updatePasteInfo(const std::string& public_key, newPasteInfo data);
+    static bool UpdatePasteInfo(const std::string& public_key, NewPasteInfo data);
 
 };
