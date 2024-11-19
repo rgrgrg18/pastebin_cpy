@@ -2,7 +2,7 @@
 
 #include <gmock/gmock.h>
 
-#include "../../../../../interfaces/cache_text.hpp"
+#include "cache_text_interface.hpp"
 
 class MockCacheText {
 public:

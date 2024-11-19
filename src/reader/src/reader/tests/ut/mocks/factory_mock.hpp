@@ -2,7 +2,7 @@
 
 #include <gmock/gmock.h>
 
-#include "../../../../../interfaces/factory.hpp"
+#include "factory_interface.hpp"
 #include "cache_metadata_mock.hpp"
 #include "cache_text_mock.hpp"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../paste_types.hpp"
+#include "paste_types.hpp"
 
 namespace pastebin {
 

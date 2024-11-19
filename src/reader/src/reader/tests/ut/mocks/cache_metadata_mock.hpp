@@ -2,7 +2,7 @@
 
 #include <gmock/gmock.h>
 
-#include "../../../../../interfaces/cache_metadata.hpp"
+#include "cache_metadata_interface.hpp"
 
 class MockCacheMetadata {
 public:

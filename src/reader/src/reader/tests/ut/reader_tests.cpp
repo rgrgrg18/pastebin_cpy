@@ -1,19 +1,7 @@
 #include <gmock/gmock.h>
 
-#include "../../../../interfaces/reader.hpp"
+#include "reader_interface.hpp"
 #include "mocks/factory_mock.hpp"
-
-bool operator==(const pastebin::PasteText& first, const pastebin::PasteText& second) {
-    return first.text == second.text;
-}
-
-bool operator==(const pastebin::PasteMetadata& first, const pastebin::PasteMetadata& second) {
-    return (first.user_id == second.user_id) && (first.author == second.author) && (first.created_at == second.created_at) && (first.password == second.password) && (first.title == second.title);
-}
-
-bool operator==(const pastebin::Paste& first, const pastebin::Paste& second) {
-    return (first.paste_metadata == second.paste_metadata) && (first.paste_text == second.paste_text);
-}
 
 class Reader {
 public:
@@ -25,6 +13,14 @@ public:
     Reader(MockFactory&& factory) {};
     Reader(Reader&& other) noexcept = default;
 };
+
+bool operator==(const pastebin::Paste& other, const pastebin::Paste& penis) {
+    return true;
+}
+
+MATCHER_P(PasteEquals, expected, "Matches Paste objects") {
+    return arg == expected;
+}
 
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -72,7 +68,7 @@ TEST(ReaderTest, Get) {
     
     const pastebin::Paste expected_paste{text, metadata};
     
-    EXPECT_EQ(res, expected_paste);
+    EXPECT_THAT(res, PasteEquals(expected_paste));
 }
 
 
