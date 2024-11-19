@@ -40,7 +40,7 @@ git clone https://github.com/sewenew/redis-plus-plus.git \
     && mkdir -p build \
     && cd build \
     && cmake -DCMAKE_BUILD_TYPE=Release .. \
-    && make \
+    && make -j4 \
     && make install \
     && cd ../../ \
     && rm -rf redis-plus-plus
@@ -51,7 +51,7 @@ git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp.git \
     && mkdir build \
     && cd build \
     && cmake .. -DBUILD_ONLY="s3;sts;core" -DCMAKE_BUILD_TYPE=Release -DENABLE_UNITY_BUILD=ON \
-    && make \
+    && make -j4 \
     && make install \
     && cd ../../ \
     && rm -rf aws-sdk-cpp
@@ -63,7 +63,7 @@ git clone -b v1.48.0 https://github.com/grpc/grpc \
     && mkdir -p cmake/build \
     && cd cmake/build \
     && cmake ../.. -DgRPC_INSTALL=ON -DgRPC_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release \
-    && make \
+    && make -j4 \
     && make install \
     && cd ../../../ \
     && rm -rf grpc
@@ -74,7 +74,7 @@ git clone https://github.com/google/googletest.git \
     && mkdir build \
     && cd build \
     && cmake .. \
-    && make \
+    && make -j4 \
     && make install \
     && cd ../../ \
     && rm -rf googletest
