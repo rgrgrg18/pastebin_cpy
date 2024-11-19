@@ -2,8 +2,8 @@
 
 #include <type_traits>
 
-#include "cache_metadata.hpp"
-#include "cache_text.hpp"
+#include "cache_metadata_interface.hpp"
+#include "cache_text_interface.hpp"
 
 namespace pastebin {
 

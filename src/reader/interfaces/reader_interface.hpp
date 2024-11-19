@@ -3,7 +3,7 @@
 #include <concepts>
 #include <type_traits>
 
-#include "../paste_types.hpp"
+#include "paste_types.hpp"
 
 namespace pastebin {
 

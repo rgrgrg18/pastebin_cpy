@@ -1,4 +1,1 @@
 add_subdirectory(reader)
-add_subdirectory(server)
-add_subdirectory(cache_metadata)
-add_subdirectory(cache_text)
