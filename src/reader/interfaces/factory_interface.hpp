@@ -11,14 +11,14 @@ namespace factory {
 
 namespace {
     template <typename T>
-    concept RefCacheText = pastebin::cache_text::CacheText<T> && std::is_reference_v<T>;
+    concept RefCacheText = pastebin::cache_text::ICacheText<T> && std::is_reference_v<T>;
 
     template <typename T>
-    concept RefCacheMetadata = pastebin::cache_metadata::CacheMetadata<T> && std::is_reference_v<T>;
+    concept RefCacheMetadata = pastebin::cache_metadata::ICacheMetadata<T> && std::is_reference_v<T>;
 }
 
 template <typename T>
-concept Factory = requires(T factory) {
+concept IFactory = requires(T factory) {
     { factory.getCacheText() } -> RefCacheText;
     { factory.getCacheMetadata() } -> RefCacheMetadata;
 } && std::is_nothrow_move_constructible_v<T> && std::is_nothrow_destructible_v<T>;
