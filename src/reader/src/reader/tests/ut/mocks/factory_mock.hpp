@@ -6,6 +6,8 @@
 #include "cache_text_mock.hpp"
 #include "factory_interface.hpp"
 
+namespace mock {
+
 class MockFactory {
 public:
     MOCK_METHOD(MockCacheText&, getCacheText, ());
@@ -51,4 +53,6 @@ private:
     MockFactory* factory_;
 };
 
-static_assert(pastebin::factory::IFactory<MockFactory>);
+} // namespace mock
+
+static_assert(pastebin::factory::IFactory<mock::MockFactory>);
