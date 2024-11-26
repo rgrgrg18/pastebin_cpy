@@ -4,13 +4,25 @@
 
 #include "cache_text_interface.hpp"
 
+namespace mock {
+
 class MockCacheText {
 public:
     MOCK_METHOD(pastebin::PasteText, get, (pastebin::PublicKey), (noexcept)); 
 
     MockCacheText() = default;
-    MockCacheText(MockCacheText&& other) noexcept {}; 
+
+    // non-copyable
+    MockCacheText(MockCacheText& other) = delete;
+    MockCacheText& operator=(MockCacheText& other) = delete;
+
+    // movable
+    MockCacheText(MockCacheText&& other) noexcept {};
+    MockCacheText& operator=(MockCacheText&& other) noexcept = default;
+    
     ~MockCacheText() = default;
 };
 
-static_assert(pastebin::cache_text::CacheText<MockCacheText>);
+} // namespace mock
+
+static_assert(pastebin::cache_text::ICacheText<mock::MockCacheText>);
