@@ -7,28 +7,7 @@
 
 #include "reader.hpp"
 
-namespace pastebin {
-
-namespace reader {
-
-class DefaultReader {
-public:
-    template <factory::IFactory FactoryT>
-    DefaultReader(FactoryT factory) {};
-
-    DefaultReader(DefaultReader&& other) noexcept = default;
-    DefaultReader& operator=(DefaultReader&& other) noexcept = default;
-public:
-    PasteText getText(PublicKey public_key) const { return {}; };
-    PasteMetadata getMetadata(PublicKey public_key) const { return {}; };
-    Paste get(PublicKey public_key) const { return {}; };
-};
-
-} // namespace
-
-} // namesapce pastebin
-
-using Reader = pastebin::reader::DefaultReader;
+using Reader = pastebin::reader::Reader;
 
 static_assert(pastebin::reader::IReader<Reader>);
 
