@@ -26,19 +26,26 @@ MATCHER_P(PasteMetadataEquals, expected, "Matches PasteMetadata objects") {
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-TEST(ReaderUnitTest, DefaultGet) {
-    pastebin::mock::MockCacheText cache_text;
-    pastebin::mock::MockCacheMetadata cache_metadata;
+using utility::testing::GeneratePublicKey;
+using utility::testing::GeneratePaste;
+using utility::testing::GeneratePasteText;
+using utility::testing::GeneratePasteMetadata;
 
-    pastebin::mock::MockFactory factory;
+using namespace pastebin::reader::mock;
+
+TEST(ReaderUnitTest, DefaultGet) {
+    MockCacheText cache_text;
+    MockCacheMetadata cache_metadata;
+
+    MockFactory factory;
 
     uint64_t seed = 5432;
 
     for (uint64_t i = 0; i < 1'000; ++i) {
-        const std::string public_key = utility::testing::GeneratePublicKey(seed);
+        const std::string public_key = GeneratePublicKey(seed);
         const pastebin::PublicKey key = public_key;
 
-        const pastebin::Paste expected_paste = utility::testing::GeneratePaste(seed);
+        const pastebin::Paste expected_paste = GeneratePaste(seed);
 
         ON_CALL(cache_text, get(key))
             .WillByDefault(Return(expected_paste.paste_text));
@@ -60,7 +67,7 @@ TEST(ReaderUnitTest, DefaultGet) {
         EXPECT_CALL(factory, getCacheMetadata())
             .Times(1);
 
-        Reader reader(std::move(pastebin::mock::WrapperMockFactory(&factory)));
+        Reader reader(std::move(WrapperMockFactory(&factory)));
         
         const pastebin::Paste res = reader.get(key);
         
@@ -69,17 +76,17 @@ TEST(ReaderUnitTest, DefaultGet) {
 }
 
 TEST(ReaderUnitTest, DefaultGetText) {
-    pastebin::mock::MockCacheText cache_text;
+    MockCacheText cache_text;
 
-    pastebin::mock::MockFactory factory;
+    MockFactory factory;
 
     uint64_t seed = 5432;
 
     for (uint64_t i = 0; i < 1'000; ++i) {
-        const std::string public_key = utility::testing::GeneratePublicKey(seed);
+        const std::string public_key = GeneratePublicKey(seed);
         const pastebin::PublicKey key = public_key;
 
-        const pastebin::PasteText expected_text = utility::testing::GeneratePasteText(seed);
+        const pastebin::PasteText expected_text = GeneratePasteText(seed);
 
         ON_CALL(cache_text, get(key))
             .WillByDefault(Return(expected_text));
@@ -91,7 +98,7 @@ TEST(ReaderUnitTest, DefaultGetText) {
         EXPECT_CALL(factory, getCacheText())
             .Times(1);
 
-        Reader reader(std::move(pastebin::mock::WrapperMockFactory(&factory)));
+        Reader reader(std::move(WrapperMockFactory(&factory)));
         
         const pastebin::PasteText res = reader.getText(key);
 
@@ -100,17 +107,17 @@ TEST(ReaderUnitTest, DefaultGetText) {
 }
 
 TEST(ReaderUnitTest, DefaultGetMetadata) {
-    pastebin::mock::MockCacheMetadata cache_metadata;
+    MockCacheMetadata cache_metadata;
 
-    pastebin::mock::MockFactory factory;
+    MockFactory factory;
 
     uint64_t seed = 5432;
 
     for (uint64_t i = 0; i < 500'000; ++i) {
-        const std::string public_key = utility::testing::GeneratePublicKey(seed);
+        const std::string public_key = GeneratePublicKey(seed);
         const pastebin::PublicKey key = public_key;
 
-        const pastebin::PasteMetadata expected_metadata = utility::testing::GeneratePasteMetadata(seed); 
+        const pastebin::PasteMetadata expected_metadata = GeneratePasteMetadata(seed); 
 
         ON_CALL(cache_metadata, get(key))
             .WillByDefault(Return(expected_metadata));    
@@ -122,7 +129,7 @@ TEST(ReaderUnitTest, DefaultGetMetadata) {
         EXPECT_CALL(factory, getCacheMetadata())
             .Times(1);
 
-        Reader reader(std::move(pastebin::mock::WrapperMockFactory(&factory)));
+        Reader reader(std::move(WrapperMockFactory(&factory)));
 
         const pastebin::PasteMetadata res = reader.getMetadata(key);
         
