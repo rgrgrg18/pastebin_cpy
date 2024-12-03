@@ -1,0 +1,32 @@
+name: Build Reader
+
+on: 
+  pull_request:
+    branches:
+      - reader
+      - reader_class_tests
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Create container
+        run: |
+          cd docker/client 
+          ./create.sh 
+      - name: Run and login to container
+        run: |
+          ./up.sh app 
+          ./login.sh cd
+      - name: Build
+        run: |
+          src/reader
+          cd build
+          make -j4
+      - name: End
+        if: success() || failure()
+        run: |
+          exit
+          ./down.sh
