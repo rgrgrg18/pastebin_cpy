@@ -6,7 +6,7 @@
 #include "cache_text_mock.hpp"
 #include "factory_interface.hpp"
 
-namespace mock {
+namespace pastebin::mock {
 
 class MockFactory {
 public:
@@ -29,7 +29,8 @@ public:
 class WrapperMockFactory  {
 public:
     WrapperMockFactory(MockFactory* factory) 
-        : factory_(factory) {}
+        : factory_(factory) 
+    {}
 
     // non-copyable
     WrapperMockFactory(WrapperMockFactory& other) = delete;
@@ -40,7 +41,7 @@ public:
     WrapperMockFactory& operator=(WrapperMockFactory&& other) noexcept = default;
     
     ~WrapperMockFactory() = default;
-public:
+
     MockCacheText& getCacheText() {
         return factory_->getCacheText();
     }
@@ -53,6 +54,6 @@ private:
     MockFactory* factory_;
 };
 
-} // namespace mock
+} // namespace pastebin::mock
 
-static_assert(pastebin::factory::IFactory<mock::MockFactory>);
+static_assert(pastebin::factory::IFactory<pastebin::mock::MockFactory>);

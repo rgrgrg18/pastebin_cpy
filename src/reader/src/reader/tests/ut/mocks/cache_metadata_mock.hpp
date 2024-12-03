@@ -4,7 +4,7 @@
 
 #include "cache_metadata_interface.hpp"
 
-namespace mock {
+namespace pastebin::mock {
 
 class MockCacheMetadata {
 public:
@@ -23,6 +23,6 @@ public:
     ~MockCacheMetadata() = default;
 };
 
-} // namespace mock
+} // namespace pastebin::mock
 
-static_assert(pastebin::cache_metadata::ICacheMetadata<mock::MockCacheMetadata>);
+static_assert(pastebin::cache_metadata::ICacheMetadata<pastebin::mock::MockCacheMetadata>);

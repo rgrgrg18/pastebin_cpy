@@ -1,9 +1,11 @@
 #include "reader.hpp"
 
-namespace pastebin {
-
-namespace reader {
+namespace pastebin::reader {
     
+Reader::~Reader() {
+    (*destroy_ptr_)(pimpl_);
+}
+
 PasteText Reader::getText(PublicKey public_key) const {
     PasteText text = (*get_text_ptr_)(pimpl_, public_key);
     
@@ -23,6 +25,4 @@ Paste Reader::get(PublicKey public_key) const {
     return {text, metadata};
 }
 
-} // namespace reader
-
-} // namespace pastebin
+} // namespace pastebin::reader

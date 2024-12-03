@@ -4,7 +4,7 @@
 
 #include "cache_text_interface.hpp"
 
-namespace mock {
+namespace pastebin::mock {
 
 class MockCacheText {
 public:
@@ -23,6 +23,6 @@ public:
     ~MockCacheText() = default;
 };
 
-} // namespace mock
+} // namespace pastebin::mock
 
-static_assert(pastebin::cache_text::ICacheText<mock::MockCacheText>);
+static_assert(pastebin::cache_text::ICacheText<pastebin::mock::MockCacheText>);

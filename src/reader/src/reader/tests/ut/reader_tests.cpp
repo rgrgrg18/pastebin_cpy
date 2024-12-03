@@ -27,10 +27,10 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 
 TEST(ReaderUnitTest, DefaultGet) {
-    mock::MockCacheText cache_text;
-    mock::MockCacheMetadata cache_metadata;
+    pastebin::mock::MockCacheText cache_text;
+    pastebin::mock::MockCacheMetadata cache_metadata;
 
-    mock::MockFactory factory;
+    pastebin::mock::MockFactory factory;
 
     uint64_t seed = 5432;
 
@@ -60,7 +60,7 @@ TEST(ReaderUnitTest, DefaultGet) {
         EXPECT_CALL(factory, getCacheMetadata())
             .Times(1);
 
-        Reader reader(std::move(mock::WrapperMockFactory(&factory)));
+        Reader reader(std::move(pastebin::mock::WrapperMockFactory(&factory)));
         
         const pastebin::Paste res = reader.get(key);
         
@@ -69,9 +69,9 @@ TEST(ReaderUnitTest, DefaultGet) {
 }
 
 TEST(ReaderUnitTest, DefaultGetText) {
-    mock::MockCacheText cache_text;
+    pastebin::mock::MockCacheText cache_text;
 
-    mock::MockFactory factory;
+    pastebin::mock::MockFactory factory;
 
     uint64_t seed = 5432;
 
@@ -91,7 +91,7 @@ TEST(ReaderUnitTest, DefaultGetText) {
         EXPECT_CALL(factory, getCacheText())
             .Times(1);
 
-        Reader reader(std::move(mock::WrapperMockFactory(&factory)));
+        Reader reader(std::move(pastebin::mock::WrapperMockFactory(&factory)));
         
         const pastebin::PasteText res = reader.getText(key);
 
@@ -100,9 +100,9 @@ TEST(ReaderUnitTest, DefaultGetText) {
 }
 
 TEST(ReaderUnitTest, DefaultGetMetadata) {
-    mock::MockCacheMetadata cache_metadata;
+    pastebin::mock::MockCacheMetadata cache_metadata;
 
-    mock::MockFactory factory;
+    pastebin::mock::MockFactory factory;
 
     uint64_t seed = 5432;
 
@@ -122,7 +122,7 @@ TEST(ReaderUnitTest, DefaultGetMetadata) {
         EXPECT_CALL(factory, getCacheMetadata())
             .Times(1);
 
-        Reader reader(std::move(mock::WrapperMockFactory(&factory)));
+        Reader reader(std::move(pastebin::mock::WrapperMockFactory(&factory)));
 
         const pastebin::PasteMetadata res = reader.getMetadata(key);
         
