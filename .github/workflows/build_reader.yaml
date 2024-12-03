@@ -1,10 +1,11 @@
 name: Build Reader
 
-on: 
+on:
   pull_request:
     branches:
       - reader
       - reader_class_tests
+      - ci
 
 jobs:
   build:
