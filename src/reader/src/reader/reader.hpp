@@ -5,16 +5,15 @@
 
 #include "factory_interface.hpp"
 
-namespace pastebin {
-
-namespace reader {    
+namespace pastebin::reader {
 
 class Reader {
 private:
     template <factory::IFactory FactoryT>
     struct OwningModel {
         explicit OwningModel(FactoryT factory)
-                : factory_(std::move(factory)) {}
+                : factory_(std::move(factory)) 
+        {}
 
         FactoryT factory_;
     };
@@ -23,10 +22,8 @@ private:
     using GetTextOperation = PasteText(void*, PublicKey);
     using GetMetadataOperation = PasteMetadata(void*, PublicKey);
 
-private:
     static const size_t kBufferSize = 300;
 
-private:
     template <typename ModelT>
     static void Destroy(ModelT* model) {
         model->~ModelT();
@@ -45,11 +42,11 @@ private:
 public:
     template <factory::IFactory FactoryT>
     explicit Reader(FactoryT factory) 
-            : pimpl_(new (&buffer_) 
-                    OwningModel<FactoryT>(std::move(factory)))
+            : pimpl_(new (&buffer_) OwningModel<FactoryT>(std::move(factory)))
             , destroy_ptr_(reinterpret_cast<DestroyOperation*>(&Destroy<OwningModel<FactoryT>>))
             , get_text_ptr_(reinterpret_cast<GetTextOperation*>(&GetText<OwningModel<FactoryT>>)) 
-            , get_metadata_ptr_(reinterpret_cast<GetMetadataOperation*>(&GetMetadata<OwningModel<FactoryT>>)) {};
+            , get_metadata_ptr_(reinterpret_cast<GetMetadataOperation*>(&GetMetadata<OwningModel<FactoryT>>)) 
+    {}
 
     // non-copyable
     Reader(Reader& other) = delete;
@@ -59,11 +56,8 @@ public:
     Reader(Reader&& other) noexcept = default;
     Reader& operator=(Reader&& other) noexcept = default;
 
-    ~Reader() {
-        (*destroy_ptr_)(pimpl_);
-    };
+    ~Reader();
 
-public:
     PasteText getText(PublicKey public_key) const;
     PasteMetadata getMetadata(PublicKey public_key) const;
     Paste get(PublicKey public_key) const;
@@ -77,6 +71,4 @@ private:
     GetMetadataOperation* get_metadata_ptr_{nullptr};
 };
 
-} // namespace reader
-
-} // namespace pastebin
+} // namespace pastebin::reader
