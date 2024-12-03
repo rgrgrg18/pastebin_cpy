@@ -6,7 +6,7 @@
 #include "cache_text_mock.hpp"
 #include "factory_interface.hpp"
 
-namespace pastebin::mock {
+namespace pastebin::reader::mock {
 
 class MockFactory {
 public:
@@ -54,6 +54,6 @@ private:
     MockFactory* factory_;
 };
 
-} // namespace pastebin::mock
+} // namespace pastebin::reader::mock
 
-static_assert(pastebin::factory::IFactory<pastebin::mock::MockFactory>);
+static_assert(pastebin::factory::IFactory<pastebin::reader::mock::MockFactory>);
