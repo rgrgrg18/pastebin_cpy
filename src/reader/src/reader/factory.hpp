@@ -10,7 +10,8 @@ class Factory {
 public: 
     Factory(CacheTextT cache_text, CacheMetadataT cache_metadata) 
             : cache_text_(std::move(cache_text))
-            , cache_metadata_(std::move(cache_metadata)) {}
+            , cache_metadata_(std::move(cache_metadata)) 
+    {}
 
     // non-copyable
     Factory(Factory& other) = delete;
