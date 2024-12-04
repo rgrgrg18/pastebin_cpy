@@ -10,14 +10,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-        image: izmkirill/pastebin_actions:latest
+        image: izmkirill/pastebin_enviroment:latest
         credentials:
             username: izmkirill
             password: ${{  secrets.DOCKER_CONTAINER_REGISTRY_TOKEN }}
-    steps:      
+    steps:  
+      - name: Clone project
+        uses: actions/checkout@v4    
       - name: Build
         run: |
-          cd /usr/src/app/src/reader
+          cd src/reader
           cmake . -B build
           cd build
           make -j4
