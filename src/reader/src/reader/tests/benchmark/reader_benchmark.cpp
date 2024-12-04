@@ -6,11 +6,20 @@
 
 #include "reader.hpp"
 
+#include "reader_manual_virtual_dispatch.hpp"
+#include "reader_sbo.hpp"
+#include "reader_type_erasure_without_optimizations.hpp"
+
 using namespace pastebin::fake;
 
 static_assert(pastebin::factory::IFactory<Factory<CacheText, CacheMetadata>>);
 
 using pastebin::reader::Reader;
+
+using pastebin::reader::ReaderWithoutOptimization;
+using pastebin::reader::ReaderSBO;
+using pastebin::reader::ReaderVirtualDispatch;
+
 
 template <typename T>
 T SetUp() {
@@ -59,3 +68,18 @@ BENCHMARK_TEMPLATE(BM_Reader_CreationDestruction, Reader)->Name("Reader_SBO_Virt
 BENCHMARK_TEMPLATE(BM_Reader_GetText, Reader)->Name("Reader_SBO_VirtualDispatch - GetText");
 BENCHMARK_TEMPLATE(BM_Reader_GetMetadata, Reader)->Name("Reader_SBO_VirtualDispatch - GetMetadata");
 BENCHMARK_TEMPLATE(BM_Reader_Get, Reader)->Name("Reader_SBO_VirtualDispatch  - Get");
+
+BENCHMARK_TEMPLATE(BM_Reader_CreationDestruction, ReaderWithoutOptimization)->Name("Reader_WithoutOptimization - CreationDestruction");
+BENCHMARK_TEMPLATE(BM_Reader_GetText, ReaderWithoutOptimization)->Name("Reader_WithoutOptimization - GetText");
+BENCHMARK_TEMPLATE(BM_Reader_GetMetadata, ReaderWithoutOptimization)->Name("Reader_WithoutOptimization - GetMetadata");
+BENCHMARK_TEMPLATE(BM_Reader_Get, ReaderWithoutOptimization)->Name("Reader_WithoutOptimization - Get");
+
+BENCHMARK_TEMPLATE(BM_Reader_CreationDestruction, ReaderSBO)->Name("Reader_SBO - CreationDestruction");
+BENCHMARK_TEMPLATE(BM_Reader_GetText, ReaderSBO)->Name("Reader_SBO - GetText");
+BENCHMARK_TEMPLATE(BM_Reader_GetMetadata, ReaderSBO)->Name("Reader_SBO - GetMetadata");
+BENCHMARK_TEMPLATE(BM_Reader_Get, ReaderSBO)->Name("Reader_SBO - Get");
+
+BENCHMARK_TEMPLATE(BM_Reader_CreationDestruction, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - CreationDestruction");
+BENCHMARK_TEMPLATE(BM_Reader_GetText, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - GetText");
+BENCHMARK_TEMPLATE(BM_Reader_GetMetadata, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - GetMetadata");
+BENCHMARK_TEMPLATE(BM_Reader_Get, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - Get");
