@@ -5,7 +5,7 @@
 
 #include "factory_interface.hpp"
 
-namespace pastebin::fake {
+namespace pastebin::reader::fake {
 
 template <cache_text::ICacheText CacheTextT, cache_metadata::ICacheMetadata CacheMetadataT>
 class Factory {
@@ -13,8 +13,13 @@ public:
     Factory(CacheTextT cache_text, CacheMetadataT cache_metadata) 
             : cache_text_(std::move(cache_text))
             , cache_metadata_(std::move(cache_metadata)) 
-    {}
+    {}  
 
+    // non-copyable
+    Factory(Factory& other) = delete;
+    Factory& operator=(Factory& other) = delete;
+
+    // movable
     Factory(Factory&& other) = default;
     Factory& operator=(Factory&& other) = default;
 
@@ -33,4 +38,4 @@ private:
     CacheMetadataT cache_metadata_;
 };
 
-} // namespace pastebin::fake
+} // namespace pastebin::reader::fake

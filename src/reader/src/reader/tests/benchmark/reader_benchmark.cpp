@@ -1,8 +1,8 @@
 #include <benchmark/benchmark.h>
 
-#include "fakes/factory.hpp"
 #include "fakes/cache_metadata.hpp"
 #include "fakes/cache_text.hpp"
+#include "fakes/factory.hpp"
 
 #include "reader.hpp"
 
@@ -10,7 +10,7 @@
 #include "reader_sbo.hpp"
 #include "reader_type_erasure_without_optimizations.hpp"
 
-using namespace pastebin::fake;
+using namespace pastebin::reader::fake;
 
 static_assert(pastebin::factory::IFactory<Factory<CacheText, CacheMetadata>>);
 
@@ -34,9 +34,7 @@ T SetUp() {
 template <typename T>
 static void BM_Reader_CreationDestruction(benchmark::State& state) {
     for (auto _ : state) {
-        {
         auto reader = SetUp<T>();
-        }
     }
 }
 
@@ -67,7 +65,7 @@ static void BM_Reader_Get(benchmark::State& state) {
 BENCHMARK_TEMPLATE(BM_Reader_CreationDestruction, Reader)->Name("Reader_SBO_VirtualDispatch - CreationDestruction");
 BENCHMARK_TEMPLATE(BM_Reader_GetText, Reader)->Name("Reader_SBO_VirtualDispatch - GetText");
 BENCHMARK_TEMPLATE(BM_Reader_GetMetadata, Reader)->Name("Reader_SBO_VirtualDispatch - GetMetadata");
-BENCHMARK_TEMPLATE(BM_Reader_Get, Reader)->Name("Reader_SBO_VirtualDispatch  - Get");
+BENCHMARK_TEMPLATE(BM_Reader_Get, Reader)->Name("Reader_SBO_VirtualDispatch - Get");
 
 BENCHMARK_TEMPLATE(BM_Reader_CreationDestruction, ReaderWithoutOptimization)->Name("Reader_WithoutOptimization - CreationDestruction");
 BENCHMARK_TEMPLATE(BM_Reader_GetText, ReaderWithoutOptimization)->Name("Reader_WithoutOptimization - GetText");
@@ -82,4 +80,4 @@ BENCHMARK_TEMPLATE(BM_Reader_Get, ReaderSBO)->Name("Reader_SBO - Get");
 BENCHMARK_TEMPLATE(BM_Reader_CreationDestruction, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - CreationDestruction");
 BENCHMARK_TEMPLATE(BM_Reader_GetText, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - GetText");
 BENCHMARK_TEMPLATE(BM_Reader_GetMetadata, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - GetMetadata");
-BENCHMARK_TEMPLATE(BM_Reader_Get, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - Get");
+BENCHMARK_TEMPLATE(BM_Reader_Get, ReaderVirtualDispatch)->Name("Reader_VirtualDispatch - Get"); 
