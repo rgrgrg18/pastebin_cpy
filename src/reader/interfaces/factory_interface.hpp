@@ -5,9 +5,7 @@
 #include "cache_metadata_interface.hpp"
 #include "cache_text_interface.hpp"
 
-namespace pastebin {
-
-namespace factory {
+namespace pastebin::factory {
 
 namespace {
     template <typename T>
@@ -23,6 +21,4 @@ concept IFactory = requires(T factory) {
     { factory.getCacheMetadata() } -> RefCacheMetadata;
 } && std::is_nothrow_move_constructible_v<T> && std::is_nothrow_destructible_v<T>;
 
-} // namespace factory
-
-} // namespace pastebin
+} // namespace pastebin::factory
