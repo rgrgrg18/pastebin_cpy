@@ -1,8 +1,11 @@
+add_subdirectory(implementations)
+
 add_executable(reader_benchmark
     reader_benchmark.cpp)
 
 target_link_libraries(reader_benchmark PRIVATE
     reader
+    reader_implementations
     paste_types
     interface
     benchmark
