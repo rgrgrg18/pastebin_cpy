@@ -26,6 +26,7 @@ enable_testing()
 
 add_subdirectory(src)
 add_subdirectory(interfaces)
+add_subdirectory(utility)
 
 # Create an INTERFACE library to expose the paste_types.hpp
 add_library(paste_types INTERFACE)
