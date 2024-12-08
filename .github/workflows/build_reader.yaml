@@ -19,10 +19,8 @@ jobs:
         uses: actions/checkout@v4    
       - name: Build
         run: |
-          cd src/reader
-          cmake . -B build
-          cd build
-          make -j4
+          cd src/reader/scripts 
+          ./build.sh
       - name: End
         if: success() || failure()
         run: |
