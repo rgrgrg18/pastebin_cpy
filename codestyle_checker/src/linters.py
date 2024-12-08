@@ -8,7 +8,7 @@ def find_files_recursively(extensions):
     extensions = set(extensions)
 
     for root, dirs, filenames in os.walk('.'):
-        dirs[:] = [d for d in dirs if 'tests' not in d]
+        dirs[:] = [d for d in dirs if 'test' not in d and 'build' not in d]
 
         for filename in filenames:
             ext = filename.split('.')[-1]
@@ -31,6 +31,7 @@ def run_clang_tidy_on_files(files, clang_tidy_config_path, build_dir):
             'clang-tidy',
             '--config-file=' + clang_tidy_config_path,
             '--quiet',
+            '--system-headers=false',
         ]
 
         if len(build_dir) != 0:

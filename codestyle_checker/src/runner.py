@@ -9,13 +9,13 @@ import linters
 
 def load_config():
     config_dir_path = os.getenv('CODESTYLE_CONFIG_DIR_PATH')
+    build_dir = os.getenv('CODESTYLE_BUILD_DIR')
     with open(config_dir_path + '/config.json', 'r') as config_file:
         config = json.load(config_file)
 
 
     clang_tidy_config_path = config_dir_path + '/.clang-tidy'
     extensions = config.get('extensions', [])
-    build_dir = config.get('build_dir')
 
     return clang_tidy_config_path, extensions, build_dir
 

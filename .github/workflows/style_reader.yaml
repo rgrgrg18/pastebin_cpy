@@ -1,0 +1,34 @@
+name: Style Tests Reader
+
+on:
+  pull_request:
+    branches:
+      - reader
+      - reader_class_tests
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    container:
+      image: izmkirill/pastebin_enviroment:latest
+      env:
+        CODESTYLE_BUILD_DIR: "/usr/src/app/src/reader/build"
+      credentials:
+        username: izmkirill
+        password: ${{  secrets.DOCKER_CONTAINER_REGISTRY_TOKEN }}
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cd src/reader/scripts
+          ./build.sh
+      - name: StyleTest
+        run: |
+          cd src/reader
+          style -r
+      - name: End
+        if: success() || failure()
+        run: |
+          exit
+          ./down.sh
