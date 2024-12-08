@@ -16,15 +16,15 @@ jobs:
             password: ${{  secrets.DOCKER_CONTAINER_REGISTRY_TOKEN }}
     steps:   
       - name: Clone project
-        uses: actions/checkout@v4    
+        uses: actions/checkout@v4   
       - name: Build
         run: |
-          cd src/reader
-          cmake . -B build
-          cd build
-          make -j4
+          cd src/reader/scripts 
+          ./build.sh
       - name: Test
-        run: ctest -R ReaderUt
+        run: |
+          cd src/reader/scripts 
+          ./test.sh reader ut
       - name: End
         if: success() || failure()
         run: |
