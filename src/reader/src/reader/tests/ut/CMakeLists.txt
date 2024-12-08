@@ -5,7 +5,7 @@ target_link_libraries(reader_ut PRIVATE
         reader
         paste_types
         interface
-        utility
+        random
         ${GTEST_LIBRARIES}
         ${GMOCK_LIBRARIES}
         gtest_main
