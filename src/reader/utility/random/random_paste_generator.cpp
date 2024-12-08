@@ -23,8 +23,8 @@ static std::string GenerateString(uint64_t min_length, uint64_t max_length, uint
     return random_string;
 }
 
-pastebin::PasteText GeneratePasteText(uint64_t seed) {
-    return {GenerateString(0, 1000000, seed)};
+pastebin::PasteText GeneratePasteText(uint64_t seed, uint64_t min_length, uint64_t max_length) {
+    return {GenerateString(min_length, max_length, seed)};
 }
 
 pastebin::PasteMetadata GeneratePasteMetadata(uint64_t seed) {
