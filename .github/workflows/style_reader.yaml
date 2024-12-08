@@ -1,0 +1,40 @@
+name: Style Tests Reader
+
+on:
+  pull_request:
+    branches:
+      - reader
+      - reader_class_tests
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    container:
+      image: izmkirill/pastebin_enviroment:latest
+      credentials:
+        username: izmkirill
+        password: ${{  secrets.DOCKER_CONTAINER_REGISTRY_TOKEN }}
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v4
+      - name: Build
+        run: |
+          cd src/reader/scripts
+          ./build.sh
+      - name: Set CODESTYLE_CONFIG_DIR_PATH
+        run: |
+          cd codestyle_checker/
+          echo "CODESTYLE_CONFIG_DIR_PATH=$(pwd)" >> $GITHUB_ENV
+      - name: Set CODESTYLE_BUILD_DIR
+        run: |
+          cd src/reader/build
+          echo "CODESTYLE_BUILD_DIR=$(pwd)" >> $GITHUB_ENV
+      - name: StyleTest
+        run: |
+          cd src/reader/scripts
+          ./style.sh
+      - name: End
+        if: success() || failure()
+        run: |
+          exit
+          ./down.sh
