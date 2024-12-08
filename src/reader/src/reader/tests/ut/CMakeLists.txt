@@ -5,6 +5,7 @@ target_link_libraries(reader_ut PRIVATE
         reader
         paste_types
         interface
+        utility
         ${GTEST_LIBRARIES}
         ${GMOCK_LIBRARIES}
         gtest_main
@@ -13,7 +14,7 @@ target_link_libraries(reader_ut PRIVATE
 )
 
 set_target_properties(reader_ut PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test/ut
 )
 
 add_test(NAME ReaderUt COMMAND reader_ut)

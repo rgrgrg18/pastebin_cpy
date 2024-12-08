@@ -7,7 +7,7 @@
 
 namespace pastebin::reader {
 
-class Reader {
+class ReaderVirtualDispatch {
 private:
     template <factory::IFactory FactoryT>
     struct OwningModel {
@@ -22,11 +22,9 @@ private:
     using GetTextOperation = PasteText(void*, PublicKey);
     using GetMetadataOperation = PasteMetadata(void*, PublicKey);
 
-    static const size_t kBufferSize = 300;
-
     template <typename ModelT>
     static void Destroy(ModelT* model) {
-        model->~ModelT();
+        delete model;
     }
 
     template <typename ModelT>
@@ -41,31 +39,30 @@ private:
 
 public:
     template <factory::IFactory FactoryT>
-    explicit Reader(FactoryT factory) 
-            : pimpl_(new (&buffer_) OwningModel<FactoryT>(std::move(factory)))
+    explicit ReaderVirtualDispatch(FactoryT factory) 
+            : pimpl_(new OwningModel<FactoryT>(std::move(factory)))
             , destroy_ptr_(reinterpret_cast<DestroyOperation*>(&Destroy<OwningModel<FactoryT>>))
             , get_text_ptr_(reinterpret_cast<GetTextOperation*>(&GetText<OwningModel<FactoryT>>)) 
             , get_metadata_ptr_(reinterpret_cast<GetMetadataOperation*>(&GetMetadata<OwningModel<FactoryT>>)) 
     {}
 
     // non-copyable
-    Reader(Reader& other) = delete;
-    Reader& operator=(Reader& other) = delete;
+    ReaderVirtualDispatch(ReaderVirtualDispatch& other) = delete;
+    ReaderVirtualDispatch& operator=(ReaderVirtualDispatch& other) = delete;
     
     // moveable
-    Reader(Reader&& other) noexcept = default;
-    Reader& operator=(Reader&& other) noexcept = default;
+    ReaderVirtualDispatch(ReaderVirtualDispatch&& other) noexcept = default;
+    ReaderVirtualDispatch& operator=(ReaderVirtualDispatch&& other) noexcept = default;
 
-    ~Reader();
+    ~ReaderVirtualDispatch();
 
     PasteText getText(PublicKey public_key) const;
     PasteMetadata getMetadata(PublicKey public_key) const;
     Paste get(PublicKey public_key) const;
 
 private:
-    alignas(max_align_t) std::array<std::byte, kBufferSize> buffer_;
-
     void* pimpl_;
+
     DestroyOperation* destroy_ptr_{nullptr};
     GetTextOperation* get_text_ptr_{nullptr};
     GetMetadataOperation* get_metadata_ptr_{nullptr};

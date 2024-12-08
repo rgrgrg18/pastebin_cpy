@@ -79,5 +79,16 @@ git clone https://github.com/google/googletest.git \
     && cd ../../ \
     && rm -rf googletest
 
+git clone https://github.com/google/benchmark.git \
+    && cd benchmark \
+    && cmake -E make_directory "build" \
+    && cmake -E chdir "build" cmake -DBENCHMARK_DOWNLOAD_DEPENDENCIES=on -DCMAKE_BUILD_TYPE=Release ../ \
+    && cmake --build "build" --config Release -j4 \
+    && cd build \
+    && make install \
+    && cd ../.. \
+    && rm -rf benchmark
+
+
 ln -s /usr/src/app/codestyle_checker/src/runner.py /usr/local/bin/style
 

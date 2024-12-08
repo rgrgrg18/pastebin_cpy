@@ -16,9 +16,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 set(GTEST_INCLUDE_DIRS "/usr/local/include")
 set(GMOCK_INCLUDE_DIRS "/usr/local/include")
+set(BENCHMARK_INCLUDE_DIRS "/usr/local/include")
 
 set(GTEST_LIBRARIES "/usr/local/lib/libgtest.a")
 set(GMOCK_LIBRARIES "/usr/local/lib/libgmock.a")
+set(BENCHMARK_LIBRARIES "/usr/local/lib/lib")
 
 find_package(Threads REQUIRED)
 
@@ -26,6 +28,7 @@ enable_testing()
 
 add_subdirectory(src)
 add_subdirectory(interfaces)
+add_subdirectory(utility)
 
 # Create an INTERFACE library to expose the paste_types.hpp
 add_library(paste_types INTERFACE)

@@ -1,0 +1,32 @@
+name: Unit Tests Reader
+
+on: 
+  pull_request:
+    branches:
+      - reader
+      - reader_class_tests
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    container:
+        image: izmkirill/pastebin_enviroment:latest
+        credentials:
+            username: izmkirill
+            password: ${{  secrets.DOCKER_CONTAINER_REGISTRY_TOKEN }}
+    steps:   
+      - name: Clone project
+        uses: actions/checkout@v4    
+      - name: Build
+        run: |
+          cd src/reader
+          cmake . -B build
+          cd build
+          make -j4
+      - name: Test
+        run: ctest -R ReaderUt
+      - name: End
+        if: success() || failure()
+        run: |
+          exit
+          ./down.sh
