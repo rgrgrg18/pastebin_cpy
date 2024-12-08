@@ -33,14 +33,19 @@ using utility::testing::GeneratePasteMetadata;
 
 using namespace pastebin::reader::mock;
 
-TEST(ReaderUnitTest, DefaultGet) {
+class ReaderUnitTest : public ::testing::Test {
+protected:
+    // Nothing needs to be done
+    void SetUp() override {}
+    void TearDown() override {}
+
     MockCacheText cache_text;
     MockCacheMetadata cache_metadata;
-
     MockFactory factory;
-
     uint64_t seed = 5432;
+};
 
+TEST_F(ReaderUnitTest, DefaultGet) {
     for (uint64_t i = 0; i < 1'000; ++i) {
         const std::string public_key = GeneratePublicKey(seed);
         const pastebin::PublicKey key = public_key;
@@ -75,13 +80,7 @@ TEST(ReaderUnitTest, DefaultGet) {
     }
 }
 
-TEST(ReaderUnitTest, DefaultGetText) {
-    MockCacheText cache_text;
-
-    MockFactory factory;
-
-    uint64_t seed = 5432;
-
+TEST_F(ReaderUnitTest, DefaultGetText) {
     for (uint64_t i = 0; i < 1'000; ++i) {
         const std::string public_key = GeneratePublicKey(seed);
         const pastebin::PublicKey key = public_key;
@@ -106,13 +105,7 @@ TEST(ReaderUnitTest, DefaultGetText) {
     }
 }
 
-TEST(ReaderUnitTest, DefaultGetMetadata) {
-    MockCacheMetadata cache_metadata;
-
-    MockFactory factory;
-
-    uint64_t seed = 5432;
-
+TEST_F(ReaderUnitTest, DefaultGetMetadata) {
     for (uint64_t i = 0; i < 500'000; ++i) {
         const std::string public_key = GeneratePublicKey(seed);
         const pastebin::PublicKey key = public_key;
