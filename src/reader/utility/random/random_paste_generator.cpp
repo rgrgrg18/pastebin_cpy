@@ -1,14 +1,12 @@
 #include "random_paste_generator.hpp"
 
-#include <random>
 #include <limits>
+#include <random>
 
-namespace utility {
-
-namespace testing {
+namespace pastebin::utility::testing {
 
 static std::string GenerateString(uint64_t min_length, uint64_t max_length, uint64_t seed) {
-    const std::string kCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{|}~[\"\'\\]^_`:;<=>?@!#$%&()*+,-./";
+    static const std::string kCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
     std::mt19937 generator(seed);
     std::uniform_int_distribution<char> distribution(0, kCharacters.size() - 1);
@@ -44,9 +42,7 @@ pastebin::Paste GeneratePaste(uint64_t seed) {
 }
 
 std::string GeneratePublicKey(uint64_t seed) {
-    return GenerateString(8, 16, seed);
+    return GenerateString(8, 8, seed);
 }
 
-} // namespace testing
-
-} // namespace utility
+} // namespace pastebin::utility::testing

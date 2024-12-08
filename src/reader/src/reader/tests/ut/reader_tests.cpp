@@ -1,6 +1,5 @@
 #include <gmock/gmock.h>
 
-#include "comparisition_paste_types.hpp"
 #include "mocks/factory_mock.hpp"
 #include "random_paste_generator.hpp"
 #include "reader_interface.hpp"
@@ -26,10 +25,10 @@ MATCHER_P(PasteMetadataEquals, expected, "Matches PasteMetadata objects") {
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-using utility::testing::GeneratePublicKey;
-using utility::testing::GeneratePaste;
-using utility::testing::GeneratePasteText;
-using utility::testing::GeneratePasteMetadata;
+using pastebin::utility::testing::GeneratePublicKey;
+using pastebin::utility::testing::GeneratePaste;
+using pastebin::utility::testing::GeneratePasteText;
+using pastebin::utility::testing::GeneratePasteMetadata;
 
 using namespace pastebin::reader::mock;
 
