@@ -10,6 +10,5 @@ ln -sf "$CODESTYLE_CONFIG_DIR_PATH/src/runner.py" ~/bin/style
 
 export PATH=$PATH:~/bin
 
-
 cd ../
 style -r

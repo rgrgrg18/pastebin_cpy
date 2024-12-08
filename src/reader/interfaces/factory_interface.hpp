@@ -7,13 +7,11 @@
 
 namespace pastebin::factory {
 
-namespace {
-    template <typename T>
-    concept RefCacheText = pastebin::cache_text::ICacheText<T> && std::is_reference_v<T>;
+template <typename T>
+concept RefCacheText = pastebin::cache_text::ICacheText<T> && std::is_reference_v<T>;
 
-    template <typename T>
-    concept RefCacheMetadata = pastebin::cache_metadata::ICacheMetadata<T> && std::is_reference_v<T>;
-}
+template <typename T>
+concept RefCacheMetadata = pastebin::cache_metadata::ICacheMetadata<T> && std::is_reference_v<T>;
 
 template <typename T>
 concept IFactory = requires(T factory) {
