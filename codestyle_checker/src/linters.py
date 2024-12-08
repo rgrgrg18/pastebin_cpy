@@ -24,6 +24,7 @@ def find_files_in_current_directory(extensions):
     return files
 
 def run_clang_tidy_on_files(files, clang_tidy_config_path, build_dir):
+    is_wrong = False
     for file in files:
         print(f"\033[95mAnalyzing file:\033[0m {file}")
 
@@ -42,6 +43,10 @@ def run_clang_tidy_on_files(files, clang_tidy_config_path, build_dir):
         try:
             result = subprocess.run(command, check=True, text=True)
         except subprocess.CalledProcessError as e:
+            is_wrong = True
             continue
 
         print("\033[92mSuccess\033[0m")
+
+    if is_wrong:
+        raise 1
