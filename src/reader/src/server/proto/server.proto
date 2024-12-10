@@ -1,0 +1,40 @@
+syntax = "proto2";
+
+// get paste text
+message GetTextArgs {
+    required string public_key = 1;
+    optional string password = 2;
+}
+
+message GetTextResponse {
+    optional string text = 1;
+}
+
+// get paste metadata
+message GetMetadataArgs {
+    required string public_key = 1;
+    optional string password = 2;
+}
+
+message GetMetadataResponse {
+    optional string author = 1;
+    optional string title = 2;
+    optional string created_at = 3;
+}
+
+// get all paste info
+message GetPasteArgs {
+    required string public_key = 1;
+    optional string password = 2;
+}
+
+message GetPasteResponse {
+    optional GetTextResponse paste_text = 1;
+    optional GetMetadataResponse paste_metadata = 2; 
+}
+
+service PastebinReaderApi {
+    rpc get(GetPasteArgs) returns(GetPasteResponse) {}
+    rpc getText(GetTextArgs) returns(GetTextResponse) {}
+    rpc getMetadata(GetMetadataArgs) returns(GetMetadataResponse) {}
+}
