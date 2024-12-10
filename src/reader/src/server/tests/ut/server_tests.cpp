@@ -13,7 +13,7 @@ private:
     static constexpr char kServerIP[] = "localhost:50051";
 
 protected:
-    void init() {
+    void Init() {
         service_ = std::make_unique<pastebin::reader_grpc::ReadergRPC>(std::move(pastebin::mock::WrapperMockReader(&reader)));
                 
         server_ = ::grpc::ServerBuilder()
@@ -27,7 +27,7 @@ protected:
         server_thread_ = std::thread([this] { server_->Wait(); });
     }
 
-    void destroy() {
+    void Destroy() {
         server_->Shutdown();
         server_thread_.join();
         service_.reset();
@@ -78,7 +78,7 @@ TEST_F(ReadergRPCUnitTest, DefaultGetText) {
         grpc::ClientContext context;
 
         // start server, channels          
-        init();
+        Init();
 
         // call grpc method
         grpc::Status status = stub->getText(&context, request, &response);
@@ -88,7 +88,7 @@ TEST_F(ReadergRPCUnitTest, DefaultGetText) {
         EXPECT_EQ(response.text(), expected_paste.paste_text.text);
 
         // destroy server, channels  
-        destroy();
+        Destroy();
     }
 }
 
@@ -116,7 +116,7 @@ TEST_F(ReadergRPCUnitTest, DefaultGetMetadata) {
         grpc::ClientContext context;
 
         // start server, channels       
-        init();
+        Init();
 
         // call grpc method
         grpc::Status status = stub->getMetadata(&context, request, &response);
@@ -128,7 +128,7 @@ TEST_F(ReadergRPCUnitTest, DefaultGetMetadata) {
         EXPECT_EQ(response.created_at(), expected_metadata.created_at);
         
         // destroy server, channels 
-        destroy();
+        Destroy();
     }
 }
 
@@ -156,7 +156,7 @@ TEST_F(ReadergRPCUnitTest, DefaultGet) {
         grpc::ClientContext context;
 
         // start server, channels       
-        init();
+        Init();
 
         // call grpc method
         grpc::Status status = stub->get(&context, request, &response);
@@ -169,6 +169,6 @@ TEST_F(ReadergRPCUnitTest, DefaultGet) {
         EXPECT_EQ(response.paste_text().text(), expected_paste.paste_text.text);
         
         // destroy server, channels 
-        destroy();
+        Destroy();
     }
 }
