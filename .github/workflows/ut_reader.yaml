@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - reader
-      - reader_class_tests
 
 jobs:
   tests:
@@ -21,10 +20,14 @@ jobs:
         run: |
           cd src/reader/scripts 
           ./build.sh
-      - name: Test
+      - name: Test Reader implementation
         run: |
           cd src/reader/scripts 
           ./test.sh reader ut
+      - name: Test gRPC Reader implementation
+        run: |
+          cd src/reader/scripts 
+          ./test.sh server ut
       - name: End
         if: success() || failure()
         run: |
