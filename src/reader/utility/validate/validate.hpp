@@ -4,6 +4,6 @@
 
 namespace pastebin::utility {
 
-bool is_valid(PublicKey public_key);
+bool IsValid(PublicKey public_key);
 
 } // namespace pastebin::utility

@@ -21,7 +21,7 @@ ReadergRPC::~ReadergRPC() {
         ::grpc::ServerContext* context,
         const GetPasteArgs* request,
         GetPasteResponse* response) {
-    if (!pastebin::utility::is_valid(request->public_key())) {
+    if (!pastebin::utility::IsValid(request->public_key())) {
         return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should be 8 symbols");
     }
         
@@ -34,7 +34,7 @@ ReadergRPC::~ReadergRPC() {
 
     set_text(response->mutable_paste_text()
         , std::move(result.paste_text.text));
-        
+
     set_metadata(response->mutable_paste_metadata()
         , std::move(result.paste_metadata.author)
         , std::move(result.paste_metadata.title)
@@ -47,7 +47,7 @@ ReadergRPC::~ReadergRPC() {
         ::grpc::ServerContext* context,
         const GetTextArgs* request,
         GetTextResponse* response) {
-    if (!pastebin::utility::is_valid(request->public_key())) {
+    if (!pastebin::utility::IsValid(request->public_key())) {
         return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should be 8 symbols");
     }
 
@@ -68,7 +68,7 @@ ReadergRPC::~ReadergRPC() {
         ::grpc::ServerContext* context,
         const GetMetadataArgs* request,
         GetMetadataResponse* response) {
-    if (!pastebin::utility::is_valid(request->public_key())) {
+    if (!pastebin::utility::IsValid(request->public_key())) {
         return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "Public key should be 8 symbols");
     }
 
@@ -87,4 +87,4 @@ ReadergRPC::~ReadergRPC() {
     return ::grpc::Status::OK;
 }
 
-} // pastebin::reader_grpc
+} // namespace pastebin::reader_grpc

@@ -25,6 +25,16 @@ then
     else 
         echo "Error: Write nothing or ut/bm."
     fi
+elif [ "$1" = "server" ];
+then
+    if [ "$2" = "ut" ] || [ $# -eq 1 ];
+    then
+        echo "Run gRPC reader unit tests..."
+        cd "$UT_DIR"
+        ./server_ut
+    else 
+        echo "Error: Write nothing or ut."
+    fi
 elif [ $# -eq 0 ];
 then
     echo "Run all tests..."
