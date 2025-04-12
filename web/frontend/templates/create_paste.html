@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Create Paste - My.Paste{% endblock %}
+
+{% block extra_css %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/vscode-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/vscode-light.min.css">
+    <link href="{{ url_for('static', filename='css/editor.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <div class="editor-container">
+        <form id="paste-form">
+            <div class="title-input">
+                <input type="text" class="form-control" id="paste-title" placeholder="Enter paste title" required>
+            </div>
+            
+            <div class="split-view">
+                <div class="editor-section">
+                    <div class="editor-header">
+                        <select class="form-select language-selector" id="language-select">
+                            <option value="python">Python</option>
+                            <option value="cpp">C++</option>
+                            <option value="sql">SQL</option>
+                            <option value="markdown">README</option>
+                        </select>
+                        <div style="flex: 1;"></div>
+                        <select class="form-select font-size-selector" id="font-size-select">
+                            <option value="12">12px</option>
+                            <option value="14" selected>14px</option>
+                            <option value="16">16px</option>
+                            <option value="18">18px</option>
+                            <option value="20">20px</option>
+                            <option value="22">22px</option>
+                            <option value="24">24px</option>
+                        </select>
+                    </div>
+                    <textarea id="paste-content"></textarea>
+                </div>
+                <div class="resizer"></div>
+                <div class="preview-section" id="preview-section">
+                    <div class="preview-content markdown-body"></div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary save-button">Save Paste</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %} 
