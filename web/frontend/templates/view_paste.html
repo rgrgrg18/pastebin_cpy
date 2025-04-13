@@ -72,25 +72,14 @@
         </div>
         <div class="paste-content">
             {% if paste.language == 'markdown' %}
-                <div class="preview-content markdown-body">{{ paste.content | safe }}</div>
+                <div class="preview-content">{{ paste.content | safe }}</div>
             {% else %}
                 <pre><code class="language-{{ paste.language }}">{{ paste.content }}</code></pre>
             {% endif %}
         </div>
         <div class="paste-footer">
             <span>
-                {% if paste.created_at.year == current_year %}
-                    {{ paste.created_at.strftime('%d %b %H:%M') }}
-                {% else %}
-                    {{ paste.created_at.strftime('%d %b %y %H:%M') }}
-                {% endif %}
-            </span>
-            <span>
-                {% if paste.last_edit.year == current_year %}
-                    Edited: {{ paste.last_edit.strftime('%d %b %H:%M') }}
-                {% else %}
-                    Edited: {{ paste.last_edit.strftime('%d %b %y %H:%M') }}
-                {% endif %}
+                {{ paste.created_at }}
             </span>
         </div>
     </div>

@@ -10,6 +10,20 @@ function toggleTheme() {
     const isDark = document.body.classList.contains('dark-theme');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
     updateThemeIcon();
+    updateHighlightTheme(isDark);
+}
+
+
+function updateHighlightTheme(isDark) {
+    const highlightLink = document.getElementById('highlight-theme');
+    if (!highlightLink) return;
+
+    const newHref = isDark 
+        ? "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/monokai.min.css"
+        : "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css";
+
+    console.log('Updating highlight theme to:', newHref);
+    highlightLink.href = newHref;
 }
 
 function updateThemeIcon() {
@@ -37,8 +51,9 @@ function updateThemeIcon() {
 // Initialize theme when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    updateHighlightTheme(document.body.classList.contains('dark-theme'));
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', toggleTheme);
     }
-}); 
+});
