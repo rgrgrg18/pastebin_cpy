@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}{{ paste.title }} - My.Paste{% endblock %}
+
+{% block extra_css %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/vscode-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/vscode-light.min.css">
+    <link href="{{ url_for('static', filename='css/editor.css') }}" rel="stylesheet">
+    <style>
+        .paste-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+        }
+        .paste-content {
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            white-space: pre-wrap;
+        }
+        .paste-footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        .paste-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .creation-date {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .dark-theme .paste-content {
+            background-color: #2d2d2d;
+            color: #e1e4e8;
+        }
+        .dark-theme .paste-footer {
+            border-top-color: #404040;
+            color: #adb5bd;
+        }
+        .dark-theme .creation-date {
+            color: #adb5bd;
+        }
+    </style>
+    {% if paste.language == 'markdown' %}
+    <style>
+        .paste-content {
+            background-color: #ffffff;
+            padding: 1rem;
+        }
+        .dark-theme .paste-content {
+            background-color: #2d2d2d;
+        }
+    </style>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="container paste-container">
+        <h1>{{ paste.title }}</h1>
+        <div class="paste-meta mb-3">
+            <span class="badge bg-secondary">{{ paste.language }}</span>
+        </div>
+        <div class="paste-content">
+            {% if paste.language == 'markdown' %}
+                <div class="preview-content">{{ paste.content | safe }}</div>
+            {% else %}
+                <pre><code class="language-{{ paste.language }}">{{ paste.content }}</code></pre>
+            {% endif %}
+        </div>
+        <div class="paste-footer">
+            <span>
+                {{ paste.created_at }}
+            </span>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {% if paste.language == 'markdown' %}
+        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const previewContent = document.querySelector('.preview-content');
+                previewContent.innerHTML = marked.parse(previewContent.textContent);
+            });
+        </script>
+    {% else %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+    {% endif %}
+{% endblock %} 
